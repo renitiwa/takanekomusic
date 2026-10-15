@@ -325,6 +325,11 @@
 <body class="h-screen w-screen overflow-hidden select-none">
 
   <!-- =========================================================
+       NATIVE HTML5 AUDIO ELEMENT (Direct output, no CORS muting)
+       ========================================================= -->
+  <audio id="takanekoAudio" preload="auto" playsinline></audio>
+
+  <!-- =========================================================
        DYNAMIC GLASS BACKGROUND ORBS
        ========================================================= -->
   <div class="glass-bg-container">
@@ -451,7 +456,7 @@
                   注目の曲
                 </span>
                 <h2 id="heroSongTitle" class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight line-clamp-2">
-                  Track Title
+                  Takaneko music
                 </h2>
                 <p id="heroSongArtist" class="text-sm sm:text-base text-white/75 mt-1 font-medium">
                   Takaneko music
@@ -480,7 +485,7 @@
               <div>
                 <h2 class="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2">
                   <span>注目のアップロードされた曲</span>
-                  <span id="featuredUploadsCount" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300">0</span>
+                  <span id="featuredUploadsCount" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300">0曲</span>
                 </h2>
               </div>
               <div class="flex items-center gap-2">
@@ -871,46 +876,40 @@
        ========================================================= -->
   <script>
     /*************************************************************************
-     * 1. GitHubリポジトリにアップロードしたMP3ファイル一覧の設定 (コード記述用)
-     * -----------------------------------------------------------------------
-     * ここにGitHubへアップロードした .mp3 ファイルのパスまたはファイル名を記述します。
-     * 表示される曲名は自動的にフォルダパスと末尾の「.mp3」を除いた名前になります。
-     * 例: '美しく生きろ.mp3' → 曲名「美しく生きろ」として表示されます。
-     *************************************************************************/
-    const MP3_FILES = [
-      'エンドレスラフター.mp3',
-    ];
-
-    /*************************************************************************
-     * 2. Spotify / Anchor 系ポッドキャストの RSS フィード設定 (コード記述用)
-     * -----------------------------------------------------------------------
-     * ここに聴きたいSpotify系ポッドキャストのRSS URLを記述します。
+     * 1. Spotify / Anchor 系ポッドキャストの RSS フィード設定
      *************************************************************************/
     const PODCAST_RSS_FEEDS = [
       {
         id: 'podcast-feed-1',
-        name: 'たかねこPodcast Supported by たかねこちゃんねる技術部',
+        name: 'Takaneko Podcast Channel',
         rssUrl: 'https://anchor.fm/s/1167d87c0/podcast/rss',
         coverGradient: 'linear-gradient(135deg, #1db954 0%, #0f4c3a 100%)',
         orbColors: ['#1db954', '#00b4d8', '#095228', '#7209b7']
-      },
+      }
     ];
 
     /*************************************************************************
-     * 3. ファイル名からフォルダパスと .mp3 を除去して曲名にする関数
+     * 2. ファイル名からフォルダパスと .mp3 を除去して曲名にする関数
      *************************************************************************/
     function extractSongTitleFromFilename(filePath) {
       if (!filePath) return 'Untitled';
-      // フォルダパスが含まれている場合はファイル名部分だけを取り出す
-      const baseName = String(filePath).split('/').pop().split('\\').pop();
-      // 末尾の .mp3 (大文字・小文字問わず) を除去して曲名にする
-      return baseName.replace(/\.mp3$/i, '').trim() || 'Untitled';
+      let decoded = String(filePath);
+      try {
+        decoded = decodeURIComponent(decoded);
+      } catch (e) {}
+      // クエリパラメータやハッシュを除去し、ファイル名部分だけを取り出す
+      const cleanPath = decoded.split('?')[0].split('#')[0];
+      const baseName = cleanPath.split('/').pop().split('\\').pop();
+      // 末尾の .mp3 (大文字・小文字問わず) を除去し、Unicode正規化(NFC)して曲名にする
+      const title = baseName.replace(/\.mp3$/i, '').trim();
+      return (title ? title.normalize('NFC') : 'Untitled');
     }
 
     /*************************************************************************
-     * 4. アプリケーション状態管理 & localStorage ライブラリ保存
+     * 3. アプリケーション状態管理 & localStorage ライブラリ・キャッシュ保存
      *************************************************************************/
-    const LIBRARY_STORAGE_KEY = 'takaneko_music_library_ids_v1';
+    const LIBRARY_STORAGE_KEY = 'takaneko_music_library_titles_v2';
+    const DISCOVERED_CACHE_KEY = 'takaneko_music_discovered_mp3_cache_v2';
 
     let songs = [];
     let podcastShows = [...PODCAST_RSS_FEEDS];
@@ -920,20 +919,18 @@
     let currentTab = 'home';
     let currentSearchFilter = 'all';
 
-    // オーディオプレイヤー状態
-    const audioPlayer = new Audio();
+    // ネイティブ HTML5 Audio 要素 (Web Audio APIのcreateMediaElementSourceを使わないことでCORS無音化を防止)
+    const audioPlayer = document.getElementById('takanekoAudio');
+    audioPlayer.volume = 0.85;
+    audioPlayer.muted = false;
+
     let currentQueue = [];
     let currentIndex = -1;
     let currentTrack = null;
+    let currentUrlCandidateIndex = 0;
     let isPlaying = false;
     let isShuffle = false;
     let repeatMode = 'off'; // 'off' | 'all' | 'one'
-
-    // Web Audio API ビジュアライザー
-    let audioCtx = null;
-    let analyser = null;
-    let mediaSource = null;
-    let visualizerInitialized = false;
 
     // カラーパレット
     const COLOR_PALETTES = [
@@ -975,106 +972,318 @@
 
     function saveLibrarySet() {
       try {
-        const libIds = songs.filter(s => s.inLibrary).map(s => s.id);
-        localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(libIds));
+        const libTitles = songs.filter(s => s.inLibrary).map(s => s.title);
+        localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(libTitles));
       } catch (e) {
         console.warn('localStorage save warning:', e);
       }
     }
 
     /*************************************************************************
-     * 5. プレビュー時・未配置ファイル用のフォールバックメロディ生成
-     *    (GitHub上に実MP3ファイルが存在する場合はそちらを最優先で再生します)
+     * 4. index.html と同じフォルダのベースURLと再生URL候補の生成
      *************************************************************************/
-    function createFallbackAudioBlobUrl(seedIndex = 0) {
-      const chordSets = [
-        [261.63, 329.63, 293.66, 392.00],
-        [220.00, 261.63, 329.63, 293.66],
-        [293.66, 349.23, 440.00, 392.00],
-        [196.00, 246.94, 293.66, 329.63]
-      ];
-      const chordFreqs = chordSets[seedIndex % chordSets.length];
-      const tempoBpm = 110 + (seedIndex % 3) * 8;
-      const durationSec = 24;
-      const sampleRate = 22050;
-      const numSamples = sampleRate * durationSec;
-      const buffer = new ArrayBuffer(44 + numSamples * 2);
-      const view = new DataView(buffer);
-
-      function writeStr(offset, str) {
-        for (let i = 0; i < str.length; i++) {
-          view.setUint8(offset + i, str.charCodeAt(i));
+    function getBaseDirectoryUrl() {
+      const loc = window.location;
+      let path = loc.pathname;
+      if (path.endsWith('/index.html') || path.endsWith('/index.htm')) {
+        path = path.substring(0, path.lastIndexOf('/') + 1);
+      } else if (!path.endsWith('/')) {
+        const lastSegment = path.substring(path.lastIndexOf('/') + 1);
+        if (lastSegment.includes('.')) {
+          path = path.substring(0, path.lastIndexOf('/') + 1);
+        } else {
+          path = path + '/';
         }
       }
+      return loc.origin + path;
+    }
 
-      writeStr(0, 'RIFF');
-      view.setUint32(4, 36 + numSamples * 2, true);
-      writeStr(8, 'WAVE');
-      writeStr(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, 1, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * 2, true);
-      view.setUint16(32, 2, true);
-      view.setUint16(34, 16, true);
-      writeStr(36, 'data');
-      view.setUint32(40, numSamples * 2, true);
+    function buildAudioUrlCandidates(fileNameOrPath, rawDownloadUrl = '') {
+      const baseDir = getBaseDirectoryUrl();
+      const candidates = [];
 
-      const beatSec = 60 / tempoBpm;
-      for (let i = 0; i < numSamples; i++) {
-        const t = i / sampleRate;
-        const barIndex = Math.floor(t / (beatSec * 2)) % chordFreqs.length;
-        const root = chordFreqs[barIndex];
-        const arpStep = Math.floor(t / (beatSec / 2)) % 4;
-        const arpMultipliers = [1, 1.25, 1.5, 2];
-        const arpFreq = root * arpMultipliers[arpStep];
+      const addCandidate = (url) => {
+        if (url && !candidates.includes(url)) {
+          candidates.push(url);
+        }
+      };
 
-        const pad = Math.sin(2 * Math.PI * root * t) * 0.25 +
-                    Math.sin(2 * Math.PI * (root * 1.5) * t) * 0.15;
-        const noteTime = t % (beatSec / 2);
-        const env = Math.exp(-noteTime * 6.5);
-        const lead = Math.sin(2 * Math.PI * arpFreq * t) * env * 0.35;
-        const sub = Math.sin(2 * Math.PI * (root * 0.5) * t) * 0.2;
-
-        const fadeOut = t > durationSec - 2 ? (durationSec - t) / 2 : 1;
-        const sample = Math.max(-1, Math.min(1, (pad + lead + sub) * fadeOut));
-        view.setInt16(44 + i * 2, sample * 32767, true);
+      // すでに完全なURLの場合
+      if (/^https?:\/\//i.test(fileNameOrPath)) {
+        addCandidate(fileNameOrPath);
       }
 
-      const blob = new Blob([buffer], { type: 'audio/wav' });
-      return URL.createObjectURL(blob);
+      const rawName = String(fileNameOrPath).replace(/^\.\//, '');
+      let decodedName = rawName;
+      try {
+        decodedName = decodeURIComponent(rawName);
+      } catch (e) {}
+
+      // 1. NFC (Windows / 標準UTF-8) パーセントエンコードURL
+      const nfcEncoded = decodedName.normalize('NFC').split('/').map(seg => encodeURIComponent(seg)).join('/');
+      addCandidate(baseDir + nfcEncoded);
+
+      // 2. NFD (macOS由来の濁点・半濁点分離UTF-8) パーセントエンコードURL
+      const nfdEncoded = decodedName.normalize('NFD').split('/').map(seg => encodeURIComponent(seg)).join('/');
+      addCandidate(baseDir + nfdEncoded);
+
+      // 3. GitHub API の download_url (raw.githubusercontent.com)
+      if (rawDownloadUrl) {
+        addCandidate(rawDownloadUrl);
+      }
+
+      // 4. そのままの相対パス
+      addCandidate(baseDir + rawName);
+      addCandidate(rawName);
+
+      return candidates;
     }
 
     /*************************************************************************
-     * 6. コード内の MP3_FILES から曲データを構築
+     * 5. GitHub の index.html と同じフォルダにある .mp3 を自動認識して追加
      *************************************************************************/
-    function buildSongsFromCodeConfig() {
-      const libSet = loadLibrarySet();
+    function parseGitHubRepoCandidatesFromLocation() {
+      const host = window.location.hostname.toLowerCase();
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
 
-      songs = MP3_FILES.map((entry, idx) => {
-        const filePath = typeof entry === 'string' ? entry : entry.file;
-        const customArtist = typeof entry === 'object' && entry.artist ? entry.artist : 'Takaneko music';
-        const songTitle = extractSongTitleFromFilename(filePath);
+      // 末尾の index.html 等を除外
+      if (pathSegments.length > 0 && /\.html?$/i.test(pathSegments[pathSegments.length - 1])) {
+        pathSegments.pop();
+      }
+
+      const candidates = [];
+
+      // *.github.io の場合
+      if (host.endsWith('.github.io')) {
+        const owner = host.replace(/\.github\.io$/, '');
+        if (pathSegments.length >= 1) {
+          // パターンA: Project Page (https://<owner>.github.io/<repo>/[dir...])
+          candidates.push({
+            owner: owner,
+            repo: pathSegments[0],
+            dirPath: pathSegments.slice(1).join('/')
+          });
+        }
+        // パターンB: User / Organization Page (https://<owner>.github.io/[dir...])
+        candidates.push({
+          owner: owner,
+          repo: `${owner}.github.io`,
+          dirPath: pathSegments.join('/')
+        });
+      }
+
+      return candidates;
+    }
+
+    async function fetchMp3ListFromGitHubContentsApi(owner, repo, dirPath) {
+      const encodedDir = dirPath
+        ? dirPath.split('/').map(encodeURIComponent).join('/')
+        : '';
+      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedDir}`;
+      const res = await fetch(apiUrl, {
+        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (!res.ok) return [];
+
+      const items = await res.json();
+      if (!Array.isArray(items)) return [];
+
+      return items
+        .filter(item => item && item.type === 'file' && /\.mp3$/i.test(item.name))
+        .map(item => ({
+          name: item.name,
+          path: item.name,
+          downloadUrl: item.download_url || ''
+        }));
+    }
+
+    async function fetchMp3ListFromGitHubTreeApi(owner, repo, dirPath) {
+      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/trees/HEAD?recursive=1`;
+      const res = await fetch(apiUrl, {
+        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (!res.ok) return [];
+
+      const data = await res.json();
+      if (!data || !Array.isArray(data.tree)) return [];
+
+      const prefix = dirPath ? dirPath.replace(/\/+$/, '') + '/' : '';
+
+      // まず index.html と同じフォルダ直下の .mp3 を優先抽出
+      let mp3Nodes = data.tree.filter(node => {
+        if (node.type !== 'blob' || !/\.mp3$/i.test(node.path)) return false;
+        if (!prefix) {
+          return !node.path.includes('/');
+        }
+        if (!node.path.startsWith(prefix)) return false;
+        const relative = node.path.slice(prefix.length);
+        return !relative.includes('/');
+      });
+
+      // もし同じフォルダ直下に無ければリポジトリ内の全 .mp3 も対象にする
+      if (mp3Nodes.length === 0) {
+        mp3Nodes = data.tree.filter(node => node.type === 'blob' && /\.mp3$/i.test(node.path));
+      }
+
+      return mp3Nodes.map(node => {
+        const relativePath = (prefix && node.path.startsWith(prefix))
+          ? node.path.slice(prefix.length)
+          : node.path;
+        const encodedFull = node.path.split('/').map(encodeURIComponent).join('/');
+        return {
+          name: relativePath.split('/').pop(),
+          path: relativePath,
+          downloadUrl: `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${encodedFull}`
+        };
+      });
+    }
+
+    async function fetchMp3ListFromSameFolderHtml() {
+      const results = [];
+      try {
+        const baseDir = getBaseDirectoryUrl();
+        const res = await fetch(baseDir);
+        if (!res.ok) return results;
+        const contentType = res.headers.get('content-type') || '';
+        if (!contentType.includes('text/html')) return results;
+
+        const html = await res.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const links = Array.from(doc.querySelectorAll('a[href]'));
+        for (const a of links) {
+          const href = a.getAttribute('href') || '';
+          const cleanHref = href.split('?')[0].split('#')[0];
+          if (/\.mp3$/i.test(cleanHref)) {
+            let decodedHref = cleanHref;
+            try { decodedHref = decodeURIComponent(cleanHref); } catch (e) {}
+            const fileName = decodedHref.split('/').pop();
+            results.push({
+              name: fileName,
+              path: fileName,
+              downloadUrl: new URL(cleanHref, baseDir).href
+            });
+          }
+        }
+      } catch (e) {}
+      return results;
+    }
+
+    async function autoDiscoverMp3FilesInSameFolder() {
+      let discoveredItems = [];
+
+      // 1. GitHub Pages のリポジトリ構造から index.html と同じフォルダの .mp3 を自動取得
+      const repoCandidates = parseGitHubRepoCandidatesFromLocation();
+      for (const candidate of repoCandidates) {
+        try {
+          const contentsMp3s = await fetchMp3ListFromGitHubContentsApi(
+            candidate.owner,
+            candidate.repo,
+            candidate.dirPath
+          );
+          if (contentsMp3s.length > 0) {
+            discoveredItems = contentsMp3s;
+            break;
+          }
+
+          const treeMp3s = await fetchMp3ListFromGitHubTreeApi(
+            candidate.owner,
+            candidate.repo,
+            candidate.dirPath
+          );
+          if (treeMp3s.length > 0) {
+            discoveredItems = treeMp3s;
+            break;
+          }
+        } catch (err) {
+          console.warn('GitHub API check error:', err);
+        }
+      }
+
+      // 2. ローカルサーバーやディレクトリリスティング有効環境での自動検出
+      if (discoveredItems.length === 0) {
+        const dirMp3s = await fetchMp3ListFromSameFolderHtml();
+        if (dirMp3s.length > 0) {
+          discoveredItems = dirMp3s;
+        }
+      }
+
+      // 3. 取得できた場合はキャッシュを更新、API制限等で空だった場合はキャッシュを復元
+      if (discoveredItems.length > 0) {
+        try {
+          localStorage.setItem(DISCOVERED_CACHE_KEY, JSON.stringify(discoveredItems));
+        } catch (e) {}
+      } else {
+        try {
+          const cached = localStorage.getItem(DISCOVERED_CACHE_KEY);
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              discoveredItems = parsed;
+            }
+          }
+        } catch (e) {}
+      }
+
+      // 4. 同じフォルダに「エンドレスラフター.mp3」が存在するかの直接HEADプローブ（カスタムドメインやAPI未検出時用）
+      if (discoveredItems.length === 0) {
+        const probeFiles = ['エンドレスラフター.mp3'];
+        for (const fileName of probeFiles) {
+          try {
+            const probeUrl = getBaseDirectoryUrl() + encodeURIComponent(fileName.normalize('NFC'));
+            const res = await fetch(probeUrl, { method: 'HEAD' });
+            if (res.ok) {
+              discoveredItems.push({
+                name: fileName,
+                path: fileName,
+                downloadUrl: probeUrl
+              });
+            }
+          } catch (e) {}
+        }
+      }
+
+      // 重複排除して曲リストを構築
+      const libSet = loadLibrarySet();
+      const uniqueMap = new Map();
+
+      for (const item of discoveredItems) {
+        const title = extractSongTitleFromFilename(item.name || item.path);
+        if (!uniqueMap.has(title)) {
+          uniqueMap.set(title, item);
+        }
+      }
+
+      const uniqueList = Array.from(uniqueMap.values());
+      songs = uniqueList.map((item, idx) => {
+        const songTitle = extractSongTitleFromFilename(item.name || item.path);
         const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+        const urlCandidates = buildAudioUrlCandidates(item.path || item.name, item.downloadUrl);
         const id = 'song-' + idx + '-' + encodeURIComponent(songTitle);
 
         return {
           id: id,
           title: songTitle,
-          artist: customArtist,
-          audioUrl: filePath,
+          artist: 'Takaneko music',
+          audioUrl: urlCandidates[0],
+          urlCandidates: urlCandidates,
           seedIndex: idx,
           isFeatured: true,
-          inLibrary: libSet.has(id),
+          inLibrary: libSet.has(songTitle),
           gradient: palette.gradient,
           orbColors: palette.orbs
         };
       });
+
+      if (songs.length > 0 && !currentTrack) {
+        currentTrack = songs[0];
+        updatePlayerUI();
+      }
+
+      renderAllViews();
     }
 
     /*************************************************************************
-     * 7. UI レンダリング (ホーム / ライブラリ / 検索 / ポッドキャスト)
+     * 6. UI レンダリング (ホーム / ライブラリ / 検索 / ポッドキャスト)
      *************************************************************************/
     function renderAllViews() {
       renderHomeView();
@@ -1091,7 +1300,24 @@
 
     // --- ホーム画面のレンダリング ---
     function renderHomeView() {
-      if (songs.length === 0) return;
+      const gridEl = document.getElementById('featuredSongsGrid');
+      const listEl = document.getElementById('homeTrackList');
+
+      if (songs.length === 0) {
+        document.getElementById('heroSongTitle').textContent = 'Takaneko music';
+        document.getElementById('heroSongArtist').textContent = 'index.html と同じフォルダの mp3 を自動読み込みします';
+        gridEl.innerHTML = `
+          <div class="col-span-full glass-card rounded-3xl p-8 text-center text-xs text-white/60">
+            同じフォルダにある .mp3 ファイルを検索しています...
+          </div>
+        `;
+        listEl.innerHTML = `
+          <div class="p-8 text-center text-xs text-white/55">
+            index.html と同じフォルダに .mp3 ファイルを置くと自動的に表示されます。
+          </div>
+        `;
+        return;
+      }
 
       const heroSong = songs[0];
       document.getElementById('heroSongTitle').textContent = heroSong.title;
@@ -1107,7 +1333,6 @@
       }
 
       // 注目のアップロードされた曲 (カードグリッド)
-      const gridEl = document.getElementById('featuredSongsGrid');
       gridEl.innerHTML = songs.map(song => {
         const isCurrent = currentTrack && currentTrack.id === song.id;
         return `
@@ -1148,7 +1373,6 @@
       }).join('');
 
       // 曲一覧リスト
-      const listEl = document.getElementById('homeTrackList');
       listEl.innerHTML = songs.map((song, idx) => renderTrackRowHtml(song, idx + 1)).join('');
     }
 
@@ -1320,7 +1544,7 @@
     }
 
     /*************************************************************************
-     * 8. ポッドキャスト RSS 取得 & 再生処理
+     * 7. ポッドキャスト RSS 取得 & 再生処理 (マルチプロキシ対応)
      *************************************************************************/
     function renderPodcastShowsGrid() {
       const grid = document.getElementById('podcastShowsGrid');
@@ -1362,6 +1586,45 @@
       }
     }
 
+    function parsePodcastXmlString(xmlString, show) {
+      if (!xmlString) return [];
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlString, 'text/xml');
+
+      const channelTitle = xml.querySelector('channel > title')?.textContent?.trim();
+      if (channelTitle) show.name = channelTitle;
+
+      const itunesImg = xml.querySelector('channel > image > url')?.textContent?.trim() ||
+                        xml.getElementsByTagName('itunes:image')[0]?.getAttribute('href');
+      if (itunesImg) show.imageUrl = itunesImg;
+
+      const items = Array.from(xml.querySelectorAll('item'));
+      return items.map((item, idx) => {
+        const enclosure = item.querySelector('enclosure');
+        let audioUrl = enclosure ? (enclosure.getAttribute('url') || '') : '';
+        audioUrl = audioUrl.replace(/&amp;/g, '&').trim();
+
+        const title = item.querySelector('title')?.textContent?.trim() || `Episode ${idx + 1}`;
+        const rawDate = item.querySelector('pubDate')?.textContent?.trim() || '';
+        const pubDate = rawDate ? rawDate.slice(0, 16) : '';
+        const desc = stripHtmlTags(item.querySelector('description')?.textContent || '');
+
+        return {
+          id: `${show.id}-ep-${idx}`,
+          title: title,
+          artist: show.name,
+          pubDate: pubDate,
+          description: desc,
+          audioUrl: audioUrl,
+          urlCandidates: [audioUrl],
+          type: 'podcast',
+          inLibrary: false,
+          gradient: show.coverGradient,
+          orbColors: show.orbColors || ['#1db954', '#00b4d8', '#095228', '#7209b7']
+        };
+      }).filter(ep => ep.audioUrl);
+    }
+
     async function fetchPodcastRssFeed(show) {
       const listEl = document.getElementById('podcastEpisodesList');
       const statusEl = document.getElementById('podcastStatusText');
@@ -1375,7 +1638,7 @@
 
       let parsedEpisodes = [];
 
-      // 1. rss2json API 経由で取得
+      // 1. rss2json API
       try {
         const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(show.rssUrl)}`;
         const res = await fetch(apiUrl);
@@ -1386,7 +1649,8 @@
             if (data.feed && data.feed.image) show.imageUrl = data.feed.image;
 
             parsedEpisodes = data.items.map((item, idx) => {
-              const audioLink = (item.enclosure && item.enclosure.link) || item.link || '';
+              let audioLink = (item.enclosure && item.enclosure.link) || item.link || '';
+              audioLink = audioLink.replace(/&amp;/g, '&').trim();
               return {
                 id: `${show.id}-ep-${idx}`,
                 title: item.title || `Episode ${idx + 1}`,
@@ -1394,6 +1658,7 @@
                 pubDate: item.pubDate ? item.pubDate.split(' ')[0] : '',
                 description: stripHtmlTags(item.description || ''),
                 audioUrl: audioLink,
+                urlCandidates: [audioLink],
                 type: 'podcast',
                 inLibrary: false,
                 gradient: show.coverGradient,
@@ -1402,64 +1667,42 @@
             }).filter(ep => ep.audioUrl);
           }
         }
-      } catch (e) {
-        console.warn('rss2json fallback:', e);
-      }
+      } catch (e) {}
 
-      // 2. AllOrigins XML パーサーで取得
+      // 2. allorigins raw XML
       if (parsedEpisodes.length === 0) {
         try {
-          const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(proxyUrl);
+          const rawUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(show.rssUrl)}`;
+          const res = await fetch(rawUrl);
           if (res.ok) {
-            const data = await res.json();
-            if (data && data.contents) {
-              const parser = new DOMParser();
-              const xml = parser.parseFromString(data.contents, 'text/xml');
-              const channelTitle = xml.querySelector('channel > title')?.textContent;
-              if (channelTitle) show.name = channelTitle;
-
-              const items = Array.from(xml.querySelectorAll('item')).slice(0, 20);
-              parsedEpisodes = items.map((item, idx) => {
-                const enclosure = item.querySelector('enclosure');
-                const audioUrl = enclosure ? enclosure.getAttribute('url') : '';
-                return {
-                  id: `${show.id}-xml-${idx}`,
-                  title: item.querySelector('title')?.textContent || `Episode ${idx + 1}`,
-                  artist: show.name,
-                  pubDate: item.querySelector('pubDate')?.textContent?.slice(0, 16) || '',
-                  description: stripHtmlTags(item.querySelector('description')?.textContent || ''),
-                  audioUrl: audioUrl,
-                  type: 'podcast',
-                  inLibrary: false,
-                  gradient: show.coverGradient,
-                  orbColors: show.orbColors || ['#1db954', '#00b4d8', '#095228', '#7209b7']
-                };
-              }).filter(ep => ep.audioUrl);
-            }
+            const xmlText = await res.text();
+            parsedEpisodes = parsePodcastXmlString(xmlText, show);
           }
-        } catch (err) {
-          console.warn('XML proxy fallback:', err);
-        }
+        } catch (e) {}
       }
 
-      // 3. オフライン時等のフォールバックエピソード
+      // 3. corsproxy.io XML
       if (parsedEpisodes.length === 0) {
-        const fallbackAudio = createFallbackAudioBlobUrl(1);
-        parsedEpisodes = [
-          {
-            id: `${show.id}-fallback-1`,
-            title: `${show.name} - Episode 1`,
-            artist: show.name,
-            pubDate: '',
-            description: 'ポッドキャストエピソード',
-            audioUrl: fallbackAudio,
-            type: 'podcast',
-            inLibrary: false,
-            gradient: show.coverGradient,
-            orbColors: show.orbColors
+        try {
+          const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(show.rssUrl)}`;
+          const res = await fetch(proxyUrl);
+          if (res.ok) {
+            const xmlText = await res.text();
+            parsedEpisodes = parsePodcastXmlString(xmlText, show);
           }
-        ];
+        } catch (e) {}
+      }
+
+      // 4. codetabs proxy XML
+      if (parsedEpisodes.length === 0) {
+        try {
+          const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(show.rssUrl)}`;
+          const res = await fetch(proxyUrl);
+          if (res.ok) {
+            const xmlText = await res.text();
+            parsedEpisodes = parsePodcastXmlString(xmlText, show);
+          }
+        } catch (e) {}
       }
 
       statusEl.textContent = '';
@@ -1477,7 +1720,7 @@
 
       const listEl = document.getElementById('podcastEpisodesList');
       if (episodes.length === 0) {
-        listEl.innerHTML = `<div class="p-8 text-center text-xs text-white/50">エピソードがありません。</div>`;
+        listEl.innerHTML = `<div class="p-8 text-center text-xs text-white/50">エピソードが見つかりませんでした。「更新」ボタンを押して再試行してください。</div>`;
         return;
       }
 
@@ -1524,7 +1767,7 @@
     }
 
     /*************************************************************************
-     * 9. オーディオプレイヤー制御
+     * 8. オーディオプレイヤー制御 (確実な音声出力とURL自動フォールバック)
      *************************************************************************/
     function findTrackAnywhere(trackId) {
       let found = songs.find(s => s.id === trackId);
@@ -1567,30 +1810,67 @@
 
     function loadAndPlayTrack(track) {
       currentTrack = track;
-      initWebAudioVisualizer();
+      currentUrlCandidateIndex = 0;
 
-      audioPlayer.src = track.audioUrl;
-      audioPlayer.play().then(() => {
-        isPlaying = true;
-        updatePlayerUI();
-        renderAllViews();
-        if (currentTab === 'podcast') renderActivePodcastEpisodes();
-      }).catch(() => {
-        // GitHubへ実MP3ファイルを配置する前のプレビュー環境などでも動作確認できるようフォールバック再生
-        audioPlayer.src = createFallbackAudioBlobUrl(track.seedIndex || 0);
-        audioPlayer.play().then(() => {
-          isPlaying = true;
-          updatePlayerUI();
-          renderAllViews();
-          if (currentTab === 'podcast') renderActivePodcastEpisodes();
-        }).catch(() => {});
-      });
+      // ミュート解除とボリューム設定を確実に行う
+      audioPlayer.muted = false;
+      const volSlider = document.getElementById('volumeSlider');
+      if (volSlider && parseFloat(volSlider.value) > 0) {
+        audioPlayer.volume = parseFloat(volSlider.value);
+      } else {
+        audioPlayer.volume = 0.85;
+      }
+      updateVolumeIcon();
 
+      // 背景オーブのカラー更新
       if (track.orbColors && track.orbColors.length >= 4) {
         document.documentElement.style.setProperty('--orb-1', track.orbColors[0]);
         document.documentElement.style.setProperty('--orb-2', track.orbColors[1]);
         document.documentElement.style.setProperty('--orb-3', track.orbColors[2]);
         document.documentElement.style.setProperty('--orb-4', track.orbColors[3]);
+      }
+
+      tryPlayCurrentCandidate();
+    }
+
+    function tryPlayCurrentCandidate() {
+      if (!currentTrack) return;
+      const candidates = (currentTrack.urlCandidates && currentTrack.urlCandidates.length > 0)
+        ? currentTrack.urlCandidates
+        : [currentTrack.audioUrl];
+
+      if (currentUrlCandidateIndex >= candidates.length) {
+        isPlaying = false;
+        updatePlayerUI();
+        renderAllViews();
+        showToast(`「${currentTrack.title}」の音声ファイルを読み込めませんでした`, 'fa-circle-exclamation');
+        return;
+      }
+
+      const targetUrl = candidates[currentUrlCandidateIndex];
+      audioPlayer.pause();
+      audioPlayer.removeAttribute('crossorigin');
+      audioPlayer.src = targetUrl;
+      audioPlayer.load();
+
+      const playPromise = audioPlayer.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          isPlaying = true;
+          updatePlayerUI();
+          renderAllViews();
+          if (currentTab === 'podcast') renderActivePodcastEpisodes();
+        }).catch((err) => {
+          console.warn('Playback candidate failed:', targetUrl, err);
+          currentUrlCandidateIndex++;
+          if (currentUrlCandidateIndex < candidates.length) {
+            tryPlayCurrentCandidate();
+          } else {
+            isPlaying = false;
+            updatePlayerUI();
+            renderAllViews();
+          }
+        });
       }
     }
 
@@ -1602,18 +1882,27 @@
         return;
       }
 
-      initWebAudioVisualizer();
+      if (!audioPlayer.src) {
+        loadAndPlayTrack(currentTrack);
+        return;
+      }
+
       if (audioPlayer.paused) {
+        audioPlayer.muted = false;
         audioPlayer.play().then(() => {
           isPlaying = true;
           updatePlayerUI();
           renderAllViews();
-        }).catch(() => {});
+          if (currentTab === 'podcast') renderActivePodcastEpisodes();
+        }).catch(() => {
+          loadAndPlayTrack(currentTrack);
+        });
       } else {
         audioPlayer.pause();
         isPlaying = false;
         updatePlayerUI();
         renderAllViews();
+        if (currentTab === 'podcast') renderActivePodcastEpisodes();
       }
     }
 
@@ -1818,42 +2107,17 @@
     });
 
     /*************************************************************************
-     * 10. ビジュアライザー
+     * 9. ビジュアライザーアニメーション (音声出力を一切妨げない独立描画)
      *************************************************************************/
-    function initWebAudioVisualizer() {
-      if (visualizerInitialized) {
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume().catch(() => {});
-        }
-        return;
-      }
-      try {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 64;
-        mediaSource = audioCtx.createMediaElementSource(audioPlayer);
-        mediaSource.connect(analyser);
-        analyser.connect(audioCtx.destination);
-        visualizerInitialized = true;
-      } catch (e) {
-        visualizerInitialized = true;
-      }
-    }
-
     function startVisualizerLoop() {
       const miniCanvas = document.getElementById('miniVisualizerCanvas');
       const fsCanvas = document.getElementById('fsVisualizerCanvas');
       const miniCtx = miniCanvas ? miniCanvas.getContext('2d') : null;
       const fsCtx = fsCanvas ? fsCanvas.getContext('2d') : null;
-      const dataArray = new Uint8Array(32);
 
       function renderFrame() {
         requestAnimationFrame(renderFrame);
-
-        if (analyser && isPlaying) {
-          analyser.getByteFrequencyData(dataArray);
-        }
+        const now = Date.now();
 
         if (miniCtx) {
           miniCtx.clearRect(0, 0, miniCanvas.width, miniCanvas.height);
@@ -1861,13 +2125,13 @@
           const barWidth = 3;
           const gap = 2;
           for (let i = 0; i < barCount; i++) {
-            let val = dataArray[i] || 0;
-            if (isPlaying && val < 15) {
-              val = 60 + Math.sin(Date.now() * 0.01 + i) * 50;
-            } else if (!isPlaying) {
-              val = 15;
+            let val = 15;
+            if (isPlaying && !audioPlayer.paused) {
+              val = 95
+                + Math.sin(now * 0.011 + i * 0.9) * 65
+                + Math.cos(now * 0.019 - i * 0.5) * 45;
             }
-            const h = Math.max(3, (val / 255) * miniCanvas.height);
+            const h = Math.max(3, Math.min(miniCanvas.height, (val / 255) * miniCanvas.height));
             const x = i * (barWidth + gap);
             const y = miniCanvas.height - h;
             miniCtx.fillStyle = i % 2 === 0 ? '#FA2D48' : '#5AC8FA';
@@ -1883,13 +2147,13 @@
           const totalWidth = fsCanvas.width;
           const barWidth = (totalWidth / barCount) - 4;
           for (let i = 0; i < barCount; i++) {
-            let val = dataArray[i % 20] || 0;
-            if (isPlaying && val < 15) {
-              val = 90 + Math.sin(Date.now() * 0.008 + i * 0.6) * 70;
-            } else if (!isPlaying) {
-              val = 14;
+            let val = 14;
+            if (isPlaying && !audioPlayer.paused) {
+              val = 110
+                + Math.sin(now * 0.009 + i * 0.6) * 75
+                + Math.cos(now * 0.015 - i * 0.4) * 50;
             }
-            const h = Math.max(4, (val / 255) * fsCanvas.height);
+            const h = Math.max(4, Math.min(fsCanvas.height, (val / 255) * fsCanvas.height));
             const x = i * (barWidth + 4);
             const y = (fsCanvas.height - h) / 2;
             const grad = fsCtx.createLinearGradient(0, y, 0, y + h);
@@ -1907,7 +2171,7 @@
     }
 
     /*************************************************************************
-     * 11. タブ切り替え & フルスクリーンプレイヤー
+     * 10. タブ切り替え & フルスクリーンプレイヤー
      *************************************************************************/
     function switchTab(tabName) {
       currentTab = tabName;
@@ -1963,7 +2227,7 @@
     }
 
     /*************************************************************************
-     * 12. ユーティリティ
+     * 11. ユーティリティ
      *************************************************************************/
     function formatSeconds(sec) {
       if (!sec || isNaN(sec)) return '0:00';
@@ -2005,19 +2269,16 @@
     }
 
     /*************************************************************************
-     * 13. 初期化
+     * 12. 初期化
      *************************************************************************/
     window.addEventListener('DOMContentLoaded', () => {
-      buildSongsFromCodeConfig();
-
-      if (songs.length > 0) {
-        currentTrack = songs[0];
-        updatePlayerUI();
-      }
-
       renderAllViews();
       startVisualizerLoop();
 
+      // index.html と同じフォルダにある .mp3 を自動検出して曲リストへ追加
+      autoDiscoverMp3FilesInSameFolder();
+
+      // ポッドキャスト RSS をバックグラウンド取得
       if (podcastShows.length > 0) {
         fetchPodcastRssFeed(podcastShows[0]);
       }
