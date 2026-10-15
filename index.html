@@ -476,19 +476,27 @@
                 <i class="fa-solid fa-plus"></i>
                 <span>ライブラリに追加</span>
               </button>
+              <button id="heroOfflineBtn" onclick="toggleHeroOffline()" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 text-white">
+                <i class="fa-solid fa-arrow-down"></i>
+                <span>オフライン保存</span>
+              </button>
             </div>
           </div>
 
           <!-- Section: 注目の曲 (Featured Grid) -->
           <div>
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
               <div>
                 <h2 class="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2">
                   <span>注目のアップロードされた曲</span>
                   <span id="featuredUploadsCount" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300">0曲</span>
                 </h2>
               </div>
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <button onclick="rescanGitHubMp3Files()" id="btnRescanMp3" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 text-white/85">
+                  <i id="rescanIcon" class="fa-solid fa-rotate text-[10px] text-emerald-400"></i>
+                  <span>再スキャン</span>
+                </button>
                 <button onclick="playAllSongs(false)" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
                   <i class="fa-solid fa-play text-[10px] text-rose-400"></i>
                   <span>すべて再生</span>
@@ -557,24 +565,52 @@
         </section>
 
         <!-- ===================================================
-             TAB 3: ライブラリ (LIBRARY - User's Added Tracks)
+             TAB 3: ライブラリ (LIBRARY - User's Added Tracks & Offline)
              =================================================== -->
         <section id="tab-library" class="hidden space-y-6">
-          <div class="glass-card rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 class="text-2xl font-extrabold tracking-tight">ライブラリ</h2>
-              <p class="text-xs sm:text-sm text-white/65 mt-1">
-                ライブラリに追加した曲をいつでも再生できます。
-              </p>
+          <div class="glass-card rounded-3xl p-6 flex flex-col gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-2xl font-extrabold tracking-tight">ライブラリ</h2>
+                  <span id="offlineSavedBadge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300">
+                    オフライン保存: 0件
+                  </span>
+                </div>
+                <p class="text-xs sm:text-sm text-white/65 mt-1">
+                  追加した曲やポッドキャスト、オフライン保存した音源をいつでも再生できます。
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <button onclick="playLibraryTracks(false)" class="apple-accent-btn px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2">
+                  <i class="fa-solid fa-play"></i>
+                  <span>再生</span>
+                </button>
+                <button onclick="playLibraryTracks(true)" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2">
+                  <i class="fa-solid fa-shuffle text-cyan-400"></i>
+                  <span>シャッフル</span>
+                </button>
+                <button onclick="downloadAllLibraryTracksOffline()" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 text-cyan-300 border-cyan-400/30">
+                  <i class="fa-solid fa-cloud-arrow-down"></i>
+                  <span>一括オフライン保存</span>
+                </button>
+              </div>
             </div>
-            <div class="flex items-center gap-2.5 shrink-0">
-              <button onclick="playLibraryTracks(false)" class="apple-accent-btn px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2">
-                <i class="fa-solid fa-play"></i>
-                <span>再生</span>
+
+            <!-- Library Filter Pills -->
+            <div class="flex flex-wrap items-center gap-2 text-xs pt-1 border-t border-white/10">
+              <button onclick="setLibraryFilter('all')" id="lib-filter-all" class="glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white">
+                すべて
               </button>
-              <button onclick="playLibraryTracks(true)" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2">
-                <i class="fa-solid fa-shuffle text-cyan-400"></i>
-                <span>シャッフル</span>
+              <button onclick="setLibraryFilter('songs')" id="lib-filter-songs" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
+                曲
+              </button>
+              <button onclick="setLibraryFilter('podcast')" id="lib-filter-podcast" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
+                ポッドキャスト
+              </button>
+              <button onclick="setLibraryFilter('offline')" id="lib-filter-offline" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check text-cyan-400 text-[10px]"></i>
+                <span>オフライン保存済み</span>
               </button>
             </div>
           </div>
@@ -722,14 +758,14 @@
           </button>
 
           <button onclick="toggleRepeat()" id="btnRepeat" title="リピート" class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white/60 hover:text-white transition-colors">
-            <i class="fa-solid fa-repeat text-xs"></i>
-          </button>
-        </div>
-
-        <!-- Right: Library Add (+), Mini Visualizer, Volume & Expand -->
-        <div class="flex items-center justify-end gap-2.5 flex-1">
+        <!-- Right: Library Add (+), Offline Save, Mini Visualizer, Volume & Expand -->
+        <div class="flex items-center justify-end gap-2 flex-1">
           <button id="miniPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" title="ライブラリに追加/解除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
             <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+
+          <button id="miniPlayerOfflineBtn" onclick="toggleCurrentTrackOffline()" title="オフライン保存/削除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
+            <i class="fa-solid fa-arrow-down text-xs"></i>
           </button>
 
           <canvas id="miniVisualizerCanvas" width="60" height="24" class="hidden lg:block opacity-85"></canvas>
@@ -818,9 +854,14 @@
               Takaneko music
             </p>
           </div>
-          <button id="fsPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white shrink-0">
-            <i class="fa-solid fa-plus"></i>
-          </button>
+          <div class="flex items-center gap-2 shrink-0">
+            <button id="fsPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" title="ライブラリに追加/解除" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white shrink-0">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button id="fsPlayerOfflineBtn" onclick="toggleCurrentTrackOffline()" title="オフライン保存/削除" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white shrink-0">
+              <i class="fa-solid fa-arrow-down"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Audio Spectrum Visualizer -->
@@ -888,6 +929,9 @@
       }
     ];
 
+    // GitHubのデフォルト検索対象オーナー（カスタムドメインやプレビュー環境でも自動検出できるよう設定）
+    const DEFAULT_GITHUB_OWNERS = ['sirokumacook'];
+
     /*************************************************************************
      * 2. ファイル名からフォルダパスと .mp3 を除去して曲名にする関数
      *************************************************************************/
@@ -897,29 +941,49 @@
       try {
         decoded = decodeURIComponent(decoded);
       } catch (e) {}
-      // クエリパラメータやハッシュを除去し、ファイル名部分だけを取り出す
       const cleanPath = decoded.split('?')[0].split('#')[0];
       const baseName = cleanPath.split('/').pop().split('\\').pop();
-      // 末尾の .mp3 (大文字・小文字問わず) を除去し、Unicode正規化(NFC)して曲名にする
       const title = baseName.replace(/\.mp3$/i, '').trim();
       return (title ? title.normalize('NFC') : 'Untitled');
     }
 
+    function getTrackStableKey(trackOrTitle, type = 'song') {
+      if (typeof trackOrTitle === 'object' && trackOrTitle !== null) {
+        if (trackOrTitle.stableKey) return trackOrTitle.stableKey;
+        const tType = trackOrTitle.type === 'podcast' ? 'podcast' : 'song';
+        const rawTitle = (trackOrTitle.title || 'Untitled').normalize('NFC').trim();
+        return `${tType}:${rawTitle}`;
+      }
+      const cleanTitle = String(trackOrTitle || 'Untitled').normalize('NFC').trim();
+      return `${type}:${cleanTitle}`;
+    }
+
     /*************************************************************************
-     * 3. アプリケーション状態管理 & localStorage ライブラリ・キャッシュ保存
+     * 3. アプリケーション状態管理 & ライブラリ永続保存 (localStorage)
      *************************************************************************/
-    const LIBRARY_STORAGE_KEY = 'takaneko_music_library_titles_v2';
-    const DISCOVERED_CACHE_KEY = 'takaneko_music_discovered_mp3_cache_v2';
+    const LIBRARY_STORAGE_KEY_V3 = 'takaneko_music_library_store_v3';
+    const LEGACY_LIBRARY_KEYS = ['takaneko_music_library_titles_v2', 'takaneko_music_library_ids_v1'];
+    const DISCOVERED_CACHE_KEY = 'takaneko_music_discovered_mp3_cache_v3';
 
     let songs = [];
     let podcastShows = [...PODCAST_RSS_FEEDS];
     let podcastEpisodesByFeed = {};
     let activePodcastFeedId = PODCAST_RSS_FEEDS[0]?.id || '';
 
+    // ライブラリ永続ストア: { [stableKey]: trackMetadata }
+    let savedLibraryMap = {};
+
+    // オフライン保存状態 (IndexedDB):
+    // offlineBlobUrlMap: { [stableKey]: { blobUrl, size, savedAt, trackMeta } }
+    const offlineBlobUrlMap = new Map();
+    // 現在ダウンロード中のキー集合
+    const offlineDownloadingKeys = new Set();
+
     let currentTab = 'home';
     let currentSearchFilter = 'all';
+    let currentLibraryFilter = 'all';
 
-    // ネイティブ HTML5 Audio 要素 (Web Audio APIのcreateMediaElementSourceを使わないことでCORS無音化を防止)
+    // ネイティブ HTML5 Audio 要素
     const audioPlayer = document.getElementById('takanekoAudio');
     audioPlayer.volume = 0.85;
     audioPlayer.muted = false;
@@ -960,27 +1024,375 @@
       }
     ];
 
-    function loadLibrarySet() {
+    // --- ライブラリの読み込み・マイグレーション・保存 ---
+    function loadLibraryStore() {
+      savedLibraryMap = {};
       try {
-        const raw = localStorage.getItem(LIBRARY_STORAGE_KEY);
-        if (!raw) return new Set();
-        return new Set(JSON.parse(raw));
+        const rawV3 = localStorage.getItem(LIBRARY_STORAGE_KEY_V3);
+        if (rawV3) {
+          const parsed = JSON.parse(rawV3);
+          if (parsed && typeof parsed === 'object') {
+            savedLibraryMap = parsed;
+          }
+        }
+        // 旧バージョンのライブラリデータも引き継ぐ
+        for (const legacyKey of LEGACY_LIBRARY_KEYS) {
+          const rawLegacy = localStorage.getItem(legacyKey);
+          if (rawLegacy) {
+            const arr = JSON.parse(rawLegacy);
+            if (Array.isArray(arr)) {
+              arr.forEach((item, idx) => {
+                let title = String(item);
+                if (title.startsWith('song-')) {
+                  const parts = title.split('-');
+                  title = decodeURIComponent(parts.slice(2).join('-') || title);
+                }
+                const cleanTitle = extractSongTitleFromFilename(title);
+                const sKey = getTrackStableKey(cleanTitle, 'song');
+                if (!savedLibraryMap[sKey]) {
+                  const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+                  savedLibraryMap[sKey] = {
+                    id: 'lib-' + encodeURIComponent(sKey),
+                    stableKey: sKey,
+                    title: cleanTitle,
+                    artist: 'Takaneko music',
+                    type: 'song',
+                    audioUrl: buildAudioUrlCandidates(cleanTitle + '.mp3')[0],
+                    urlCandidates: buildAudioUrlCandidates(cleanTitle + '.mp3'),
+                    inLibrary: true,
+                    gradient: palette.gradient,
+                    orbColors: palette.orbs
+                  };
+                }
+              });
+            }
+          }
+        }
       } catch (e) {
-        return new Set();
+        console.warn('loadLibraryStore error:', e);
       }
     }
 
-    function saveLibrarySet() {
+    function saveLibraryStore() {
       try {
-        const libTitles = songs.filter(s => s.inLibrary).map(s => s.title);
-        localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(libTitles));
+        localStorage.setItem(LIBRARY_STORAGE_KEY_V3, JSON.stringify(savedLibraryMap));
       } catch (e) {
-        console.warn('localStorage save warning:', e);
+        console.warn('saveLibraryStore error:', e);
+      }
+    }
+
+    function isTrackInLibrary(track) {
+      if (!track) return false;
+      const sKey = getTrackStableKey(track);
+      return Boolean(savedLibraryMap[sKey]);
+    }
+
+    function setTrackLibraryState(track, shouldBeInLibrary) {
+      if (!track) return;
+      const sKey = getTrackStableKey(track);
+      track.stableKey = sKey;
+      track.inLibrary = shouldBeInLibrary;
+
+      if (shouldBeInLibrary) {
+        savedLibraryMap[sKey] = {
+          id: track.id,
+          stableKey: sKey,
+          title: track.title,
+          artist: track.artist || 'Takaneko music',
+          type: track.type || 'song',
+          pubDate: track.pubDate || '',
+          description: track.description || '',
+          audioUrl: track.audioUrl || '',
+          urlCandidates: track.urlCandidates || (track.audioUrl ? [track.audioUrl] : []),
+          inLibrary: true,
+          gradient: track.gradient || COLOR_PALETTES[0].gradient,
+          orbColors: track.orbColors || COLOR_PALETTES[0].orbs
+        };
+      } else {
+        delete savedLibraryMap[sKey];
+      }
+
+      // メモリ上の曲・ポッドキャスト一覧にも同期
+      songs.forEach(s => {
+        if (getTrackStableKey(s) === sKey) s.inLibrary = shouldBeInLibrary;
+      });
+      Object.values(podcastEpisodesByFeed).forEach(epList => {
+        if (Array.isArray(epList)) {
+          epList.forEach(ep => {
+            if (getTrackStableKey(ep) === sKey) ep.inLibrary = shouldBeInLibrary;
+          });
+        }
+      });
+
+      saveLibraryStore();
+    }
+
+    /*************************************************************************
+     * 4. IndexedDB オフライン保存エンジン (曲・ポッドキャスト対応)
+     *************************************************************************/
+    const OFFLINE_DB_NAME = 'TakanekoOfflineDB_v1';
+    const OFFLINE_STORE_NAME = 'offline_audio_store';
+
+    function openOfflineDB() {
+      return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+          reject(new Error('IndexedDB is not supported'));
+          return;
+        }
+        const req = indexedDB.open(OFFLINE_DB_NAME, 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(OFFLINE_STORE_NAME)) {
+            db.createObjectStore(OFFLINE_STORE_NAME, { keyPath: 'stableKey' });
+          }
+        };
+        req.onsuccess = (e) => resolve(e.target.result);
+        req.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    async function loadAllOfflineTracksFromIDB() {
+      try {
+        const db = await openOfflineDB();
+        const tx = db.transaction(OFFLINE_STORE_NAME, 'readonly');
+        const store = tx.objectStore(OFFLINE_STORE_NAME);
+        const records = await new Promise((resolve, reject) => {
+          const req = store.getAll();
+          req.onsuccess = () => resolve(req.result || []);
+          req.onerror = () => reject(req.error);
+        });
+
+        for (const rec of records) {
+          if (rec && rec.stableKey && rec.blob instanceof Blob) {
+            const oldEntry = offlineBlobUrlMap.get(rec.stableKey);
+            if (oldEntry && oldEntry.blobUrl) {
+              try { URL.revokeObjectURL(oldEntry.blobUrl); } catch (e) {}
+            }
+            const blobUrl = URL.createObjectURL(rec.blob);
+            offlineBlobUrlMap.set(rec.stableKey, {
+              stableKey: rec.stableKey,
+              blobUrl: blobUrl,
+              size: rec.size || rec.blob.size || 0,
+              savedAt: rec.savedAt || Date.now(),
+              trackMeta: rec.trackMeta || null
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('loadAllOfflineTracksFromIDB warning:', e);
+      }
+    }
+
+    async function saveTrackBlobToIDB(track, blob) {
+      const sKey = getTrackStableKey(track);
+      const trackMeta = {
+        id: track.id || ('offline-' + encodeURIComponent(sKey)),
+        stableKey: sKey,
+        title: track.title,
+        artist: track.artist || 'Takaneko music',
+        type: track.type || 'song',
+        pubDate: track.pubDate || '',
+        description: track.description || '',
+        audioUrl: track.audioUrl || '',
+        urlCandidates: track.urlCandidates || (track.audioUrl ? [track.audioUrl] : []),
+        inLibrary: isTrackInLibrary(track),
+        gradient: track.gradient || COLOR_PALETTES[0].gradient,
+        orbColors: track.orbColors || COLOR_PALETTES[0].orbs
+      };
+
+      const record = {
+        stableKey: sKey,
+        blob: blob,
+        size: blob.size || 0,
+        savedAt: Date.now(),
+        trackMeta: trackMeta
+      };
+
+      const db = await openOfflineDB();
+      const tx = db.transaction(OFFLINE_STORE_NAME, 'readwrite');
+      const store = tx.objectStore(OFFLINE_STORE_NAME);
+      await new Promise((resolve, reject) => {
+        const req = store.put(record);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+
+      const old = offlineBlobUrlMap.get(sKey);
+      if (old && old.blobUrl) {
+        try { URL.revokeObjectURL(old.blobUrl); } catch (e) {}
+      }
+      const blobUrl = URL.createObjectURL(blob);
+      offlineBlobUrlMap.set(sKey, {
+        stableKey: sKey,
+        blobUrl: blobUrl,
+        size: record.size,
+        savedAt: record.savedAt,
+        trackMeta: trackMeta
+      });
+    }
+
+    async function deleteTrackBlobFromIDB(track) {
+      const sKey = getTrackStableKey(track);
+      const db = await openOfflineDB();
+      const tx = db.transaction(OFFLINE_STORE_NAME, 'readwrite');
+      const store = tx.objectStore(OFFLINE_STORE_NAME);
+      await new Promise((resolve, reject) => {
+        const req = store.delete(sKey);
+        req.onsuccess = () => resolve();
+        req.onerror = () => reject(req.error);
+      });
+
+      const existing = offlineBlobUrlMap.get(sKey);
+      if (existing && existing.blobUrl) {
+        try { URL.revokeObjectURL(existing.blobUrl); } catch (e) {}
+      }
+      offlineBlobUrlMap.delete(sKey);
+    }
+
+    function isTrackSavedOffline(track) {
+      if (!track) return false;
+      return offlineBlobUrlMap.has(getTrackStableKey(track));
+    }
+
+    function isTrackDownloadingOffline(track) {
+      if (!track) return false;
+      return offlineDownloadingKeys.has(getTrackStableKey(track));
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes || bytes <= 0) return '';
+      const mb = bytes / (1024 * 1024);
+      if (mb >= 1) return `${mb.toFixed(1)} MB`;
+      const kb = bytes / 1024;
+      return `${Math.round(kb)} KB`;
+    }
+
+    async function fetchAudioBlobWithFallback(track) {
+      const rawCandidates = (track.urlCandidates && track.urlCandidates.length > 0)
+        ? [...track.urlCandidates]
+        : (track.audioUrl ? [track.audioUrl] : []);
+
+      // ポッドキャストや外部URLの場合はCORSプロキシ経由の候補も後ろに追加して確実にバイナリ取得できるようにする
+      const fetchTargets = [];
+      const addTarget = (u) => {
+        if (u && !u.startsWith('blob:') && !fetchTargets.includes(u)) {
+          fetchTargets.push(u);
+        }
+      };
+
+      rawCandidates.forEach(u => addTarget(u));
+      rawCandidates.forEach(u => {
+        if (/^https?:\/\//i.test(u)) {
+          addTarget(`https://corsproxy.io/?${encodeURIComponent(u)}`);
+          addTarget(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`);
+        }
+      });
+
+      for (const url of fetchTargets) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          if (!res.ok) continue;
+          const blob = await res.blob();
+          // HTMLエラーページではなく実際の音声データであることを確認 (1KB以上 & text/htmlでない)
+          if (blob && blob.size > 1024 && !String(blob.type).includes('text/html')) {
+            const finalBlob = blob.type && blob.type.startsWith('audio/')
+              ? blob
+              : new Blob([blob], { type: 'audio/mpeg' });
+            return finalBlob;
+          }
+        } catch (err) {
+          console.warn('Offline fetch candidate failed:', url, err);
+        }
+      }
+      throw new Error('音声データの取得に失敗しました');
+    }
+
+    async function toggleOfflineTrackById(trackId) {
+      const track = findTrackAnywhere(trackId);
+      if (!track) return;
+      await toggleOfflineTrack(track);
+    }
+
+    async function toggleHeroOffline() {
+      if (songs.length > 0) {
+        await toggleOfflineTrack(songs[0]);
+      }
+    }
+
+    async function toggleCurrentTrackOffline() {
+      if (!currentTrack) return;
+      await toggleOfflineTrack(currentTrack);
+    }
+
+    async function toggleOfflineTrack(track) {
+      if (!track) return;
+      const sKey = getTrackStableKey(track);
+
+      if (offlineDownloadingKeys.has(sKey)) {
+        return;
+      }
+
+      // すでにオフライン保存済みの場合は解除
+      if (offlineBlobUrlMap.has(sKey)) {
+        try {
+          await deleteTrackBlobFromIDB(track);
+          showToast(`「${track.title}」のオフライン保存を削除しました`, 'fa-trash-can');
+          updatePlayerUI();
+          renderAllViews();
+          if (currentTab === 'podcast') renderActivePodcastEpisodes();
+        } catch (e) {
+          showToast('オフラインデータの削除に失敗しました', 'fa-circle-exclamation');
+        }
+        return;
+      }
+
+      // 新規オフライン保存（ダウンロード）
+      offlineDownloadingKeys.add(sKey);
+      showToast(`「${track.title}」をオフライン保存しています...`, 'fa-cloud-arrow-down');
+      updatePlayerUI();
+      renderAllViews();
+      if (currentTab === 'podcast') renderActivePodcastEpisodes();
+
+      try {
+        const blob = await fetchAudioBlobWithFallback(track);
+        await saveTrackBlobToIDB(track, blob);
+        // オフライン保存した曲は自動的にライブラリにも登録しておくとオフライン時にライブラリからもすぐ聴ける
+        if (!isTrackInLibrary(track)) {
+          setTrackLibraryState(track, true);
+        }
+        const sizeLabel = formatBytes(blob.size);
+        showToast(`「${track.title}」をオフライン保存しました ${sizeLabel ? `(${sizeLabel})` : ''}`, 'fa-circle-check');
+      } catch (err) {
+        console.error('Offline download error:', err);
+        showToast(`「${track.title}」のオフライン保存に失敗しました`, 'fa-circle-exclamation');
+      } finally {
+        offlineDownloadingKeys.delete(sKey);
+        updatePlayerUI();
+        renderAllViews();
+        if (currentTab === 'podcast') renderActivePodcastEpisodes();
+      }
+    }
+
+    async function downloadAllLibraryTracksOffline() {
+      const libItems = getCombinedLibraryItems();
+      const pending = libItems.filter(item => !isTrackSavedOffline(item));
+      if (libItems.length === 0) {
+        showToast('ライブラリに曲やポッドキャストがありません', 'fa-layer-group');
+        return;
+      }
+      if (pending.length === 0) {
+        showToast('ライブラリのすべての曲がオフライン保存済みです', 'fa-circle-check');
+        return;
+      }
+
+      showToast(`${pending.length}件のトラックを順番にオフライン保存します...`, 'fa-cloud-arrow-down');
+      for (const item of pending) {
+        await toggleOfflineTrack(item);
       }
     }
 
     /*************************************************************************
-     * 4. index.html と同じフォルダのベースURLと再生URL候補の生成
+     * 5. index.html と同じフォルダのベースURLと再生URL候補の生成
      *************************************************************************/
     function getBaseDirectoryUrl() {
       const loc = window.location;
@@ -998,17 +1410,16 @@
       return loc.origin + path;
     }
 
-    function buildAudioUrlCandidates(fileNameOrPath, rawDownloadUrl = '') {
+    function buildAudioUrlCandidates(fileNameOrPath, extraUrls = []) {
       const baseDir = getBaseDirectoryUrl();
       const candidates = [];
 
       const addCandidate = (url) => {
-        if (url && !candidates.includes(url)) {
+        if (url && typeof url === 'string' && !candidates.includes(url)) {
           candidates.push(url);
         }
       };
 
-      // すでに完全なURLの場合
       if (/^https?:\/\//i.test(fileNameOrPath)) {
         addCandidate(fileNameOrPath);
       }
@@ -1019,20 +1430,23 @@
         decodedName = decodeURIComponent(rawName);
       } catch (e) {}
 
-      // 1. NFC (Windows / 標準UTF-8) パーセントエンコードURL
+      // 1. 同じフォルダの NFC (Windows / 標準 UTF-8) URL
       const nfcEncoded = decodedName.normalize('NFC').split('/').map(seg => encodeURIComponent(seg)).join('/');
       addCandidate(baseDir + nfcEncoded);
 
-      // 2. NFD (macOS由来の濁点・半濁点分離UTF-8) パーセントエンコードURL
+      // 2. 同じフォルダの NFD (macOS 濁点・半濁点分離 UTF-8) URL
       const nfdEncoded = decodedName.normalize('NFD').split('/').map(seg => encodeURIComponent(seg)).join('/');
       addCandidate(baseDir + nfdEncoded);
 
-      // 3. GitHub API の download_url (raw.githubusercontent.com)
-      if (rawDownloadUrl) {
-        addCandidate(rawDownloadUrl);
+      // 3. GitHub Raw URL や jsDelivr CDN URL (GitHubへアップロード直後でPagesビルド前でも即時再生可能)
+      if (typeof extraUrls === 'string' && extraUrls) {
+        addCandidate(extraUrls);
+      } else if (Array.isArray(extraUrls)) {
+        extraUrls.forEach(u => addCandidate(u));
       }
 
       // 4. そのままの相対パス
+      addCandidate('./' + nfcEncoded);
       addCandidate(baseDir + rawName);
       addCandidate(rawName);
 
@@ -1040,174 +1454,346 @@
     }
 
     /*************************************************************************
-     * 5. GitHub の index.html と同じフォルダにある .mp3 を自動認識して追加
+     * 6. GitHub の index.html と同じフォルダにある .mp3 を確実に自動認識
+     *    (キャッシュ無効化 + 複数ブランチ + jsDelivr API + リポジトリ自動探索)
      *************************************************************************/
     function parseGitHubRepoCandidatesFromLocation() {
       const host = window.location.hostname.toLowerCase();
       const pathSegments = window.location.pathname.split('/').filter(Boolean);
 
-      // 末尾の index.html 等を除外
       if (pathSegments.length > 0 && /\.html?$/i.test(pathSegments[pathSegments.length - 1])) {
         pathSegments.pop();
       }
 
       const candidates = [];
+      const seen = new Set();
+      const addRepoCandidate = (owner, repo, dirPath = '') => {
+        if (!owner || !repo) return;
+        const cleanDir = String(dirPath || '').replace(/^\/+|\/+$/g, '');
+        const key = `${owner}/${repo}/${cleanDir}`.toLowerCase();
+        if (!seen.has(key)) {
+          seen.add(key);
+          candidates.push({ owner, repo, dirPath: cleanDir });
+        }
+      };
 
-      // *.github.io の場合
+      // URLクエリ (?repo=owner/repo) または meta[name="github-repo"] 指定がある場合
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const repoParam = params.get('repo') || document.querySelector('meta[name="github-repo"]')?.getAttribute('content');
+        if (repoParam && repoParam.includes('/')) {
+          const [o, r, ...rest] = repoParam.split('/');
+          addRepoCandidate(o, r, rest.join('/'));
+        }
+      } catch (e) {}
+
+      // *.github.io ドメインからの自動判別
       if (host.endsWith('.github.io')) {
         const owner = host.replace(/\.github\.io$/, '');
         if (pathSegments.length >= 1) {
-          // パターンA: Project Page (https://<owner>.github.io/<repo>/[dir...])
-          candidates.push({
-            owner: owner,
-            repo: pathSegments[0],
-            dirPath: pathSegments.slice(1).join('/')
-          });
+          // Project Page: https://<owner>.github.io/<repo>/[dir...]
+          addRepoCandidate(owner, pathSegments[0], pathSegments.slice(1).join('/'));
+          // ルート直下も念のため候補に追加
+          if (pathSegments.length > 1) {
+            addRepoCandidate(owner, pathSegments[0], '');
+          }
         }
-        // パターンB: User / Organization Page (https://<owner>.github.io/[dir...])
-        candidates.push({
-          owner: owner,
-          repo: `${owner}.github.io`,
-          dirPath: pathSegments.join('/')
-        });
+        // User Page: https://<owner>.github.io/[dir...]
+        addRepoCandidate(owner, `${owner}.github.io`, pathSegments.join('/'));
+        if (pathSegments.length > 0) {
+          addRepoCandidate(owner, `${owner}.github.io`, '');
+        }
       }
 
       return candidates;
     }
 
+    function buildGitHubAndCdnUrls(owner, repo, branch, filePath, apiDownloadUrl = '') {
+      const encodedPath = String(filePath).split('/').map(encodeURIComponent).join('/');
+      const ref = branch || 'HEAD';
+      const urls = [];
+      if (apiDownloadUrl) urls.push(apiDownloadUrl);
+      urls.push(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${encodedPath}`);
+      urls.push(`https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}/${encodedPath}`);
+      return urls;
+    }
+
+    // (A) GitHub Contents API (キャッシュ完全無効化で最新コミットを取得)
     async function fetchMp3ListFromGitHubContentsApi(owner, repo, dirPath) {
       const encodedDir = dirPath
         ? dirPath.split('/').map(encodeURIComponent).join('/')
         : '';
-      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedDir}`;
-      const res = await fetch(apiUrl, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (!res.ok) return [];
+      const branches = ['', 'main', 'master', 'gh-pages'];
 
-      const items = await res.json();
-      if (!Array.isArray(items)) return [];
+      for (const br of branches) {
+        try {
+          const refQuery = br ? `?ref=${encodeURIComponent(br)}&_t=${Date.now()}` : `?_t=${Date.now()}`;
+          const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedDir}${refQuery}`;
+          const res = await fetch(apiUrl, {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
+          });
+          if (!res.ok) continue;
 
-      return items
-        .filter(item => item && item.type === 'file' && /\.mp3$/i.test(item.name))
-        .map(item => ({
-          name: item.name,
-          path: item.name,
-          downloadUrl: item.download_url || ''
-        }));
+          const items = await res.json();
+          if (!Array.isArray(items)) continue;
+
+          const mp3Items = items
+            .filter(item => item && item.type === 'file' && /\.mp3$/i.test(item.name))
+            .map(item => ({
+              name: item.name,
+              path: item.name,
+              extraUrls: buildGitHubAndCdnUrls(owner, repo, br || 'HEAD', item.path || item.name, item.download_url)
+            }));
+
+          if (mp3Items.length > 0) return mp3Items;
+        } catch (e) {}
+      }
+      return [];
     }
 
+    // (B) GitHub Git Trees API (HEAD / main / master / gh-pages)
     async function fetchMp3ListFromGitHubTreeApi(owner, repo, dirPath) {
-      const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/trees/HEAD?recursive=1`;
-      const res = await fetch(apiUrl, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-      if (!res.ok) return [];
-
-      const data = await res.json();
-      if (!data || !Array.isArray(data.tree)) return [];
-
+      const branches = ['HEAD', 'main', 'master', 'gh-pages'];
       const prefix = dirPath ? dirPath.replace(/\/+$/, '') + '/' : '';
 
-      // まず index.html と同じフォルダ直下の .mp3 を優先抽出
-      let mp3Nodes = data.tree.filter(node => {
-        if (node.type !== 'blob' || !/\.mp3$/i.test(node.path)) return false;
-        if (!prefix) {
-          return !node.path.includes('/');
-        }
-        if (!node.path.startsWith(prefix)) return false;
-        const relative = node.path.slice(prefix.length);
-        return !relative.includes('/');
-      });
+      for (const br of branches) {
+        try {
+          const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/trees/${encodeURIComponent(br)}?recursive=1&_t=${Date.now()}`;
+          const res = await fetch(apiUrl, {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
+          });
+          if (!res.ok) continue;
 
-      // もし同じフォルダ直下に無ければリポジトリ内の全 .mp3 も対象にする
-      if (mp3Nodes.length === 0) {
-        mp3Nodes = data.tree.filter(node => node.type === 'blob' && /\.mp3$/i.test(node.path));
+          const data = await res.json();
+          if (!data || !Array.isArray(data.tree)) continue;
+
+          // index.html のあるフォルダを自動特定（もし dirPath が空でも index.html がサブフォルダにあればそのフォルダを同階層とみなす）
+          let targetPrefix = prefix;
+          if (!targetPrefix) {
+            const indexNode = data.tree.find(n => n.type === 'blob' && /(^|\/)index\.html$/i.test(n.path));
+            if (indexNode && indexNode.path.includes('/')) {
+              targetPrefix = indexNode.path.substring(0, indexNode.path.lastIndexOf('/') + 1);
+            }
+          }
+
+          // 同じフォルダ直下の .mp3 を優先抽出
+          let mp3Nodes = data.tree.filter(node => {
+            if (node.type !== 'blob' || !/\.mp3$/i.test(node.path)) return false;
+            if (!targetPrefix) return !node.path.includes('/');
+            if (!node.path.startsWith(targetPrefix)) return false;
+            const rel = node.path.slice(targetPrefix.length);
+            return !rel.includes('/');
+          });
+
+          // 同じフォルダ直下に無ければリポジトリ内の全 .mp3 も対象にする
+          if (mp3Nodes.length === 0) {
+            mp3Nodes = data.tree.filter(node => node.type === 'blob' && /\.mp3$/i.test(node.path));
+          }
+
+          if (mp3Nodes.length > 0) {
+            return mp3Nodes.map(node => {
+              const relPath = (targetPrefix && node.path.startsWith(targetPrefix))
+                ? node.path.slice(targetPrefix.length)
+                : node.path;
+              return {
+                name: relPath.split('/').pop(),
+                path: relPath,
+                extraUrls: buildGitHubAndCdnUrls(owner, repo, br, node.path)
+              };
+            });
+          }
+        } catch (e) {}
       }
-
-      return mp3Nodes.map(node => {
-        const relativePath = (prefix && node.path.startsWith(prefix))
-          ? node.path.slice(prefix.length)
-          : node.path;
-        const encodedFull = node.path.split('/').map(encodeURIComponent).join('/');
-        return {
-          name: relativePath.split('/').pop(),
-          path: relativePath,
-          downloadUrl: `https://raw.githubusercontent.com/${owner}/${repo}/HEAD/${encodedFull}`
-        };
-      });
+      return [];
     }
 
-    async function fetchMp3ListFromSameFolderHtml() {
-      const results = [];
-      try {
-        const baseDir = getBaseDirectoryUrl();
-        const res = await fetch(baseDir);
-        if (!res.ok) return results;
-        const contentType = res.headers.get('content-type') || '';
-        if (!contentType.includes('text/html')) return results;
+    // (C) jsDelivr Package Flat API (GitHub APIのレート制限を受けずにリポジトリ内の全ファイルを高速一覧取得)
+    async function fetchMp3ListFromJsDelivrFlatApi(owner, repo, dirPath) {
+      const branches = ['main', 'master', 'gh-pages'];
+      const prefix = dirPath ? '/' + dirPath.replace(/^\/+|\/+$/g, '') + '/' : '/';
 
-        const html = await res.text();
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const links = Array.from(doc.querySelectorAll('a[href]'));
-        for (const a of links) {
-          const href = a.getAttribute('href') || '';
-          const cleanHref = href.split('?')[0].split('#')[0];
-          if (/\.mp3$/i.test(cleanHref)) {
-            let decodedHref = cleanHref;
-            try { decodedHref = decodeURIComponent(cleanHref); } catch (e) {}
-            const fileName = decodedHref.split('/').pop();
-            results.push({
-              name: fileName,
-              path: fileName,
-              downloadUrl: new URL(cleanHref, baseDir).href
+      for (const br of branches) {
+        try {
+          const apiUrl = `https://data.jsdelivr.com/v1/package/gh/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}@${encodeURIComponent(br)}/flat`;
+          const res = await fetch(apiUrl, { cache: 'no-store' });
+          if (!res.ok) continue;
+
+          const data = await res.json();
+          if (!data || !Array.isArray(data.files)) continue;
+
+          let targetPrefix = prefix;
+          if (targetPrefix === '/') {
+            const indexFile = data.files.find(f => f && /(^|\/)index\.html$/i.test(f.name));
+            if (indexFile && indexFile.name.lastIndexOf('/') > 0) {
+              targetPrefix = indexFile.name.substring(0, indexFile.name.lastIndexOf('/') + 1);
+            }
+          }
+
+          let mp3Files = data.files.filter(f => {
+            if (!f || !/\.mp3$/i.test(f.name)) return false;
+            if (!f.name.startsWith(targetPrefix)) return false;
+            const rel = f.name.slice(targetPrefix.length);
+            return !rel.includes('/');
+          });
+
+          if (mp3Files.length === 0) {
+            mp3Files = data.files.filter(f => f && /\.mp3$/i.test(f.name));
+          }
+
+          if (mp3Files.length > 0) {
+            return mp3Files.map(f => {
+              const cleanFull = f.name.replace(/^\/+/, '');
+              const relPath = f.name.startsWith(targetPrefix)
+                ? f.name.slice(targetPrefix.length)
+                : cleanFull;
+              return {
+                name: relPath.split('/').pop(),
+                path: relPath,
+                extraUrls: buildGitHubAndCdnUrls(owner, repo, br, cleanFull)
+              };
             });
+          }
+        } catch (e) {}
+      }
+      return [];
+    }
+
+    // (D) ユーザーの公開リポジトリ一覧から Takaneko music / mp3 が入っているリポジトリを自動探索
+    async function discoverMp3FromUserRepositories(ownerList) {
+      for (const owner of ownerList) {
+        try {
+          const res = await fetch(`https://api.github.com/users/${encodeURIComponent(owner)}/repos?sort=updated&per_page=15&_t=${Date.now()}`, {
+            cache: 'no-store',
+            headers: { 'Accept': 'application/vnd.github.v3+json' }
+          });
+          if (!res.ok) continue;
+          const repos = await res.json();
+          if (!Array.isArray(repos)) continue;
+
+          // Takaneko / music 関連のリポジトリ名を優先ソート
+          repos.sort((a, b) => {
+            const aScore = /takaneko|music/i.test(a.name || '') ? 1 : 0;
+            const bScore = /takaneko|music/i.test(b.name || '') ? 1 : 0;
+            return bScore - aScore;
+          });
+
+          for (const r of repos.slice(0, 8)) {
+            if (!r || !r.name) continue;
+            const viaJsDelivr = await fetchMp3ListFromJsDelivrFlatApi(owner, r.name, '');
+            if (viaJsDelivr.length > 0) return viaJsDelivr;
+
+            const viaTree = await fetchMp3ListFromGitHubTreeApi(owner, r.name, '');
+            if (viaTree.length > 0) return viaTree;
+          }
+        } catch (e) {}
+      }
+      return [];
+    }
+
+    // (E) 同じフォルダのディレクトリHTML / JSONマニフェストからの検出
+    async function fetchMp3ListFromSameFolderHtmlOrJson() {
+      const results = [];
+      const baseDir = getBaseDirectoryUrl();
+
+      // 1. 任意の mp3.json / files.json がある場合
+      for (const jsonName of ['mp3.json', 'files.json']) {
+        try {
+          const res = await fetch(`${baseDir}${jsonName}?_t=${Date.now()}`, { cache: 'no-store' });
+          if (res.ok) {
+            const arr = await res.json();
+            if (Array.isArray(arr)) {
+              arr.forEach(item => {
+                const name = typeof item === 'string' ? item : (item?.name || item?.file || '');
+                if (/\.mp3$/i.test(name)) {
+                  results.push({ name, path: name, extraUrls: [] });
+                }
+              });
+              if (results.length > 0) return results;
+            }
+          }
+        } catch (e) {}
+      }
+
+      // 2. ローカルサーバー等のディレクトリ一覧HTML
+      try {
+        const res = await fetch(baseDir, { cache: 'no-store' });
+        if (res.ok) {
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('text/html')) {
+            const html = await res.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const links = Array.from(doc.querySelectorAll('a[href]'));
+            for (const a of links) {
+              const href = a.getAttribute('href') || '';
+              const cleanHref = href.split('?')[0].split('#')[0];
+              if (/\.mp3$/i.test(cleanHref)) {
+                let decodedHref = cleanHref;
+                try { decodedHref = decodeURIComponent(cleanHref); } catch (e) {}
+                const fileName = decodedHref.split('/').pop();
+                results.push({
+                  name: fileName,
+                  path: fileName,
+                  extraUrls: [new URL(cleanHref, baseDir).href]
+                });
+              }
+            }
           }
         }
       } catch (e) {}
+
       return results;
     }
 
-    async function autoDiscoverMp3FilesInSameFolder() {
-      let discoveredItems = [];
+    async function autoDiscoverMp3FilesInSameFolder(isManualRescan = false) {
+      const rescanIcon = document.getElementById('rescanIcon');
+      if (rescanIcon) rescanIcon.classList.add('fa-spin');
 
-      // 1. GitHub Pages のリポジトリ構造から index.html と同じフォルダの .mp3 を自動取得
+      let discoveredItems = [];
+      const mergeDiscovered = (items) => {
+        if (!Array.isArray(items)) return;
+        for (const it of items) {
+          if (it && (it.name || it.path)) {
+            discoveredItems.push(it);
+          }
+        }
+      };
+
+      // Step 1: 現在のURLから推定されるGitHubリポジトリを全方式でスキャン
       const repoCandidates = parseGitHubRepoCandidatesFromLocation();
       for (const candidate of repoCandidates) {
-        try {
-          const contentsMp3s = await fetchMp3ListFromGitHubContentsApi(
-            candidate.owner,
-            candidate.repo,
-            candidate.dirPath
-          );
-          if (contentsMp3s.length > 0) {
-            discoveredItems = contentsMp3s;
-            break;
-          }
+        const [contentsList, jsDelivrList] = await Promise.all([
+          fetchMp3ListFromGitHubContentsApi(candidate.owner, candidate.repo, candidate.dirPath),
+          fetchMp3ListFromJsDelivrFlatApi(candidate.owner, candidate.repo, candidate.dirPath)
+        ]);
+        mergeDiscovered(contentsList);
+        mergeDiscovered(jsDelivrList);
 
-          const treeMp3s = await fetchMp3ListFromGitHubTreeApi(
-            candidate.owner,
-            candidate.repo,
-            candidate.dirPath
-          );
-          if (treeMp3s.length > 0) {
-            discoveredItems = treeMp3s;
-            break;
-          }
-        } catch (err) {
-          console.warn('GitHub API check error:', err);
+        if (discoveredItems.length === 0) {
+          const treeList = await fetchMp3ListFromGitHubTreeApi(candidate.owner, candidate.repo, candidate.dirPath);
+          mergeDiscovered(treeList);
         }
+        if (discoveredItems.length > 0) break;
       }
 
-      // 2. ローカルサーバーやディレクトリリスティング有効環境での自動検出
+      // Step 2: 同じフォルダのHTMLリスティングまたはJSONをスキャン
       if (discoveredItems.length === 0) {
-        const dirMp3s = await fetchMp3ListFromSameFolderHtml();
-        if (dirMp3s.length > 0) {
-          discoveredItems = dirMp3s;
-        }
+        const localList = await fetchMp3ListFromSameFolderHtmlOrJson();
+        mergeDiscovered(localList);
       }
 
-      // 3. 取得できた場合はキャッシュを更新、API制限等で空だった場合はキャッシュを復元
+      // Step 3: GitHub Pages以外のドメインやサブパス等でまだ見つからない場合、オーナーの公開リポジトリを自動探索
+      if (discoveredItems.length === 0) {
+        const ownersToScan = [...DEFAULT_GITHUB_OWNERS];
+        repoCandidates.forEach(c => {
+          if (c.owner && !ownersToScan.includes(c.owner)) ownersToScan.unshift(c.owner);
+        });
+        const repoScanList = await discoverMp3FromUserRepositories(ownersToScan);
+        mergeDiscovered(repoScanList);
+      }
+
+      // Step 4: キャッシュの保存と復元
       if (discoveredItems.length > 0) {
         try {
           localStorage.setItem(DISCOVERED_CACHE_KEY, JSON.stringify(discoveredItems));
@@ -1218,72 +1804,144 @@
           if (cached) {
             const parsed = JSON.parse(cached);
             if (Array.isArray(parsed) && parsed.length > 0) {
-              discoveredItems = parsed;
+              mergeDiscovered(parsed);
             }
           }
         } catch (e) {}
       }
 
-      // 4. 同じフォルダに「エンドレスラフター.mp3」が存在するかの直接HEADプローブ（カスタムドメインやAPI未検出時用）
-      if (discoveredItems.length === 0) {
-        const probeFiles = ['エンドレスラフター.mp3'];
-        for (const fileName of probeFiles) {
+      // Step 5: 同じフォルダに直接配置されたファイルのHEADプローブ + オフライン保存済み/ライブラリ保存済みの曲を統合
+      try {
+        const probeNames = new Set(['エンドレスラフター.mp3']);
+        Object.values(savedLibraryMap).forEach(meta => {
+          if (meta && meta.type !== 'podcast' && meta.title) {
+            probeNames.add(`${meta.title}.mp3`);
+          }
+        });
+        offlineBlobUrlMap.forEach((entry) => {
+          if (entry?.trackMeta && entry.trackMeta.type !== 'podcast' && entry.trackMeta.title) {
+            probeNames.add(`${entry.trackMeta.title}.mp3`);
+          }
+        });
+
+        for (const fileName of probeNames) {
+          const alreadyHas = discoveredItems.some(
+            it => extractSongTitleFromFilename(it.name || it.path) === extractSongTitleFromFilename(fileName)
+          );
+          if (alreadyHas) continue;
+
+          const sKey = getTrackStableKey(extractSongTitleFromFilename(fileName), 'song');
+          if (offlineBlobUrlMap.has(sKey) || savedLibraryMap[sKey]) {
+            discoveredItems.push({
+              name: fileName,
+              path: fileName,
+              extraUrls: savedLibraryMap[sKey]?.urlCandidates || []
+            });
+            continue;
+          }
+
           try {
             const probeUrl = getBaseDirectoryUrl() + encodeURIComponent(fileName.normalize('NFC'));
-            const res = await fetch(probeUrl, { method: 'HEAD' });
+            const res = await fetch(probeUrl, { method: 'HEAD', cache: 'no-store' });
             if (res.ok) {
               discoveredItems.push({
                 name: fileName,
                 path: fileName,
-                downloadUrl: probeUrl
+                extraUrls: [probeUrl]
               });
             }
           } catch (e) {}
         }
-      }
+      } catch (e) {}
 
-      // 重複排除して曲リストを構築
-      const libSet = loadLibrarySet();
+      // 重複を排除して songs 配列を構築 (同じ曲名ならextraUrlsをマージ)
       const uniqueMap = new Map();
-
       for (const item of discoveredItems) {
         const title = extractSongTitleFromFilename(item.name || item.path);
+        if (!title || title === 'Untitled') continue;
         if (!uniqueMap.has(title)) {
-          uniqueMap.set(title, item);
+          uniqueMap.set(title, {
+            name: item.name || (title + '.mp3'),
+            path: item.path || item.name || (title + '.mp3'),
+            extraUrls: Array.isArray(item.extraUrls)
+              ? [...item.extraUrls]
+              : (item.downloadUrl ? [item.downloadUrl] : [])
+          });
+        } else {
+          const existing = uniqueMap.get(title);
+          const moreUrls = Array.isArray(item.extraUrls)
+            ? item.extraUrls
+            : (item.downloadUrl ? [item.downloadUrl] : []);
+          moreUrls.forEach(u => {
+            if (u && !existing.extraUrls.includes(u)) existing.extraUrls.push(u);
+          });
         }
       }
 
       const uniqueList = Array.from(uniqueMap.values());
       songs = uniqueList.map((item, idx) => {
         const songTitle = extractSongTitleFromFilename(item.name || item.path);
+        const sKey = getTrackStableKey(songTitle, 'song');
         const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
-        const urlCandidates = buildAudioUrlCandidates(item.path || item.name, item.downloadUrl);
+        const urlCandidates = buildAudioUrlCandidates(item.path || item.name, item.extraUrls);
         const id = 'song-' + idx + '-' + encodeURIComponent(songTitle);
+        const inLib = Boolean(savedLibraryMap[sKey]);
 
-        return {
+        const songObj = {
           id: id,
+          stableKey: sKey,
           title: songTitle,
           artist: 'Takaneko music',
+          type: 'song',
           audioUrl: urlCandidates[0],
           urlCandidates: urlCandidates,
           seedIndex: idx,
           isFeatured: true,
-          inLibrary: libSet.has(songTitle),
+          inLibrary: inLib,
           gradient: palette.gradient,
           orbColors: palette.orbs
         };
+
+        // ライブラリに登録済みの曲であれば最新URL候補をライブラリ側にも反映
+        if (inLib) {
+          savedLibraryMap[sKey] = {
+            ...savedLibraryMap[sKey],
+            id: id,
+            urlCandidates: urlCandidates,
+            audioUrl: urlCandidates[0]
+          };
+        }
+
+        return songObj;
       });
+
+      saveLibraryStore();
 
       if (songs.length > 0 && !currentTrack) {
         currentTrack = songs[0];
         updatePlayerUI();
       }
 
+      if (rescanIcon) rescanIcon.classList.remove('fa-spin');
+
+      if (isManualRescan) {
+        showToast(
+          songs.length > 0
+            ? `${songs.length}曲のMP3を検出して反映しました`
+            : '同じフォルダにMP3ファイルが見つかりませんでした',
+          songs.length > 0 ? 'fa-circle-check' : 'fa-circle-info'
+        );
+      }
+
       renderAllViews();
     }
 
+    function rescanGitHubMp3Files() {
+      autoDiscoverMp3FilesInSameFolder(true);
+    }
+
     /*************************************************************************
-     * 6. UI レンダリング (ホーム / ライブラリ / 検索 / ポッドキャスト)
+     * 7. UI レンダリング (ホーム / ライブラリ / 検索 / ポッドキャスト)
      *************************************************************************/
     function renderAllViews() {
       renderHomeView();
@@ -1292,10 +1950,103 @@
       updateCountsAndBadges();
     }
 
+    function getCombinedLibraryItems() {
+      const combinedMap = new Map();
+
+      // 1. 永続保存されたライブラリ項目をベースにする
+      Object.entries(savedLibraryMap).forEach(([sKey, meta]) => {
+        if (meta) {
+          combinedMap.set(sKey, { ...meta, stableKey: sKey, inLibrary: true });
+        }
+      });
+
+      // 2. 現在の songs と podcastEpisodes の最新オブジェクトで上書き補完
+      songs.forEach(s => {
+        const sKey = getTrackStableKey(s);
+        if (s.inLibrary || combinedMap.has(sKey)) {
+          s.inLibrary = true;
+          combinedMap.set(sKey, s);
+        }
+      });
+
+      Object.values(podcastEpisodesByFeed).forEach(epList => {
+        if (Array.isArray(epList)) {
+          epList.forEach(ep => {
+            const sKey = getTrackStableKey(ep);
+            if (ep.inLibrary || combinedMap.has(sKey)) {
+              ep.inLibrary = true;
+              combinedMap.set(sKey, ep);
+            }
+          });
+        }
+      });
+
+      // 3. オフライン保存済みのトラックも「オフライン保存済み」フィルタ時やライブラリで参照可能にする
+      offlineBlobUrlMap.forEach((entry, sKey) => {
+        if (!combinedMap.has(sKey) && entry.trackMeta) {
+          combinedMap.set(sKey, {
+            ...entry.trackMeta,
+            stableKey: sKey,
+            inLibrary: Boolean(savedLibraryMap[sKey])
+          });
+        }
+      });
+
+      return Array.from(combinedMap.values());
+    }
+
     function updateCountsAndBadges() {
-      const libCount = songs.filter(s => s.inLibrary).length;
-      document.getElementById('sidebarLibraryCount').textContent = libCount;
+      const allLibItems = getCombinedLibraryItems().filter(item => item.inLibrary || isTrackSavedOffline(item));
+      document.getElementById('sidebarLibraryCount').textContent = allLibItems.length;
       document.getElementById('featuredUploadsCount').textContent = `${songs.length}曲`;
+
+      const offlineCount = offlineBlobUrlMap.size;
+      let totalOfflineBytes = 0;
+      offlineBlobUrlMap.forEach(entry => {
+        totalOfflineBytes += (entry.size || 0);
+      });
+      const sizeStr = totalOfflineBytes > 0 ? ` (${formatBytes(totalOfflineBytes)})` : '';
+      const offlineBadge = document.getElementById('offlineSavedBadge');
+      if (offlineBadge) {
+        offlineBadge.textContent = `オフライン保存: ${offlineCount}件${sizeStr}`;
+      }
+    }
+
+    function renderOfflineButtonHtml(track, compact = false) {
+      const isSaved = isTrackSavedOffline(track);
+      const isDownloading = isTrackDownloadingOffline(track);
+      const sKey = getTrackStableKey(track);
+      const sizeText = isSaved ? formatBytes(offlineBlobUrlMap.get(sKey)?.size || 0) : '';
+
+      if (isDownloading) {
+        return `
+          <button onclick="event.stopPropagation();"
+                  title="オフライン保存中..."
+                  class="${compact ? 'w-7 h-7' : 'px-3 py-1'} rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0">
+            <i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i>
+            ${compact ? '' : `<span class="hidden sm:inline">保存中</span>`}
+          </button>
+        `;
+      }
+
+      if (compact) {
+        return `
+          <button onclick="event.stopPropagation(); toggleOfflineTrackById('${track.id}')"
+                  title="${isSaved ? `オフライン保存済み ${sizeText} (クリックで削除)` : 'オフライン保存'}"
+                  class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${isSaved ? 'text-cyan-300 border-cyan-400/50 bg-cyan-500/20' : 'text-white/70'}">
+            <i class="fa-solid ${isSaved ? 'fa-cloud-arrow-down' : 'fa-arrow-down'} text-[11px]"></i>
+          </button>
+        `;
+      }
+
+      return `
+        <button onclick="event.stopPropagation(); toggleOfflineTrackById('${track.id}')"
+                title="${isSaved ? `オフライン保存済み ${sizeText} (クリックで削除)` : 'オフライン保存'}"
+                class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${isSaved ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40' : 'glass-pill-btn text-white/80'}">
+          <i class="fa-solid ${isSaved ? 'fa-circle-check' : 'fa-arrow-down'} text-[10px]"></i>
+          <span class="hidden sm:inline">${isSaved ? 'オフライン可' : 'オフライン保存'}</span>
+        </button>
+      `;
     }
 
     // --- ホーム画面のレンダリング ---
@@ -1305,15 +2056,18 @@
 
       if (songs.length === 0) {
         document.getElementById('heroSongTitle').textContent = 'Takaneko music';
-        document.getElementById('heroSongArtist').textContent = 'index.html と同じフォルダの mp3 を自動読み込みします';
+        document.getElementById('heroSongArtist').textContent = '同じフォルダの .mp3 を自動検出します';
         gridEl.innerHTML = `
-          <div class="col-span-full glass-card rounded-3xl p-8 text-center text-xs text-white/60">
-            同じフォルダにある .mp3 ファイルを検索しています...
+          <div class="col-span-full glass-card rounded-3xl p-8 text-center space-y-3">
+            <p class="text-xs text-white/70">同じフォルダにある .mp3 ファイルを検索しています...</p>
+            <button onclick="rescanGitHubMp3Files()" class="glass-pill-btn px-4 py-2 rounded-full text-xs font-semibold text-rose-300">
+              <i class="fa-solid fa-rotate mr-1.5"></i>再スキャンする
+            </button>
           </div>
         `;
         listEl.innerHTML = `
           <div class="p-8 text-center text-xs text-white/55">
-            index.html と同じフォルダに .mp3 ファイルを置くと自動的に表示されます。
+            GitHubの index.html と同じフォルダに .mp3 ファイルを入れると自動的に表示されます。
           </div>
         `;
         return;
@@ -1326,21 +2080,40 @@
       document.getElementById('heroSongArt').style.background = heroSong.gradient;
 
       const heroLibBtn = document.getElementById('heroAddLibBtn');
-      if (heroSong.inLibrary) {
+      if (isTrackInLibrary(heroSong)) {
         heroLibBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>ライブラリ追加済み</span>`;
       } else {
         heroLibBtn.innerHTML = `<i class="fa-solid fa-plus"></i><span>ライブラリに追加</span>`;
       }
 
+      const heroOffBtn = document.getElementById('heroOfflineBtn');
+      if (heroOffBtn) {
+        if (isTrackDownloadingOffline(heroSong)) {
+          heroOffBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-300"></i><span>保存中...</span>`;
+        } else if (isTrackSavedOffline(heroSong)) {
+          heroOffBtn.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-300"></i><span>オフライン保存済み</span>`;
+        } else {
+          heroOffBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i><span>オフライン保存</span>`;
+        }
+      }
+
       // 注目のアップロードされた曲 (カードグリッド)
       gridEl.innerHTML = songs.map(song => {
-        const isCurrent = currentTrack && currentTrack.id === song.id;
+        const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(song);
+        const inLib = isTrackInLibrary(song);
+        const isOffline = isTrackSavedOffline(song);
         return `
           <div class="glass-card rounded-3xl p-3.5 flex flex-col justify-between group cursor-pointer relative"
                onclick="playTrackById('${song.id}')">
             <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
                  style="background: ${song.gradient}">
               <i class="fa-solid fa-music text-4xl text-white/85 group-hover:scale-110 transition-transform duration-300"></i>
+
+              ${isOffline ? `
+                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/55 backdrop-blur-md text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[9px]"></i>オフライン
+                </span>
+              ` : ''}
 
               <!-- ホバー再生オーバーレイ -->
               <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -1350,7 +2123,7 @@
               </div>
             </div>
 
-            <div class="flex items-start justify-between gap-2">
+            <div class="flex items-start justify-between gap-1.5">
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-1.5">
                   ${isCurrent && isPlaying ? `<div class="eq-bars shrink-0"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>` : ''}
@@ -1361,12 +2134,16 @@
                 <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(song.artist)}</p>
               </div>
 
-              <!-- ライブラリ追加/解除ボタン -->
-              <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
-                      title="${song.inLibrary ? 'ライブラリから解除' : 'ライブラリに追加'}"
-                      class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${song.inLibrary ? 'text-rose-400 border-rose-400/40' : 'text-white/70'}">
-                <i class="fa-solid ${song.inLibrary ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
-              </button>
+              <div class="flex items-center gap-1 shrink-0">
+                <!-- ライブラリ追加/解除ボタン -->
+                <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
+                        title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
+                        class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${inLib ? 'text-rose-400 border-rose-400/40' : 'text-white/70'}">
+                  <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
+                </button>
+                <!-- オフライン保存ボタン -->
+                ${renderOfflineButtonHtml(song, true)}
+              </div>
             </div>
           </div>
         `;
@@ -1377,7 +2154,12 @@
     }
 
     function renderTrackRowHtml(song, indexNum, showRemoveFromLib = false) {
-      const isCurrent = currentTrack && currentTrack.id === song.id;
+      const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(song);
+      const inLib = isTrackInLibrary(song);
+      const isOffline = isTrackSavedOffline(song);
+      const offlineEntry = offlineBlobUrlMap.get(getTrackStableKey(song));
+      const sizeStr = offlineEntry ? formatBytes(offlineEntry.size) : '';
+
       return `
         <div onclick="playTrackById('${song.id}')"
              class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.07] transition-colors cursor-pointer group ${isCurrent ? 'bg-white/[0.09]' : ''}">
@@ -1393,32 +2175,62 @@
               <i class="fa-solid ${song.type === 'podcast' ? 'fa-podcast' : 'fa-music'} text-white text-xs"></i>
             </div>
             <div class="min-w-0 flex-1">
-              <p class="text-xs sm:text-sm font-semibold ${isCurrent ? 'text-rose-400' : 'text-white'} truncate">
-                ${escapeHtml(song.title)}
-              </p>
+              <div class="flex items-center gap-2">
+                <p class="text-xs sm:text-sm font-semibold ${isCurrent ? 'text-rose-400' : 'text-white'} truncate">
+                  ${escapeHtml(song.title)}
+                </p>
+                ${isOffline ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-semibold shrink-0">オフライン可 ${sizeStr}</span>` : ''}
+              </div>
               <p class="text-[11px] text-white/50 truncate">${escapeHtml(song.artist)}</p>
             </div>
           </div>
 
-          <div class="flex items-center gap-2.5 shrink-0">
+          <div class="flex items-center gap-2 shrink-0">
             <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
-                    class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${song.inLibrary ? 'bg-rose-500/20 text-rose-300 border border-rose-400/30' : 'glass-pill-btn text-white/80'}">
-              <i class="fa-solid ${song.inLibrary ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
-              <span class="hidden sm:inline">${song.inLibrary ? (showRemoveFromLib ? '解除' : '追加済み') : 'ライブラリ'}</span>
+                    class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${inLib ? 'bg-rose-500/20 text-rose-300 border border-rose-400/30' : 'glass-pill-btn text-white/80'}">
+              <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
+              <span class="hidden sm:inline">${inLib ? (showRemoveFromLib ? '解除' : '追加済み') : 'ライブラリ'}</span>
             </button>
+            ${renderOfflineButtonHtml(song, false)}
           </div>
         </div>
       `;
     }
 
     // --- ライブラリ画面のレンダリング ---
+    function setLibraryFilter(filter) {
+      currentLibraryFilter = filter;
+      ['all', 'songs', 'podcast', 'offline'].forEach(f => {
+        const btn = document.getElementById(`lib-filter-${f}`);
+        if (!btn) return;
+        if (f === filter) {
+          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white flex items-center gap-1.5';
+        } else {
+          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75 flex items-center gap-1.5';
+        }
+      });
+      renderLibraryView();
+    }
+
     function renderLibraryView() {
-      const libSongs = songs.filter(s => s.inLibrary);
+      let libItems = getCombinedLibraryItems();
+
+      if (currentLibraryFilter === 'offline') {
+        libItems = libItems.filter(item => isTrackSavedOffline(item));
+      } else {
+        libItems = libItems.filter(item => item.inLibrary || isTrackSavedOffline(item));
+        if (currentLibraryFilter === 'songs') {
+          libItems = libItems.filter(item => item.type !== 'podcast');
+        } else if (currentLibraryFilter === 'podcast') {
+          libItems = libItems.filter(item => item.type === 'podcast');
+        }
+      }
+
       const emptyEl = document.getElementById('libraryEmptyState');
       const gridEl = document.getElementById('librarySongsGrid');
       const listEl = document.getElementById('libraryTracksList');
 
-      if (libSongs.length === 0) {
+      if (libItems.length === 0) {
         emptyEl.classList.remove('hidden');
         gridEl.classList.add('hidden');
         listEl.classList.add('hidden');
@@ -1429,36 +2241,46 @@
       gridEl.classList.remove('hidden');
       listEl.classList.remove('hidden');
 
-      gridEl.innerHTML = libSongs.map(song => {
-        const isCurrent = currentTrack && currentTrack.id === song.id;
+      gridEl.innerHTML = libItems.map(item => {
+        const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(item);
+        const isOffline = isTrackSavedOffline(item);
+        const inLib = isTrackInLibrary(item);
         return `
           <div class="glass-card rounded-3xl p-3.5 flex flex-col justify-between group cursor-pointer"
-               onclick="playTrackById('${song.id}')">
+               onclick="playTrackById('${item.id}')">
             <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
-                 style="background: ${song.gradient}">
-              <i class="fa-solid fa-music text-3xl text-white/90"></i>
+                 style="background: ${item.gradient}">
+              <i class="fa-solid ${item.type === 'podcast' ? 'fa-podcast' : 'fa-music'} text-3xl text-white/90"></i>
+              ${isOffline ? `
+                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/55 backdrop-blur-md text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[9px]"></i>オフライン
+                </span>
+              ` : ''}
               <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <div class="w-11 h-11 rounded-full apple-accent-btn flex items-center justify-center text-white">
                   <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'}"></i>
                 </div>
               </div>
             </div>
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0">
-                <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(song.title)}</h4>
-                <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(song.artist)}</p>
+            <div class="flex items-start justify-between gap-1.5">
+              <div class="min-w-0 flex-1">
+                <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(item.title)}</h4>
+                <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(item.artist)}</p>
               </div>
-              <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
-                      title="ライブラリから解除"
-                      class="w-7 h-7 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300 flex items-center justify-center shrink-0 hover:bg-rose-500/40">
-                <i class="fa-solid fa-check text-[11px]"></i>
-              </button>
+              <div class="flex items-center gap-1 shrink-0">
+                <button onclick="event.stopPropagation(); toggleSongLibrary('${item.id}')"
+                        title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
+                        class="w-7 h-7 rounded-full ${inLib ? 'bg-rose-500/20 border border-rose-400/30 text-rose-300' : 'glass-pill-btn text-white/70'} flex items-center justify-center shrink-0">
+                  <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
+                </button>
+                ${renderOfflineButtonHtml(item, true)}
+              </div>
             </div>
           </div>
         `;
       }).join('');
 
-      listEl.innerHTML = libSongs.map((song, idx) => renderTrackRowHtml(song, idx + 1, true)).join('');
+      listEl.innerHTML = libItems.map((item, idx) => renderTrackRowHtml(item, idx + 1, true)).join('');
     }
 
     // --- 検索画面のレンダリング (曲名で検索) ---
@@ -1500,22 +2322,28 @@
         clearBtn.classList.toggle('hidden', trimmed.length === 0);
       }
 
-      let pool = [...songs];
+      const poolMap = new Map();
+      songs.forEach(s => poolMap.set(getTrackStableKey(s), s));
       Object.values(podcastEpisodesByFeed).forEach(epList => {
         if (Array.isArray(epList)) {
-          pool = pool.concat(epList);
+          epList.forEach(ep => poolMap.set(getTrackStableKey(ep), ep));
         }
       });
+      getCombinedLibraryItems().forEach(item => {
+        const k = getTrackStableKey(item);
+        if (!poolMap.has(k)) poolMap.set(k, item);
+      });
+
+      let pool = Array.from(poolMap.values());
 
       if (currentSearchFilter === 'songs') {
         pool = pool.filter(item => item.type !== 'podcast');
       } else if (currentSearchFilter === 'library') {
-        pool = pool.filter(item => item.inLibrary);
+        pool = pool.filter(item => isTrackInLibrary(item) || isTrackSavedOffline(item));
       } else if (currentSearchFilter === 'podcast') {
         pool = pool.filter(item => item.type === 'podcast');
       }
 
-      // 曲名で一致検索
       if (trimmed.length > 0) {
         pool = pool.filter(item => item.title.toLowerCase().includes(trimmed));
       }
@@ -1544,7 +2372,7 @@
     }
 
     /*************************************************************************
-     * 7. ポッドキャスト RSS 取得 & 再生処理 (マルチプロキシ対応)
+     * 8. ポッドキャスト RSS 取得 & 再生・オフライン保存処理
      *************************************************************************/
     function renderPodcastShowsGrid() {
       const grid = document.getElementById('podcastShowsGrid');
@@ -1608,9 +2436,11 @@
         const rawDate = item.querySelector('pubDate')?.textContent?.trim() || '';
         const pubDate = rawDate ? rawDate.slice(0, 16) : '';
         const desc = stripHtmlTags(item.querySelector('description')?.textContent || '');
+        const sKey = getTrackStableKey(title, 'podcast');
 
         return {
           id: `${show.id}-ep-${idx}`,
+          stableKey: sKey,
           title: title,
           artist: show.name,
           pubDate: pubDate,
@@ -1618,7 +2448,7 @@
           audioUrl: audioUrl,
           urlCandidates: [audioUrl],
           type: 'podcast',
-          inLibrary: false,
+          inLibrary: Boolean(savedLibraryMap[sKey]),
           gradient: show.coverGradient,
           orbColors: show.orbColors || ['#1db954', '#00b4d8', '#095228', '#7209b7']
         };
@@ -1641,7 +2471,7 @@
       // 1. rss2json API
       try {
         const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(show.rssUrl)}`;
-        const res = await fetch(apiUrl);
+        const res = await fetch(apiUrl, { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
@@ -1651,16 +2481,19 @@
             parsedEpisodes = data.items.map((item, idx) => {
               let audioLink = (item.enclosure && item.enclosure.link) || item.link || '';
               audioLink = audioLink.replace(/&amp;/g, '&').trim();
+              const title = item.title || `Episode ${idx + 1}`;
+              const sKey = getTrackStableKey(title, 'podcast');
               return {
                 id: `${show.id}-ep-${idx}`,
-                title: item.title || `Episode ${idx + 1}`,
+                stableKey: sKey,
+                title: title,
                 artist: show.name,
                 pubDate: item.pubDate ? item.pubDate.split(' ')[0] : '',
                 description: stripHtmlTags(item.description || ''),
                 audioUrl: audioLink,
                 urlCandidates: [audioLink],
                 type: 'podcast',
-                inLibrary: false,
+                inLibrary: Boolean(savedLibraryMap[sKey]),
                 gradient: show.coverGradient,
                 orbColors: show.orbColors || ['#1db954', '#00b4d8', '#095228', '#7209b7']
               };
@@ -1673,7 +2506,7 @@
       if (parsedEpisodes.length === 0) {
         try {
           const rawUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(rawUrl);
+          const res = await fetch(rawUrl, { cache: 'no-store' });
           if (res.ok) {
             const xmlText = await res.text();
             parsedEpisodes = parsePodcastXmlString(xmlText, show);
@@ -1685,7 +2518,7 @@
       if (parsedEpisodes.length === 0) {
         try {
           const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(proxyUrl);
+          const res = await fetch(proxyUrl, { cache: 'no-store' });
           if (res.ok) {
             const xmlText = await res.text();
             parsedEpisodes = parsePodcastXmlString(xmlText, show);
@@ -1697,7 +2530,7 @@
       if (parsedEpisodes.length === 0) {
         try {
           const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(proxyUrl);
+          const res = await fetch(proxyUrl, { cache: 'no-store' });
           if (res.ok) {
             const xmlText = await res.text();
             parsedEpisodes = parsePodcastXmlString(xmlText, show);
@@ -1705,10 +2538,24 @@
         } catch (e) {}
       }
 
+      // 5. オフライン時に保存済みのポッドキャストエピソードがあれば復元
+      if (parsedEpisodes.length === 0) {
+        const offlineEps = [];
+        offlineBlobUrlMap.forEach((entry) => {
+          if (entry?.trackMeta && entry.trackMeta.type === 'podcast') {
+            offlineEps.push(entry.trackMeta);
+          }
+        });
+        if (offlineEps.length > 0) {
+          parsedEpisodes = offlineEps;
+        }
+      }
+
       statusEl.textContent = '';
       podcastEpisodesByFeed[show.id] = parsedEpisodes;
       renderPodcastShowsGrid();
       renderActivePodcastEpisodes();
+      renderAllViews();
     }
 
     function renderActivePodcastEpisodes() {
@@ -1728,19 +2575,25 @@
     }
 
     function renderPodcastEpisodeRowHtml(ep, num) {
-      const isCurrent = currentTrack && currentTrack.id === ep.id;
+      const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(ep);
+      const inLib = isTrackInLibrary(ep);
+      const isOffline = isTrackSavedOffline(ep);
+      const offlineEntry = offlineBlobUrlMap.get(getTrackStableKey(ep));
+      const sizeStr = offlineEntry ? formatBytes(offlineEntry.size) : '';
+
       return `
         <div onclick="playPodcastEpisode('${ep.id}')"
-             class="flex items-center justify-between gap-4 px-5 py-4 hover:bg-white/[0.07] transition-colors cursor-pointer ${isCurrent ? 'bg-white/[0.09]' : ''}">
+             class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 hover:bg-white/[0.07] transition-colors cursor-pointer ${isCurrent ? 'bg-white/[0.09]' : ''}">
           <div class="flex items-start gap-3.5 min-w-0 flex-1">
             <div class="w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center shadow border border-white/20 mt-0.5"
                  style="background: ${ep.gradient}">
               <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-podcast'} text-white text-sm"></i>
             </div>
             <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
                 <span class="text-[10px] font-mono text-emerald-300/90 bg-emerald-500/15 px-2 py-0.5 rounded-full">EP.${num}</span>
                 ${ep.pubDate ? `<span class="text-[10px] text-white/45">${escapeHtml(ep.pubDate)}</span>` : ''}
+                ${isOffline ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-semibold">オフライン可 ${sizeStr}</span>` : ''}
               </div>
               <h4 class="text-xs sm:text-sm font-bold ${isCurrent ? 'text-emerald-300' : 'text-white'} truncate mt-1">
                 ${escapeHtml(ep.title)}
@@ -1751,10 +2604,19 @@
             </div>
           </div>
 
-          <button class="apple-accent-btn px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0">
-            <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play'} text-[10px]"></i>
-            <span>${isCurrent && isPlaying ? '再生中' : '再生'}</span>
-          </button>
+          <div class="flex items-center justify-end gap-2 shrink-0">
+            <button onclick="event.stopPropagation(); toggleSongLibrary('${ep.id}')"
+                    title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
+                    class="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 ${inLib ? 'bg-rose-500/20 text-rose-300 border border-rose-400/30' : 'glass-pill-btn text-white/80'}">
+              <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
+              <span class="hidden md:inline">${inLib ? '追加済み' : 'ライブラリ'}</span>
+            </button>
+            ${renderOfflineButtonHtml(ep, false)}
+            <button class="apple-accent-btn px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0">
+              <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play'} text-[10px]"></i>
+              <span>${isCurrent && isPlaying ? '再生中' : '再生'}</span>
+            </button>
+          </div>
         </div>
       `;
     }
@@ -1767,7 +2629,7 @@
     }
 
     /*************************************************************************
-     * 8. オーディオプレイヤー制御 (確実な音声出力とURL自動フォールバック)
+     * 9. オーディオプレイヤー制御 (オフラインBlob最優先 + URL自動フォールバック)
      *************************************************************************/
     function findTrackAnywhere(trackId) {
       let found = songs.find(s => s.id === trackId);
@@ -1776,6 +2638,9 @@
         found = epList.find(ep => ep.id === trackId);
         if (found) return found;
       }
+      const libItems = getCombinedLibraryItems();
+      found = libItems.find(item => item.id === trackId);
+      if (found) return found;
       return null;
     }
 
@@ -1783,13 +2648,22 @@
       const track = findTrackAnywhere(trackId);
       if (!track) return;
 
-      if (currentTrack && currentTrack.id === track.id) {
+      if (currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(track)) {
         togglePlayPause();
         return;
       }
 
-      currentQueue = [...songs];
-      currentIndex = currentQueue.findIndex(s => s.id === track.id);
+      if (track.type === 'podcast') {
+        playPodcastEpisode(track.id);
+        return;
+      }
+
+      currentQueue = songs.length > 0 ? [...songs] : getCombinedLibraryItems();
+      currentIndex = currentQueue.findIndex(s => getTrackStableKey(s) === getTrackStableKey(track));
+      if (currentIndex === -1) {
+        currentQueue.unshift(track);
+        currentIndex = 0;
+      }
       loadAndPlayTrack(track);
     }
 
@@ -1797,22 +2671,47 @@
       const ep = findTrackAnywhere(episodeId);
       if (!ep) return;
 
-      if (currentTrack && currentTrack.id === ep.id) {
+      if (currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(ep)) {
         togglePlayPause();
         return;
       }
 
       const feedEpisodes = podcastEpisodesByFeed[activePodcastFeedId] || [ep];
-      currentQueue = [...feedEpisodes];
-      currentIndex = currentQueue.findIndex(item => item.id === ep.id);
+      currentQueue = feedEpisodes.length > 0 ? [...feedEpisodes] : [ep];
+      currentIndex = currentQueue.findIndex(item => getTrackStableKey(item) === getTrackStableKey(ep));
+      if (currentIndex === -1) {
+        currentQueue.unshift(ep);
+        currentIndex = 0;
+      }
       loadAndPlayTrack(ep);
+    }
+
+    function getEffectivePlaybackCandidates(track) {
+      const list = [];
+      const sKey = getTrackStableKey(track);
+
+      // 1. オフライン保存済みの場合はローカル IndexedDB の Blob URL を最優先で使用
+      const offlineEntry = offlineBlobUrlMap.get(sKey);
+      if (offlineEntry && offlineEntry.blobUrl) {
+        list.push(offlineEntry.blobUrl);
+      }
+
+      // 2. ネットワークURL候補
+      if (Array.isArray(track.urlCandidates)) {
+        track.urlCandidates.forEach(u => {
+          if (u && !list.includes(u)) list.push(u);
+        });
+      }
+      if (track.audioUrl && !list.includes(track.audioUrl)) {
+        list.push(track.audioUrl);
+      }
+      return list;
     }
 
     function loadAndPlayTrack(track) {
       currentTrack = track;
       currentUrlCandidateIndex = 0;
 
-      // ミュート解除とボリューム設定を確実に行う
       audioPlayer.muted = false;
       const volSlider = document.getElementById('volumeSlider');
       if (volSlider && parseFloat(volSlider.value) > 0) {
@@ -1822,7 +2721,6 @@
       }
       updateVolumeIcon();
 
-      // 背景オーブのカラー更新
       if (track.orbColors && track.orbColors.length >= 4) {
         document.documentElement.style.setProperty('--orb-1', track.orbColors[0]);
         document.documentElement.style.setProperty('--orb-2', track.orbColors[1]);
@@ -1835,9 +2733,7 @@
 
     function tryPlayCurrentCandidate() {
       if (!currentTrack) return;
-      const candidates = (currentTrack.urlCandidates && currentTrack.urlCandidates.length > 0)
-        ? currentTrack.urlCandidates
-        : [currentTrack.audioUrl];
+      const candidates = getEffectivePlaybackCandidates(currentTrack);
 
       if (currentUrlCandidateIndex >= candidates.length) {
         isPlaying = false;
@@ -1878,6 +2774,9 @@
       if (!currentTrack) {
         if (songs.length > 0) {
           playTrackById(songs[0].id);
+        } else {
+          const libItems = getCombinedLibraryItems();
+          if (libItems.length > 0) playTrackById(libItems[0].id);
         }
         return;
       }
@@ -1907,7 +2806,7 @@
     }
 
     function prevTrack() {
-      if (currentQueue.length === 0) currentQueue = [...songs];
+      if (currentQueue.length === 0) currentQueue = songs.length > 0 ? [...songs] : getCombinedLibraryItems();
       if (currentQueue.length === 0) return;
 
       if (audioPlayer.currentTime > 3) {
@@ -1920,7 +2819,7 @@
     }
 
     function nextTrack() {
-      if (currentQueue.length === 0) currentQueue = [...songs];
+      if (currentQueue.length === 0) currentQueue = songs.length > 0 ? [...songs] : getCombinedLibraryItems();
       if (currentQueue.length === 0) return;
 
       if (isShuffle) {
@@ -1941,9 +2840,17 @@
     }
 
     function playLibraryTracks(shuffle = false) {
-      const libTracks = songs.filter(s => s.inLibrary);
+      let libTracks = getCombinedLibraryItems().filter(item => item.inLibrary || isTrackSavedOffline(item));
+      if (currentLibraryFilter === 'offline') {
+        libTracks = libTracks.filter(item => isTrackSavedOffline(item));
+      } else if (currentLibraryFilter === 'songs') {
+        libTracks = libTracks.filter(item => item.type !== 'podcast');
+      } else if (currentLibraryFilter === 'podcast') {
+        libTracks = libTracks.filter(item => item.type === 'podcast');
+      }
+
       if (libTracks.length === 0) {
-        showToast('ライブラリに曲がありません。「＋」ボタンで曲を追加してください。', 'fa-layer-group');
+        showToast('再生できるライブラリ曲がありません。「＋」ボタンで曲を追加してください。', 'fa-layer-group');
         return;
       }
       isShuffle = shuffle;
@@ -1965,37 +2872,40 @@
       }
     }
 
-    function toggleSongLibrary(songId) {
-      const song = songs.find(s => s.id === songId);
-      if (!song) return;
+    function toggleSongLibrary(trackId) {
+      const track = findTrackAnywhere(trackId);
+      if (!track) return;
 
-      song.inLibrary = !song.inLibrary;
-      saveLibrarySet();
+      const nextState = !isTrackInLibrary(track);
+      setTrackLibraryState(track, nextState);
 
       showToast(
-        song.inLibrary
-          ? `「${song.title}」をライブラリに追加しました`
-          : `「${song.title}」をライブラリから解除しました`,
-        song.inLibrary ? 'fa-heart' : 'fa-circle-minus'
+        nextState
+          ? `「${track.title}」をライブラリに追加しました`
+          : `「${track.title}」をライブラリから解除しました`,
+        nextState ? 'fa-heart' : 'fa-circle-minus'
       );
 
       updatePlayerUI();
       renderAllViews();
+      if (currentTab === 'podcast') renderActivePodcastEpisodes();
     }
 
     function toggleCurrentTrackLibrary() {
       if (!currentTrack) return;
-      const existing = songs.find(s => s.id === currentTrack.id);
-      if (!existing) {
-        currentTrack.inLibrary = true;
-        songs.unshift(currentTrack);
-        saveLibrarySet();
-        showToast(`「${currentTrack.title}」をライブラリに追加しました`, 'fa-heart');
-        updatePlayerUI();
-        renderAllViews();
-        return;
-      }
-      toggleSongLibrary(currentTrack.id);
+      const nextState = !isTrackInLibrary(currentTrack);
+      setTrackLibraryState(currentTrack, nextState);
+
+      showToast(
+        nextState
+          ? `「${currentTrack.title}」をライブラリに追加しました`
+          : `「${currentTrack.title}」をライブラリから解除しました`,
+        nextState ? 'fa-heart' : 'fa-circle-minus'
+      );
+
+      updatePlayerUI();
+      renderAllViews();
+      if (currentTab === 'podcast') renderActivePodcastEpisodes();
     }
 
     function toggleShuffle() {
@@ -2067,16 +2977,44 @@
 
       if (!currentTrack) return;
 
+      const inLib = isTrackInLibrary(currentTrack);
+      const isOffline = isTrackSavedOffline(currentTrack);
+      const isDownloading = isTrackDownloadingOffline(currentTrack);
+
       document.getElementById('miniPlayerTitle').textContent = currentTrack.title;
-      document.getElementById('miniPlayerArtist').textContent = currentTrack.artist;
+      document.getElementById('miniPlayerArtist').textContent =
+        isOffline ? `${currentTrack.artist} • オフライン再生対応` : currentTrack.artist;
       document.getElementById('miniPlayerArt').style.background = currentTrack.gradient;
 
-      const libIconHtml = `<i class="fa-solid ${currentTrack.inLibrary ? 'fa-check text-rose-400' : 'fa-plus'} text-xs"></i>`;
-      document.getElementById('miniPlayerLibBtn').innerHTML = libIconHtml;
-      document.getElementById('fsPlayerLibBtn').innerHTML = `<i class="fa-solid ${currentTrack.inLibrary ? 'fa-check text-rose-400' : 'fa-plus'}"></i>`;
+      document.getElementById('miniPlayerLibBtn').innerHTML =
+        `<i class="fa-solid ${inLib ? 'fa-check text-rose-400' : 'fa-plus'} text-xs"></i>`;
+      document.getElementById('fsPlayerLibBtn').innerHTML =
+        `<i class="fa-solid ${inLib ? 'fa-check text-rose-400' : 'fa-plus'}"></i>`;
+
+      const miniOffBtn = document.getElementById('miniPlayerOfflineBtn');
+      const fsOffBtn = document.getElementById('fsPlayerOfflineBtn');
+      if (miniOffBtn) {
+        if (isDownloading) {
+          miniOffBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-300 text-xs"></i>`;
+        } else if (isOffline) {
+          miniOffBtn.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-300 text-xs"></i>`;
+        } else {
+          miniOffBtn.innerHTML = `<i class="fa-solid fa-arrow-down text-xs"></i>`;
+        }
+      }
+      if (fsOffBtn) {
+        if (isDownloading) {
+          fsOffBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-300"></i>`;
+        } else if (isOffline) {
+          fsOffBtn.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-300"></i>`;
+        } else {
+          fsOffBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
+        }
+      }
 
       document.getElementById('fsPlayerTitle').textContent = currentTrack.title;
-      document.getElementById('fsPlayerArtist').textContent = currentTrack.artist;
+      document.getElementById('fsPlayerArtist').textContent =
+        isOffline ? `${currentTrack.artist} • オフライン保存済み` : currentTrack.artist;
       document.getElementById('fsPlayerArt').style.background = currentTrack.gradient;
     }
 
@@ -2271,14 +3209,18 @@
     /*************************************************************************
      * 12. 初期化
      *************************************************************************/
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. 永続化されたライブラリ情報と IndexedDB オフライン音源を最初に復元
+      loadLibraryStore();
+      await loadAllOfflineTracksFromIDB();
+
       renderAllViews();
       startVisualizerLoop();
 
-      // index.html と同じフォルダにある .mp3 を自動検出して曲リストへ追加
-      autoDiscoverMp3FilesInSameFolder();
+      // 2. GitHub の index.html と同じフォルダにある .mp3 を自動検出して曲リストへ追加
+      await autoDiscoverMp3FilesInSameFolder(false);
 
-      // ポッドキャスト RSS をバックグラウンド取得
+      // 3. ポッドキャスト RSS をバックグラウンド取得
       if (podcastShows.length > 0) {
         fetchPodcastRssFeed(podcastShows[0]);
       }
