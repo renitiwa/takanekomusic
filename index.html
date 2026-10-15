@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Takaneko music</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Noto Sans JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'Noto Sans JP', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            appleRed: '#FA2D48',
+            applePink: '#FF375F',
+            appleCyan: '#5AC8FA',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --orb-1: #ff2a5f;
+      --orb-2: #7928ca;
+      --orb-3: #00d2ff;
+      --orb-4: #ff7b00;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #07080f;
+      color: #ffffff;
+      font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ==========================================
+       Translucent Glass Background Orbs
+       ========================================== */
+    .glass-bg-container {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, #131629 0%, #06070c 100%);
+      pointer-events: none;
+    }
+
+    .glass-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(85px);
+      opacity: 0.52;
+      mix-blend-mode: screen;
+      transition: background 1.8s cubic-bezier(0.22, 1, 0.36, 1), transform 1.8s ease;
+      will-change: transform, background;
+    }
+
+    .orb-1 {
+      width: 55vw;
+      height: 55vw;
+      max-width: 720px;
+      max-height: 720px;
+      top: -15%;
+      left: -10%;
+      background: radial-gradient(circle, var(--orb-1), transparent 70%);
+      animation: floatOrb1 22s ease-in-out infinite alternate;
+    }
+
+    .orb-2 {
+      width: 50vw;
+      height: 50vw;
+      max-width: 650px;
+      max-height: 650px;
+      bottom: -18%;
+      right: -10%;
+      background: radial-gradient(circle, var(--orb-2), transparent 70%);
+      animation: floatOrb2 26s ease-in-out infinite alternate;
+    }
+
+    .orb-3 {
+      width: 42vw;
+      height: 42vw;
+      max-width: 540px;
+      max-height: 540px;
+      top: 30%;
+      left: 38%;
+      background: radial-gradient(circle, var(--orb-3), transparent 70%);
+      animation: floatOrb3 19s ease-in-out infinite alternate;
+    }
+
+    .orb-4 {
+      width: 34vw;
+      height: 34vw;
+      max-width: 440px;
+      max-height: 440px;
+      bottom: 12%;
+      left: 12%;
+      background: radial-gradient(circle, var(--orb-4), transparent 70%);
+      animation: floatOrb4 24s ease-in-out infinite alternate;
+      opacity: 0.36;
+    }
+
+    @keyframes floatOrb1 {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      50% { transform: translate(8vw, 6vh) scale(1.12) rotate(12deg); }
+      100% { transform: translate(-4vw, 12vh) scale(0.94) rotate(-8deg); }
+    }
+    @keyframes floatOrb2 {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-10vw, -8vh) scale(1.15); }
+      100% { transform: translate(5vw, -12vh) scale(0.92); }
+    }
+    @keyframes floatOrb3 {
+      0% { transform: translate(0, 0) scale(0.95); }
+      50% { transform: translate(-7vw, 9vh) scale(1.1); }
+      100% { transform: translate(9vw, -6vh) scale(1.03); }
+    }
+    @keyframes floatOrb4 {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(12vw, -10vh) scale(1.18); }
+    }
+
+    .glass-noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: radial-gradient(rgba(255,255,255,0.8) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* ==========================================
+       Glass Surfaces & Components
+       ========================================== */
+    .glass-surface {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.04) 100%);
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 16px 40px -8px rgba(0, 0, 0, 0.45),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
+        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-surface-heavy {
+      background: linear-gradient(145deg, rgba(28, 30, 46, 0.72) 0%, rgba(14, 15, 26, 0.82) 100%);
+      backdrop-filter: blur(36px) saturate(200%);
+      -webkit-backdrop-filter: blur(36px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.65),
+        inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.32),
+        inset 0 -1px 2px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .glass-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 100%);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow:
+        0 10px 30px -5px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.22);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .glass-card:hover {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 100%);
+      border-color: rgba(255, 255, 255, 0.28);
+      transform: translateY(-3px) scale(1.01);
+      box-shadow:
+        0 18px 40px -6px rgba(0, 0, 0, 0.5),
+        inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .glass-pill-btn {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 100%);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .glass-pill-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.10) 100%);
+      border-color: rgba(255, 255, 255, 0.36);
+      transform: scale(1.03);
+    }
+
+    .glass-pill-btn:active {
+      transform: scale(0.97);
+    }
+
+    .apple-accent-btn {
+      background: linear-gradient(135deg, #FA2D48 0%, #FF375F 50%, #D91B5C 100%);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-shadow:
+        0 8px 25px -4px rgba(250, 45, 72, 0.55),
+        inset 0 1px 1px rgba(255, 255, 255, 0.45);
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .apple-accent-btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px) scale(1.02);
+      box-shadow:
+        0 12px 30px -3px rgba(250, 45, 72, 0.7),
+        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+    }
+
+    /* Navigation Active State */
+    .nav-item {
+      transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      border: 1px solid transparent;
+    }
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(250, 45, 72, 0.28) 0%, rgba(255, 55, 95, 0.12) 100%);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 6px 20px -4px rgba(250, 45, 72, 0.32),
+        inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+    }
+    .nav-item.active .nav-icon {
+      color: #FA2D48;
+      filter: drop-shadow(0 0 8px rgba(250, 45, 72, 0.6));
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Custom Range Sliders (Seek & Volume) */
+    input[type="range"].apple-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"].apple-slider::-webkit-slider-runnable-track {
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    input[type="range"].apple-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      margin-top: -3.5px;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    input[type="range"].apple-slider:hover::-webkit-slider-thumb {
+      transform: scale(1.35);
+      background: #FA2D48;
+    }
+
+    /* Playing Equalizer Bars Icon */
+    .eq-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 14px;
+      width: 14px;
+    }
+    .eq-bar {
+      width: 3px;
+      background: #FA2D48;
+      border-radius: 2px;
+      animation: eqBounce 0.8s ease-in-out infinite alternate;
+    }
+    .eq-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
+    .eq-bar:nth-child(2) { height: 100%; animation-delay: 0.2s; }
+    .eq-bar:nth-child(3) { height: 65%; animation-delay: 0.4s; }
+    @keyframes eqBounce {
+      0% { height: 25%; }
+      100% { height: 100%; }
+    }
+  </style>
+</head>
+<body class="h-screen w-screen overflow-hidden select-none">
+
+  <!-- =========================================================
+       DYNAMIC GLASS BACKGROUND ORBS
+       ========================================================= -->
+  <div class="glass-bg-container">
+    <div class="glass-orb orb-1"></div>
+    <div class="glass-orb orb-2"></div>
+    <div class="glass-orb orb-3"></div>
+    <div class="glass-orb orb-4"></div>
+  </div>
+  <div class="glass-noise"></div>
+
+  <!-- =========================================================
+       MAIN APPLICATION LAYOUT
+       ========================================================= -->
+  <div class="relative z-10 flex h-full w-full p-0 md:p-3 gap-3">
+
+    <!-- =======================================================
+         LEFT SIDEBAR (Desktop Navigation)
+         ======================================================= -->
+    <aside class="hidden md:flex flex-col w-64 lg:w-72 h-full glass-surface rounded-3xl p-5 shrink-0 justify-between">
+      <div>
+        <!-- Brand Logo: Takaneko music with takaneko.png -->
+        <div class="flex items-center gap-3 px-2 py-2 mb-6 cursor-pointer group" onclick="switchTab('home')">
+          <img
+            src="takaneko.png"
+            alt="Takaneko music"
+            class="w-10 h-10 rounded-2xl object-cover shadow-lg border border-white/25 group-hover:scale-105 transition-transform bg-rose-500/20 shrink-0"
+            onerror="this.onerror=null; this.src='https://placehold.co/80x80/FA2D48/ffffff?text=T';"
+          />
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5">
+              <span class="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-pink-200">
+                Takaneko
+              </span>
+              <span class="font-medium text-xl tracking-tight text-rose-400">music</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary 4 Tabs -->
+        <div class="space-y-1.5">
+          <button onclick="switchTab('home')" id="nav-desktop-home" class="nav-item active w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80">
+            <i class="fa-solid fa-house nav-icon text-base w-5 text-center"></i>
+            <span>ホーム</span>
+          </button>
+
+          <button onclick="switchTab('podcast')" id="nav-desktop-podcast" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80">
+            <i class="fa-solid fa-podcast nav-icon text-base w-5 text-center"></i>
+            <span>ポッドキャスト</span>
+          </button>
+
+          <button onclick="switchTab('library')" id="nav-desktop-library" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80 justify-between">
+            <div class="flex items-center gap-3.5">
+              <i class="fa-solid fa-layer-group nav-icon text-base w-5 text-center"></i>
+              <span>ライブラリ</span>
+            </div>
+            <span id="sidebarLibraryCount" class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-white/75 font-semibold">0</span>
+          </button>
+
+          <button onclick="switchTab('search')" id="nav-desktop-search" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80">
+            <i class="fa-solid fa-magnifying-glass nav-icon text-base w-5 text-center"></i>
+            <span>検索</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Subtle Footer Brand Note -->
+      <div class="px-3 py-2 text-[11px] text-white/35 font-medium">
+        Takaneko music
+      </div>
+    </aside>
+
+    <!-- =======================================================
+         MAIN CONTENT VIEWPORT
+         ======================================================= -->
+    <main class="flex-1 h-full glass-surface md:rounded-3xl flex flex-col overflow-hidden relative">
+
+      <!-- Top Translucent Glass Header -->
+      <header class="sticky top-0 z-20 px-5 md:px-8 py-3.5 flex items-center justify-between border-b border-white/10 bg-white/[0.02] backdrop-blur-xl">
+        <!-- Mobile Logo / Desktop Current Tab Title -->
+        <div class="flex items-center gap-3">
+          <div class="flex md:hidden items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
+            <img
+              src="takaneko.png"
+              alt="Takaneko music"
+              class="w-8 h-8 rounded-xl object-cover shadow border border-white/25 bg-rose-500/20 shrink-0"
+              onerror="this.onerror=null; this.src='https://placehold.co/64x64/FA2D48/ffffff?text=T';"
+            />
+            <span class="font-extrabold text-base tracking-tight">Takaneko <span class="text-rose-400 font-medium">music</span></span>
+          </div>
+          <div class="hidden md:flex items-center gap-3">
+            <h1 id="headerTabTitle" class="text-xl font-bold tracking-tight text-white">ホーム</h1>
+          </div>
+        </div>
+
+        <!-- Right Quick Search Input -->
+        <div class="flex items-center gap-2.5">
+          <div class="flex items-center glass-pill-btn rounded-full px-3.5 py-1.5 gap-2 w-48 sm:w-64 focus-within:ring-2 focus-within:ring-rose-500/50">
+            <i class="fa-solid fa-magnifying-glass text-white/50 text-xs"></i>
+            <input
+              id="headerQuickSearch"
+              type="text"
+              placeholder="曲名で検索..."
+              oninput="handleQuickSearchInput(this.value)"
+              class="bg-transparent border-none outline-none text-xs text-white placeholder-white/45 w-full"
+            />
+          </div>
+        </div>
+      </header>
+
+      <!-- Scrollable Tab Content Container -->
+      <div id="mainScrollArea" class="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 pt-6 pb-44 space-y-8">
+
+        <!-- ===================================================
+             TAB 1: ホーム (HOME - Featured Songs)
+             =================================================== -->
+        <section id="tab-home" class="space-y-8">
+          <!-- Apple Music Style Top Hero Banner -->
+          <div id="heroFeaturedCard" class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden flex flex-col justify-between min-h-[240px] group">
+            <div id="heroFeaturedBg" class="absolute inset-0 opacity-35 bg-gradient-to-br from-rose-500 via-purple-600 to-cyan-500 transition-all duration-700 group-hover:scale-105 pointer-events-none"></div>
+            <div class="relative z-10 flex items-start justify-between gap-4">
+              <div>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/15 backdrop-blur-md border border-white/25 text-white mb-3">
+                  <i class="fa-solid fa-star text-amber-300"></i>
+                  注目の曲
+                </span>
+                <h2 id="heroSongTitle" class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight line-clamp-2">
+                  Track Title
+                </h2>
+                <p id="heroSongArtist" class="text-sm sm:text-base text-white/75 mt-1 font-medium">
+                  Takaneko music
+                </p>
+              </div>
+              <div id="heroSongArt" class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl shadow-2xl border border-white/30 shrink-0 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-rose-500 to-indigo-600">
+                <i class="fa-solid fa-music text-3xl text-white/90"></i>
+              </div>
+            </div>
+
+            <div class="relative z-10 flex flex-wrap items-center gap-3 mt-6">
+              <button id="heroPlayBtn" onclick="playFeaturedHero()" class="apple-accent-btn px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2.5 shadow-xl">
+                <i class="fa-solid fa-play text-xs"></i>
+                <span>再生</span>
+              </button>
+              <button id="heroAddLibBtn" onclick="toggleHeroLibrary()" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 text-white">
+                <i class="fa-solid fa-plus"></i>
+                <span>ライブラリに追加</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Section: 注目の曲 (Featured Grid) -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2">
+                  <span>注目のアップロードされた曲</span>
+                  <span id="featuredUploadsCount" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300">0</span>
+                </h2>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="playAllSongs(false)" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                  <i class="fa-solid fa-play text-[10px] text-rose-400"></i>
+                  <span>すべて再生</span>
+                </button>
+                <button onclick="playAllSongs(true)" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                  <i class="fa-solid fa-shuffle text-[10px] text-cyan-400"></i>
+                  <span>シャッフル</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Featured Cards Grid -->
+            <div id="featuredSongsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Section: すべての曲一覧 (List View) -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h2 class="text-lg font-bold tracking-tight">曲一覧</h2>
+            </div>
+            <div id="homeTrackList" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             TAB 2: ポッドキャスト (PODCAST - RSS Feeds)
+             =================================================== -->
+        <section id="tab-podcast" class="hidden space-y-6">
+          <!-- Podcast Shows Selector -->
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">ポッドキャスト</h2>
+                <p class="text-xs text-white/55 mt-0.5">番組を選択してエピソードを再生</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span id="podcastStatusText" class="text-xs text-emerald-300/80"></span>
+                <button onclick="refreshAllPodcastFeeds()" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
+                  <i class="fa-solid fa-rotate text-[11px]"></i>
+                  <span>更新</span>
+                </button>
+              </div>
+            </div>
+            <div id="podcastShowsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Populated by JS from PODCAST_RSS_FEEDS -->
+            </div>
+          </div>
+
+          <!-- Active Podcast Show Details & Episodes List -->
+          <div id="podcastEpisodesSection" class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 id="activePodcastTitle" class="text-lg font-bold">エピソード一覧</h3>
+              </div>
+              <span id="activePodcastEpisodeCount" class="text-xs px-3 py-1 rounded-full bg-white/10 text-white/75 font-semibold">0 エピソード</span>
+            </div>
+
+            <div id="podcastEpisodesList" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
+              <!-- Episodes populated by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             TAB 3: ライブラリ (LIBRARY - User's Added Tracks)
+             =================================================== -->
+        <section id="tab-library" class="hidden space-y-6">
+          <div class="glass-card rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold tracking-tight">ライブラリ</h2>
+              <p class="text-xs sm:text-sm text-white/65 mt-1">
+                ライブラリに追加した曲をいつでも再生できます。
+              </p>
+            </div>
+            <div class="flex items-center gap-2.5 shrink-0">
+              <button onclick="playLibraryTracks(false)" class="apple-accent-btn px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2">
+                <i class="fa-solid fa-play"></i>
+                <span>再生</span>
+              </button>
+              <button onclick="playLibraryTracks(true)" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-shuffle text-cyan-400"></i>
+                <span>シャッフル</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Library Empty State -->
+          <div id="libraryEmptyState" class="hidden glass-card rounded-3xl p-12 text-center space-y-4">
+            <div class="w-16 h-16 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center mx-auto text-white/50 text-2xl">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-white">ライブラリにまだ曲がありません</h3>
+              <p class="text-xs text-white/55 mt-1 max-w-md mx-auto">
+                ホームや検索画面にある曲の「＋」ボタンを押すと、ライブラリに追加してここから聴けるようになります。
+              </p>
+            </div>
+            <div class="flex justify-center pt-2">
+              <button onclick="switchTab('home')" class="apple-accent-btn px-5 py-2 rounded-full text-xs font-semibold">
+                ホームの曲を見る
+              </button>
+            </div>
+          </div>
+
+          <div id="librarySongsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <!-- Populated by JS -->
+          </div>
+
+          <div id="libraryTracksList" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- ===================================================
+             TAB 4: 検索 (SEARCH - Search by Song Title)
+             =================================================== -->
+        <section id="tab-search" class="hidden space-y-6">
+          <!-- Search Bar -->
+          <div class="glass-card rounded-3xl p-6 space-y-4">
+            <h2 class="text-2xl font-extrabold tracking-tight">検索</h2>
+            <div class="flex items-center glass-surface rounded-2xl px-4 py-3.5 gap-3 border border-white/25 focus-within:border-rose-400 transition-all">
+              <i class="fa-solid fa-magnifying-glass text-rose-400 text-base"></i>
+              <input
+                id="mainSearchInput"
+                type="text"
+                placeholder="曲名を入力して検索..."
+                oninput="renderSearchResults(this.value)"
+                class="bg-transparent border-none outline-none text-sm sm:text-base text-white placeholder-white/45 w-full font-medium"
+              />
+              <button id="clearSearchBtn" onclick="clearSearchInput()" class="hidden w-6 h-6 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs text-white/80">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <!-- Filter Pills -->
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <button onclick="setSearchFilter('all')" id="search-filter-all" class="glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white">
+                すべて
+              </button>
+              <button onclick="setSearchFilter('songs')" id="search-filter-songs" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
+                曲
+              </button>
+              <button onclick="setSearchFilter('library')" id="search-filter-library" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
+                ライブラリ追加済み
+              </button>
+              <button onclick="setSearchFilter('podcast')" id="search-filter-podcast" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
+                ポッドキャスト
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Results List -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 id="searchResultHeading" class="text-sm font-bold text-white/75">曲一覧</h3>
+              <span id="searchResultCount" class="text-xs text-white/50">0 件</span>
+            </div>
+            <div id="searchResultsContainer" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================
+       FLOATING PLAYER BAR (Apple Music Style)
+       ========================================================= -->
+  <div class="fixed bottom-16 md:bottom-5 left-2 right-2 md:left-72 lg:left-80 md:right-6 z-30 pointer-events-none flex justify-center">
+    <div class="w-full max-w-5xl glass-surface-heavy rounded-3xl p-2.5 sm:px-5 sm:py-3 pointer-events-auto shadow-2xl border border-white/25 transition-all">
+
+      <!-- Top Slim Interactive Seek Bar -->
+      <div class="flex items-center gap-2.5 px-1 mb-1.5">
+        <span id="playerCurrentTime" class="text-[10px] font-mono text-white/60 w-9 text-right">0:00</span>
+        <input
+          id="playerSeekBar"
+          type="range"
+          min="0"
+          max="100"
+          value="0"
+          step="0.1"
+          oninput="seekAudio(this.value)"
+          class="apple-slider flex-1 h-1.5"
+        />
+        <span id="playerRemainingTime" class="text-[10px] font-mono text-white/60 w-10">-0:00</span>
+      </div>
+
+      <div class="flex items-center justify-between gap-3">
+        <!-- Left: Now Playing Artwork & Song Title -->
+        <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer group" onclick="toggleFullscreenPlayer(true)">
+          <div id="miniPlayerArt" class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shrink-0 overflow-hidden shadow-lg border border-white/25 flex items-center justify-center bg-gradient-to-br from-rose-500 to-indigo-600 relative">
+            <i class="fa-solid fa-music text-white text-base"></i>
+            <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+              <i class="fa-solid fa-up-right-and-down-left-from-center text-white text-xs"></i>
+            </div>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2">
+              <p id="miniPlayerTitle" class="text-xs sm:text-sm font-bold text-white truncate">
+                曲を選択してください
+              </p>
+            </div>
+            <p id="miniPlayerArtist" class="text-[11px] text-white/60 truncate mt-0.5">
+              Takaneko music
+            </p>
+          </div>
+        </div>
+
+        <!-- Center: Playback Transport Controls -->
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <button onclick="toggleShuffle()" id="btnShuffle" title="シャッフル" class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white/60 hover:text-white transition-colors">
+            <i class="fa-solid fa-shuffle text-xs"></i>
+          </button>
+
+          <button onclick="prevTrack()" title="前の曲" class="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-transform active:scale-90">
+            <i class="fa-solid fa-backward-step text-sm sm:text-base"></i>
+          </button>
+
+          <button onclick="togglePlayPause()" id="btnPlayPause" title="再生 / 一時停止" class="w-11 h-11 rounded-full apple-accent-btn flex items-center justify-center text-white shadow-lg">
+            <i id="playPauseIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
+          </button>
+
+          <button onclick="nextTrack()" title="次の曲" class="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-transform active:scale-90">
+            <i class="fa-solid fa-forward-step text-sm sm:text-base"></i>
+          </button>
+
+          <button onclick="toggleRepeat()" id="btnRepeat" title="リピート" class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white/60 hover:text-white transition-colors">
+            <i class="fa-solid fa-repeat text-xs"></i>
+          </button>
+        </div>
+
+        <!-- Right: Library Add (+), Mini Visualizer, Volume & Expand -->
+        <div class="flex items-center justify-end gap-2.5 flex-1">
+          <button id="miniPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" title="ライブラリに追加/解除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+
+          <canvas id="miniVisualizerCanvas" width="60" height="24" class="hidden lg:block opacity-85"></canvas>
+
+          <div class="hidden md:flex items-center gap-2 w-28">
+            <button onclick="toggleMute()" class="text-white/65 hover:text-white text-xs w-4">
+              <i id="volumeIcon" class="fa-solid fa-volume-high"></i>
+            </button>
+            <input
+              id="volumeSlider"
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              value="0.85"
+              oninput="changeVolume(this.value)"
+              class="apple-slider w-full"
+            />
+          </div>
+
+          <button onclick="toggleFullscreenPlayer(true)" title="フルスクリーン表示" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
+            <i class="fa-solid fa-expand text-xs"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       MOBILE BOTTOM TAB BAR (4 Tabs)
+       ========================================================= -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 glass-surface-heavy border-t border-white/20 px-3 py-1.5 flex items-center justify-around">
+    <button onclick="switchTab('home')" id="nav-mobile-home" class="flex flex-col items-center py-1 px-3 rounded-xl text-rose-400">
+      <i class="fa-solid fa-house text-base"></i>
+      <span class="text-[10px] font-semibold mt-0.5">ホーム</span>
+    </button>
+    <button onclick="switchTab('podcast')" id="nav-mobile-podcast" class="flex flex-col items-center py-1 px-3 rounded-xl text-white/60">
+      <i class="fa-solid fa-podcast text-base"></i>
+      <span class="text-[10px] font-semibold mt-0.5">ポッドキャスト</span>
+    </button>
+    <button onclick="switchTab('library')" id="nav-mobile-library" class="flex flex-col items-center py-1 px-3 rounded-xl text-white/60">
+      <i class="fa-solid fa-layer-group text-base"></i>
+      <span class="text-[10px] font-semibold mt-0.5">ライブラリ</span>
+    </button>
+    <button onclick="switchTab('search')" id="nav-mobile-search" class="flex flex-col items-center py-1 px-3 rounded-xl text-white/60">
+      <i class="fa-solid fa-magnifying-glass text-base"></i>
+      <span class="text-[10px] font-semibold mt-0.5">検索</span>
+    </button>
+  </nav>
+
+  <!-- =========================================================
+       FULLSCREEN PLAYER MODAL
+       ========================================================= -->
+  <div id="fullscreenPlayerModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex flex-col justify-between p-6 sm:p-10 glass-surface-heavy">
+    <div class="flex items-center justify-between max-w-4xl w-full mx-auto">
+      <div class="flex items-center gap-2.5">
+        <img
+          src="takaneko.png"
+          alt="Takaneko music"
+          class="w-7 h-7 rounded-lg object-cover border border-white/25 bg-rose-500/20"
+          onerror="this.onerror=null; this.src='https://placehold.co/56x56/FA2D48/ffffff?text=T';"
+        />
+        <span class="text-xs font-bold tracking-wider text-white/80">Takaneko music</span>
+      </div>
+      <button onclick="toggleFullscreenPlayer(false)" class="w-10 h-10 rounded-full glass-pill-btn flex items-center justify-center text-white">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+    </div>
+
+    <div class="max-w-4xl w-full mx-auto my-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-6">
+      <!-- Big Artwork -->
+      <div class="flex flex-col items-center">
+        <div id="fsPlayerArt" class="w-64 h-64 sm:w-80 sm:h-80 rounded-[36px] shadow-2xl border border-white/30 flex items-center justify-center overflow-hidden bg-gradient-to-br from-rose-500 to-indigo-600 transition-transform duration-500">
+          <i class="fa-solid fa-music text-6xl text-white/90"></i>
+        </div>
+      </div>
+
+      <!-- Controls & Visualizer -->
+      <div class="space-y-6">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h2 id="fsPlayerTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white truncate">
+              Takaneko Track
+            </h2>
+            <p id="fsPlayerArtist" class="text-sm sm:text-base text-white/65 mt-1 truncate">
+              Takaneko music
+            </p>
+          </div>
+          <button id="fsPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white shrink-0">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- Audio Spectrum Visualizer -->
+        <div class="glass-surface rounded-2xl p-3 border border-white/15">
+          <canvas id="fsVisualizerCanvas" width="420" height="64" class="w-full h-16"></canvas>
+        </div>
+
+        <!-- Seek Bar -->
+        <div class="space-y-1.5">
+          <input
+            id="fsSeekBar"
+            type="range"
+            min="0"
+            max="100"
+            value="0"
+            step="0.1"
+            oninput="seekAudio(this.value)"
+            class="apple-slider w-full"
+          />
+          <div class="flex justify-between text-xs font-mono text-white/55">
+            <span id="fsCurrentTime">0:00</span>
+            <span id="fsRemainingTime">-0:00</span>
+          </div>
+        </div>
+
+        <!-- Transport Buttons -->
+        <div class="flex items-center justify-center gap-6">
+          <button onclick="prevTrack()" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+          <button onclick="togglePlayPause()" class="w-16 h-16 rounded-full apple-accent-btn flex items-center justify-center text-white text-2xl shadow-2xl">
+            <i id="fsPlayPauseIcon" class="fa-solid fa-play ml-1"></i>
+          </button>
+          <button onclick="nextTrack()" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center text-[11px] text-white/40">
+      Takaneko music
+    </div>
+  </div>
+
+  <!-- =========================================================
+       TOAST NOTIFICATION CONTAINER
+       ========================================================= -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- =========================================================
+       APPLICATION JAVASCRIPT
+       ========================================================= -->
+  <script>
+    /*************************************************************************
+     * 1. GitHubリポジトリにアップロードしたMP3ファイル一覧の設定 (コード記述用)
+     * -----------------------------------------------------------------------
+     * ここにGitHubへアップロードした .mp3 ファイルのパスまたはファイル名を記述します。
+     * 表示される曲名は自動的にフォルダパスと末尾の「.mp3」を除いた名前になります。
+     * 例: '美しく生きろ.mp3' → 曲名「美しく生きろ」として表示されます。
+     *************************************************************************/
+    const MP3_FILES = [
+      'エンドレスラフター.mp3',
+    ];
+
+    /*************************************************************************
+     * 2. Spotify / Anchor 系ポッドキャストの RSS フィード設定 (コード記述用)
+     * -----------------------------------------------------------------------
+     * ここに聴きたいSpotify系ポッドキャストのRSS URLを記述します。
+     *************************************************************************/
+    const PODCAST_RSS_FEEDS = [
+      {
+        id: 'podcast-feed-1',
+        name: 'Takaneko Podcast Channel',
+        rssUrl: 'https://anchor.fm/s/1167d87c0/podcast/rss',
+        coverGradient: 'linear-gradient(135deg, #1db954 0%, #0f4c3a 100%)',
+        orbColors: ['#1db954', '#00b4d8', '#095228', '#7209b7']
+      },
+    ];
+
+    /*************************************************************************
+     * 3. ファイル名からフォルダパスと .mp3 を除去して曲名にする関数
+     *************************************************************************/
+    function extractSongTitleFromFilename(filePath) {
+      if (!filePath) return 'Untitled';
+      // フォルダパスが含まれている場合はファイル名部分だけを取り出す
+      const baseName = String(filePath).split('/').pop().split('\\').pop();
+      // 末尾の .mp3 (大文字・小文字問わず) を除去して曲名にする
+      return baseName.replace(/\.mp3$/i, '').trim() || 'Untitled';
+    }
+
+    /*************************************************************************
+     * 4. アプリケーション状態管理 & localStorage ライブラリ保存
+     *************************************************************************/
+    const LIBRARY_STORAGE_KEY = 'takaneko_music_library_ids_v1';
+
+    let songs = [];
+    let podcastShows = [...PODCAST_RSS_FEEDS];
+    let podcastEpisodesByFeed = {};
+    let activePodcastFeedId = PODCAST_RSS_FEEDS[0]?.id || '';
+
+    let currentTab = 'home';
+    let currentSearchFilter = 'all';
+
+    // オーディオプレイヤー状態
+    const audioPlayer = new Audio();
+    let currentQueue = [];
+    let currentIndex = -1;
+    let currentTrack = null;
+    let isPlaying = false;
+    let isShuffle = false;
+    let repeatMode = 'off'; // 'off' | 'all' | 'one'
+
+    // Web Audio API ビジュアライザー
+    let audioCtx = null;
+    let analyser = null;
+    let mediaSource = null;
+    let visualizerInitialized = false;
+
+    // カラーパレット
+    const COLOR_PALETTES = [
+      {
+        gradient: 'linear-gradient(135deg, #FF2A5F 0%, #7928CA 100%)',
+        orbs: ['#FF2A5F', '#7928CA', '#00D2FF', '#FF7B00']
+      },
+      {
+        gradient: 'linear-gradient(135deg, #00C6FF 0%, #0072FF 100%)',
+        orbs: ['#00C6FF', '#0072FF', '#7F00FF', '#00F5D4']
+      },
+      {
+        gradient: 'linear-gradient(135deg, #F857A6 0%, #FF5858 100%)',
+        orbs: ['#F857A6', '#FF5858', '#FF9966', '#8E2DE2']
+      },
+      {
+        gradient: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)',
+        orbs: ['#10B981', '#06B6D4', '#3B82F6', '#8B5CF6']
+      },
+      {
+        gradient: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)',
+        orbs: ['#FA709A', '#F59E0B', '#EC4899', '#6366F1']
+      },
+      {
+        gradient: 'linear-gradient(135deg, #A18CD1 0%, #FBC2EB 100%)',
+        orbs: ['#A855F7', '#EC4899', '#6366F1', '#38BDF8']
+      }
+    ];
+
+    function loadLibrarySet() {
+      try {
+        const raw = localStorage.getItem(LIBRARY_STORAGE_KEY);
+        if (!raw) return new Set();
+        return new Set(JSON.parse(raw));
+      } catch (e) {
+        return new Set();
+      }
+    }
+
+    function saveLibrarySet() {
+      try {
+        const libIds = songs.filter(s => s.inLibrary).map(s => s.id);
+        localStorage.setItem(LIBRARY_STORAGE_KEY, JSON.stringify(libIds));
+      } catch (e) {
+        console.warn('localStorage save warning:', e);
+      }
+    }
+
+    /*************************************************************************
+     * 5. プレビュー時・未配置ファイル用のフォールバックメロディ生成
+     *    (GitHub上に実MP3ファイルが存在する場合はそちらを最優先で再生します)
+     *************************************************************************/
+    function createFallbackAudioBlobUrl(seedIndex = 0) {
+      const chordSets = [
+        [261.63, 329.63, 293.66, 392.00],
+        [220.00, 261.63, 329.63, 293.66],
+        [293.66, 349.23, 440.00, 392.00],
+        [196.00, 246.94, 293.66, 329.63]
+      ];
+      const chordFreqs = chordSets[seedIndex % chordSets.length];
+      const tempoBpm = 110 + (seedIndex % 3) * 8;
+      const durationSec = 24;
+      const sampleRate = 22050;
+      const numSamples = sampleRate * durationSec;
+      const buffer = new ArrayBuffer(44 + numSamples * 2);
+      const view = new DataView(buffer);
+
+      function writeStr(offset, str) {
+        for (let i = 0; i < str.length; i++) {
+          view.setUint8(offset + i, str.charCodeAt(i));
+        }
+      }
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + numSamples * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, numSamples * 2, true);
+
+      const beatSec = 60 / tempoBpm;
+      for (let i = 0; i < numSamples; i++) {
+        const t = i / sampleRate;
+        const barIndex = Math.floor(t / (beatSec * 2)) % chordFreqs.length;
+        const root = chordFreqs[barIndex];
+        const arpStep = Math.floor(t / (beatSec / 2)) % 4;
+        const arpMultipliers = [1, 1.25, 1.5, 2];
+        const arpFreq = root * arpMultipliers[arpStep];
+
+        const pad = Math.sin(2 * Math.PI * root * t) * 0.25 +
+                    Math.sin(2 * Math.PI * (root * 1.5) * t) * 0.15;
+        const noteTime = t % (beatSec / 2);
+        const env = Math.exp(-noteTime * 6.5);
+        const lead = Math.sin(2 * Math.PI * arpFreq * t) * env * 0.35;
+        const sub = Math.sin(2 * Math.PI * (root * 0.5) * t) * 0.2;
+
+        const fadeOut = t > durationSec - 2 ? (durationSec - t) / 2 : 1;
+        const sample = Math.max(-1, Math.min(1, (pad + lead + sub) * fadeOut));
+        view.setInt16(44 + i * 2, sample * 32767, true);
+      }
+
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      return URL.createObjectURL(blob);
+    }
+
+    /*************************************************************************
+     * 6. コード内の MP3_FILES から曲データを構築
+     *************************************************************************/
+    function buildSongsFromCodeConfig() {
+      const libSet = loadLibrarySet();
+
+      songs = MP3_FILES.map((entry, idx) => {
+        const filePath = typeof entry === 'string' ? entry : entry.file;
+        const customArtist = typeof entry === 'object' && entry.artist ? entry.artist : 'Takaneko music';
+        const songTitle = extractSongTitleFromFilename(filePath);
+        const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+        const id = 'song-' + idx + '-' + encodeURIComponent(songTitle);
+
+        return {
+          id: id,
+          title: songTitle,
+          artist: customArtist,
+          audioUrl: filePath,
+          seedIndex: idx,
+          isFeatured: true,
+          inLibrary: libSet.has(id),
+          gradient: palette.gradient,
+          orbColors: palette.orbs
+        };
+      });
+    }
+
+    /*************************************************************************
+     * 7. UI レンダリング (ホーム / ライブラリ / 検索 / ポッドキャスト)
+     *************************************************************************/
+    function renderAllViews() {
+      renderHomeView();
+      renderLibraryView();
+      renderSearchResults(document.getElementById('mainSearchInput')?.value || '');
+      updateCountsAndBadges();
+    }
+
+    function updateCountsAndBadges() {
+      const libCount = songs.filter(s => s.inLibrary).length;
+      document.getElementById('sidebarLibraryCount').textContent = libCount;
+      document.getElementById('featuredUploadsCount').textContent = `${songs.length}曲`;
+    }
+
+    // --- ホーム画面のレンダリング ---
+    function renderHomeView() {
+      if (songs.length === 0) return;
+
+      const heroSong = songs[0];
+      document.getElementById('heroSongTitle').textContent = heroSong.title;
+      document.getElementById('heroSongArtist').textContent = heroSong.artist;
+      document.getElementById('heroFeaturedBg').style.background = heroSong.gradient;
+      document.getElementById('heroSongArt').style.background = heroSong.gradient;
+
+      const heroLibBtn = document.getElementById('heroAddLibBtn');
+      if (heroSong.inLibrary) {
+        heroLibBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>ライブラリ追加済み</span>`;
+      } else {
+        heroLibBtn.innerHTML = `<i class="fa-solid fa-plus"></i><span>ライブラリに追加</span>`;
+      }
+
+      // 注目のアップロードされた曲 (カードグリッド)
+      const gridEl = document.getElementById('featuredSongsGrid');
+      gridEl.innerHTML = songs.map(song => {
+        const isCurrent = currentTrack && currentTrack.id === song.id;
+        return `
+          <div class="glass-card rounded-3xl p-3.5 flex flex-col justify-between group cursor-pointer relative"
+               onclick="playTrackById('${song.id}')">
+            <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
+                 style="background: ${song.gradient}">
+              <i class="fa-solid fa-music text-4xl text-white/85 group-hover:scale-110 transition-transform duration-300"></i>
+
+              <!-- ホバー再生オーバーレイ -->
+              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div class="w-12 h-12 rounded-full apple-accent-btn flex items-center justify-center text-white shadow-xl">
+                  <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'} text-base"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  ${isCurrent && isPlaying ? `<div class="eq-bars shrink-0"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>` : ''}
+                  <h4 class="text-xs sm:text-sm font-bold text-white truncate" title="${escapeHtml(song.title)}">
+                    ${escapeHtml(song.title)}
+                  </h4>
+                </div>
+                <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(song.artist)}</p>
+              </div>
+
+              <!-- ライブラリ追加/解除ボタン -->
+              <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
+                      title="${song.inLibrary ? 'ライブラリから解除' : 'ライブラリに追加'}"
+                      class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${song.inLibrary ? 'text-rose-400 border-rose-400/40' : 'text-white/70'}">
+                <i class="fa-solid ${song.inLibrary ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // 曲一覧リスト
+      const listEl = document.getElementById('homeTrackList');
+      listEl.innerHTML = songs.map((song, idx) => renderTrackRowHtml(song, idx + 1)).join('');
+    }
+
+    function renderTrackRowHtml(song, indexNum, showRemoveFromLib = false) {
+      const isCurrent = currentTrack && currentTrack.id === song.id;
+      return `
+        <div onclick="playTrackById('${song.id}')"
+             class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.07] transition-colors cursor-pointer group ${isCurrent ? 'bg-white/[0.09]' : ''}">
+          <div class="flex items-center gap-3.5 min-w-0 flex-1">
+            <div class="w-6 text-center text-xs font-mono text-white/45 shrink-0">
+              ${isCurrent && isPlaying
+                ? `<div class="eq-bars mx-auto"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>`
+                : `<span>${indexNum}</span>`
+              }
+            </div>
+            <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center shadow border border-white/20"
+                 style="background: ${song.gradient}">
+              <i class="fa-solid ${song.type === 'podcast' ? 'fa-podcast' : 'fa-music'} text-white text-xs"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="text-xs sm:text-sm font-semibold ${isCurrent ? 'text-rose-400' : 'text-white'} truncate">
+                ${escapeHtml(song.title)}
+              </p>
+              <p class="text-[11px] text-white/50 truncate">${escapeHtml(song.artist)}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5 shrink-0">
+            <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
+                    class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${song.inLibrary ? 'bg-rose-500/20 text-rose-300 border border-rose-400/30' : 'glass-pill-btn text-white/80'}">
+              <i class="fa-solid ${song.inLibrary ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
+              <span class="hidden sm:inline">${song.inLibrary ? (showRemoveFromLib ? '解除' : '追加済み') : 'ライブラリ'}</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- ライブラリ画面のレンダリング ---
+    function renderLibraryView() {
+      const libSongs = songs.filter(s => s.inLibrary);
+      const emptyEl = document.getElementById('libraryEmptyState');
+      const gridEl = document.getElementById('librarySongsGrid');
+      const listEl = document.getElementById('libraryTracksList');
+
+      if (libSongs.length === 0) {
+        emptyEl.classList.remove('hidden');
+        gridEl.classList.add('hidden');
+        listEl.classList.add('hidden');
+        return;
+      }
+
+      emptyEl.classList.add('hidden');
+      gridEl.classList.remove('hidden');
+      listEl.classList.remove('hidden');
+
+      gridEl.innerHTML = libSongs.map(song => {
+        const isCurrent = currentTrack && currentTrack.id === song.id;
+        return `
+          <div class="glass-card rounded-3xl p-3.5 flex flex-col justify-between group cursor-pointer"
+               onclick="playTrackById('${song.id}')">
+            <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
+                 style="background: ${song.gradient}">
+              <i class="fa-solid fa-music text-3xl text-white/90"></i>
+              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div class="w-11 h-11 rounded-full apple-accent-btn flex items-center justify-center text-white">
+                  <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'}"></i>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(song.title)}</h4>
+                <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(song.artist)}</p>
+              </div>
+              <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
+                      title="ライブラリから解除"
+                      class="w-7 h-7 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300 flex items-center justify-center shrink-0 hover:bg-rose-500/40">
+                <i class="fa-solid fa-check text-[11px]"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      listEl.innerHTML = libSongs.map((song, idx) => renderTrackRowHtml(song, idx + 1, true)).join('');
+    }
+
+    // --- 検索画面のレンダリング (曲名で検索) ---
+    function setSearchFilter(filter) {
+      currentSearchFilter = filter;
+      ['all', 'songs', 'library', 'podcast'].forEach(f => {
+        const btn = document.getElementById(`search-filter-${f}`);
+        if (!btn) return;
+        if (f === filter) {
+          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white';
+        } else {
+          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/70';
+        }
+      });
+      renderSearchResults(document.getElementById('mainSearchInput').value);
+    }
+
+    function handleQuickSearchInput(val) {
+      if (currentTab !== 'search') {
+        switchTab('search');
+      }
+      const mainInput = document.getElementById('mainSearchInput');
+      mainInput.value = val;
+      renderSearchResults(val);
+    }
+
+    function clearSearchInput() {
+      const mainInput = document.getElementById('mainSearchInput');
+      const quickInput = document.getElementById('headerQuickSearch');
+      if (mainInput) mainInput.value = '';
+      if (quickInput) quickInput.value = '';
+      renderSearchResults('');
+    }
+
+    function renderSearchResults(query = '') {
+      const trimmed = query.trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (clearBtn) {
+        clearBtn.classList.toggle('hidden', trimmed.length === 0);
+      }
+
+      let pool = [...songs];
+      Object.values(podcastEpisodesByFeed).forEach(epList => {
+        if (Array.isArray(epList)) {
+          pool = pool.concat(epList);
+        }
+      });
+
+      if (currentSearchFilter === 'songs') {
+        pool = pool.filter(item => item.type !== 'podcast');
+      } else if (currentSearchFilter === 'library') {
+        pool = pool.filter(item => item.inLibrary);
+      } else if (currentSearchFilter === 'podcast') {
+        pool = pool.filter(item => item.type === 'podcast');
+      }
+
+      // 曲名で一致検索
+      if (trimmed.length > 0) {
+        pool = pool.filter(item => item.title.toLowerCase().includes(trimmed));
+      }
+
+      document.getElementById('searchResultHeading').textContent =
+        trimmed ? `「${query}」の検索結果` : '曲一覧';
+      document.getElementById('searchResultCount').textContent = `${pool.length} 件`;
+
+      const container = document.getElementById('searchResultsContainer');
+      if (pool.length === 0) {
+        container.innerHTML = `
+          <div class="p-10 text-center space-y-2">
+            <i class="fa-solid fa-magnifying-glass text-2xl text-white/30"></i>
+            <p class="text-sm font-semibold text-white/80">一致する曲名が見つかりませんでした</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = pool.map((item, idx) => {
+        if (item.type === 'podcast') {
+          return renderPodcastEpisodeRowHtml(item, idx + 1);
+        }
+        return renderTrackRowHtml(item, idx + 1);
+      }).join('');
+    }
+
+    /*************************************************************************
+     * 8. ポッドキャスト RSS 取得 & 再生処理
+     *************************************************************************/
+    function renderPodcastShowsGrid() {
+      const grid = document.getElementById('podcastShowsGrid');
+      grid.innerHTML = podcastShows.map(show => {
+        const isActive = show.id === activePodcastFeedId;
+        const epCount = (podcastEpisodesByFeed[show.id] || []).length;
+        return `
+          <div onclick="selectPodcastShow('${show.id}')"
+               class="glass-card rounded-3xl p-4 cursor-pointer flex items-center gap-4 border transition-all ${isActive ? 'border-emerald-400/70 bg-emerald-500/10' : 'border-white/15'}">
+            <div class="w-16 h-16 rounded-2xl shrink-0 flex items-center justify-center shadow-lg border border-white/25 overflow-hidden"
+                 style="background: ${show.coverGradient}">
+              ${show.imageUrl
+                ? `<img src="${show.imageUrl}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'" />`
+                : `<i class="fa-solid fa-podcast text-2xl text-white"></i>`
+              }
+            </div>
+            <div class="min-w-0 flex-1">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300">PODCAST</span>
+              <h4 class="text-sm font-bold text-white truncate mt-0.5">${escapeHtml(show.name)}</h4>
+              <p class="text-[11px] text-white/60 mt-1">${epCount > 0 ? `${epCount} エピソード` : 'クリックして読み込む'}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function selectPodcastShow(feedId) {
+      activePodcastFeedId = feedId;
+      renderPodcastShowsGrid();
+      const show = podcastShows.find(s => s.id === feedId);
+      if (!show) return;
+
+      document.getElementById('activePodcastTitle').textContent = show.name;
+
+      if (!podcastEpisodesByFeed[feedId] || podcastEpisodesByFeed[feedId].length === 0) {
+        await fetchPodcastRssFeed(show);
+      } else {
+        renderActivePodcastEpisodes();
+      }
+    }
+
+    async function fetchPodcastRssFeed(show) {
+      const listEl = document.getElementById('podcastEpisodesList');
+      const statusEl = document.getElementById('podcastStatusText');
+      statusEl.textContent = '読み込み中...';
+      listEl.innerHTML = `
+        <div class="p-10 text-center space-y-3">
+          <i class="fa-solid fa-circle-notch fa-spin text-2xl text-emerald-400"></i>
+          <p class="text-xs text-white/70">ポッドキャストを読み込んでいます...</p>
+        </div>
+      `;
+
+      let parsedEpisodes = [];
+
+      // 1. rss2json API 経由で取得
+      try {
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(show.rssUrl)}`;
+        const res = await fetch(apiUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+            if (data.feed && data.feed.title) show.name = data.feed.title;
+            if (data.feed && data.feed.image) show.imageUrl = data.feed.image;
+
+            parsedEpisodes = data.items.map((item, idx) => {
+              const audioLink = (item.enclosure && item.enclosure.link) || item.link || '';
+              return {
+                id: `${show.id}-ep-${idx}`,
+                title: item.title || `Episode ${idx + 1}`,
+                artist: show.name,
+                pubDate: item.pubDate ? item.pubDate.split(' ')[0] : '',
+                description: stripHtmlTags(item.description || ''),
+                audioUrl: audioLink,
+                type: 'podcast',
+                inLibrary: false,
+                gradient: show.coverGradient,
+                orbColors: show.orbColors || ['#1db954', '#00b4d8', '#095228', '#7209b7']
+              };
+            }).filter(ep => ep.audioUrl);
+          }
+        }
+      } catch (e) {
+        console.warn('rss2json fallback:', e);
+      }
+
+      // 2. AllOrigins XML パーサーで取得
+      if (parsedEpisodes.length === 0) {
+        try {
+          const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(show.rssUrl)}`;
+          const res = await fetch(proxyUrl);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.contents) {
+              const parser = new DOMParser();
+              const xml = parser.parseFromString(data.contents, 'text/xml');
+              const channelTitle = xml.querySelector('channel > title')?.textContent;
+              if (channelTitle) show.name = channelTitle;
+
+              const items = Array.from(xml.querySelectorAll('item')).slice(0, 20);
+              parsedEpisodes = items.map((item, idx) => {
+                const enclosure = item.querySelector('enclosure');
+                const audioUrl = enclosure ? enclosure.getAttribute('url') : '';
+                return {
+                  id: `${show.id}-xml-${idx}`,
+                  title: item.querySelector('title')?.textContent || `Episode ${idx + 1}`,
+                  artist: show.name,
+                  pubDate: item.querySelector('pubDate')?.textContent?.slice(0, 16) || '',
+                  description: stripHtmlTags(item.querySelector('description')?.textContent || ''),
+                  audioUrl: audioUrl,
+                  type: 'podcast',
+                  inLibrary: false,
+                  gradient: show.coverGradient,
+                  orbColors: show.orbColors || ['#1db954', '#00b4d8', '#095228', '#7209b7']
+                };
+              }).filter(ep => ep.audioUrl);
+            }
+          }
+        } catch (err) {
+          console.warn('XML proxy fallback:', err);
+        }
+      }
+
+      // 3. オフライン時等のフォールバックエピソード
+      if (parsedEpisodes.length === 0) {
+        const fallbackAudio = createFallbackAudioBlobUrl(1);
+        parsedEpisodes = [
+          {
+            id: `${show.id}-fallback-1`,
+            title: `${show.name} - Episode 1`,
+            artist: show.name,
+            pubDate: '',
+            description: 'ポッドキャストエピソード',
+            audioUrl: fallbackAudio,
+            type: 'podcast',
+            inLibrary: false,
+            gradient: show.coverGradient,
+            orbColors: show.orbColors
+          }
+        ];
+      }
+
+      statusEl.textContent = '';
+      podcastEpisodesByFeed[show.id] = parsedEpisodes;
+      renderPodcastShowsGrid();
+      renderActivePodcastEpisodes();
+    }
+
+    function renderActivePodcastEpisodes() {
+      const show = podcastShows.find(s => s.id === activePodcastFeedId);
+      const episodes = podcastEpisodesByFeed[activePodcastFeedId] || [];
+
+      document.getElementById('activePodcastTitle').textContent = show ? show.name : 'エピソード一覧';
+      document.getElementById('activePodcastEpisodeCount').textContent = `${episodes.length} エピソード`;
+
+      const listEl = document.getElementById('podcastEpisodesList');
+      if (episodes.length === 0) {
+        listEl.innerHTML = `<div class="p-8 text-center text-xs text-white/50">エピソードがありません。</div>`;
+        return;
+      }
+
+      listEl.innerHTML = episodes.map((ep, idx) => renderPodcastEpisodeRowHtml(ep, idx + 1)).join('');
+    }
+
+    function renderPodcastEpisodeRowHtml(ep, num) {
+      const isCurrent = currentTrack && currentTrack.id === ep.id;
+      return `
+        <div onclick="playPodcastEpisode('${ep.id}')"
+             class="flex items-center justify-between gap-4 px-5 py-4 hover:bg-white/[0.07] transition-colors cursor-pointer ${isCurrent ? 'bg-white/[0.09]' : ''}">
+          <div class="flex items-start gap-3.5 min-w-0 flex-1">
+            <div class="w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center shadow border border-white/20 mt-0.5"
+                 style="background: ${ep.gradient}">
+              <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-podcast'} text-white text-sm"></i>
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] font-mono text-emerald-300/90 bg-emerald-500/15 px-2 py-0.5 rounded-full">EP.${num}</span>
+                ${ep.pubDate ? `<span class="text-[10px] text-white/45">${escapeHtml(ep.pubDate)}</span>` : ''}
+              </div>
+              <h4 class="text-xs sm:text-sm font-bold ${isCurrent ? 'text-emerald-300' : 'text-white'} truncate mt-1">
+                ${escapeHtml(ep.title)}
+              </h4>
+              <p class="text-[11px] text-white/55 line-clamp-1 mt-0.5">
+                ${escapeHtml(ep.description || ep.artist)}
+              </p>
+            </div>
+          </div>
+
+          <button class="apple-accent-btn px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0">
+            <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play'} text-[10px]"></i>
+            <span>${isCurrent && isPlaying ? '再生中' : '再生'}</span>
+          </button>
+        </div>
+      `;
+    }
+
+    function refreshAllPodcastFeeds() {
+      const show = podcastShows.find(s => s.id === activePodcastFeedId);
+      if (show) {
+        fetchPodcastRssFeed(show);
+      }
+    }
+
+    /*************************************************************************
+     * 9. オーディオプレイヤー制御
+     *************************************************************************/
+    function findTrackAnywhere(trackId) {
+      let found = songs.find(s => s.id === trackId);
+      if (found) return found;
+      for (const epList of Object.values(podcastEpisodesByFeed)) {
+        found = epList.find(ep => ep.id === trackId);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function playTrackById(trackId) {
+      const track = findTrackAnywhere(trackId);
+      if (!track) return;
+
+      if (currentTrack && currentTrack.id === track.id) {
+        togglePlayPause();
+        return;
+      }
+
+      currentQueue = [...songs];
+      currentIndex = currentQueue.findIndex(s => s.id === track.id);
+      loadAndPlayTrack(track);
+    }
+
+    function playPodcastEpisode(episodeId) {
+      const ep = findTrackAnywhere(episodeId);
+      if (!ep) return;
+
+      if (currentTrack && currentTrack.id === ep.id) {
+        togglePlayPause();
+        return;
+      }
+
+      const feedEpisodes = podcastEpisodesByFeed[activePodcastFeedId] || [ep];
+      currentQueue = [...feedEpisodes];
+      currentIndex = currentQueue.findIndex(item => item.id === ep.id);
+      loadAndPlayTrack(ep);
+    }
+
+    function loadAndPlayTrack(track) {
+      currentTrack = track;
+      initWebAudioVisualizer();
+
+      audioPlayer.src = track.audioUrl;
+      audioPlayer.play().then(() => {
+        isPlaying = true;
+        updatePlayerUI();
+        renderAllViews();
+        if (currentTab === 'podcast') renderActivePodcastEpisodes();
+      }).catch(() => {
+        // GitHubへ実MP3ファイルを配置する前のプレビュー環境などでも動作確認できるようフォールバック再生
+        audioPlayer.src = createFallbackAudioBlobUrl(track.seedIndex || 0);
+        audioPlayer.play().then(() => {
+          isPlaying = true;
+          updatePlayerUI();
+          renderAllViews();
+          if (currentTab === 'podcast') renderActivePodcastEpisodes();
+        }).catch(() => {});
+      });
+
+      if (track.orbColors && track.orbColors.length >= 4) {
+        document.documentElement.style.setProperty('--orb-1', track.orbColors[0]);
+        document.documentElement.style.setProperty('--orb-2', track.orbColors[1]);
+        document.documentElement.style.setProperty('--orb-3', track.orbColors[2]);
+        document.documentElement.style.setProperty('--orb-4', track.orbColors[3]);
+      }
+    }
+
+    function togglePlayPause() {
+      if (!currentTrack) {
+        if (songs.length > 0) {
+          playTrackById(songs[0].id);
+        }
+        return;
+      }
+
+      initWebAudioVisualizer();
+      if (audioPlayer.paused) {
+        audioPlayer.play().then(() => {
+          isPlaying = true;
+          updatePlayerUI();
+          renderAllViews();
+        }).catch(() => {});
+      } else {
+        audioPlayer.pause();
+        isPlaying = false;
+        updatePlayerUI();
+        renderAllViews();
+      }
+    }
+
+    function prevTrack() {
+      if (currentQueue.length === 0) currentQueue = [...songs];
+      if (currentQueue.length === 0) return;
+
+      if (audioPlayer.currentTime > 3) {
+        audioPlayer.currentTime = 0;
+        return;
+      }
+
+      currentIndex = (currentIndex - 1 + currentQueue.length) % currentQueue.length;
+      loadAndPlayTrack(currentQueue[currentIndex]);
+    }
+
+    function nextTrack() {
+      if (currentQueue.length === 0) currentQueue = [...songs];
+      if (currentQueue.length === 0) return;
+
+      if (isShuffle) {
+        currentIndex = Math.floor(Math.random() * currentQueue.length);
+      } else {
+        currentIndex = (currentIndex + 1) % currentQueue.length;
+      }
+      loadAndPlayTrack(currentQueue[currentIndex]);
+    }
+
+    function playAllSongs(shuffle = false) {
+      if (songs.length === 0) return;
+      isShuffle = shuffle;
+      updateShuffleRepeatButtons();
+      currentQueue = [...songs];
+      currentIndex = shuffle ? Math.floor(Math.random() * currentQueue.length) : 0;
+      loadAndPlayTrack(currentQueue[currentIndex]);
+    }
+
+    function playLibraryTracks(shuffle = false) {
+      const libTracks = songs.filter(s => s.inLibrary);
+      if (libTracks.length === 0) {
+        showToast('ライブラリに曲がありません。「＋」ボタンで曲を追加してください。', 'fa-layer-group');
+        return;
+      }
+      isShuffle = shuffle;
+      updateShuffleRepeatButtons();
+      currentQueue = [...libTracks];
+      currentIndex = shuffle ? Math.floor(Math.random() * currentQueue.length) : 0;
+      loadAndPlayTrack(currentQueue[currentIndex]);
+    }
+
+    function playFeaturedHero() {
+      if (songs.length > 0) {
+        playTrackById(songs[0].id);
+      }
+    }
+
+    function toggleHeroLibrary() {
+      if (songs.length > 0) {
+        toggleSongLibrary(songs[0].id);
+      }
+    }
+
+    function toggleSongLibrary(songId) {
+      const song = songs.find(s => s.id === songId);
+      if (!song) return;
+
+      song.inLibrary = !song.inLibrary;
+      saveLibrarySet();
+
+      showToast(
+        song.inLibrary
+          ? `「${song.title}」をライブラリに追加しました`
+          : `「${song.title}」をライブラリから解除しました`,
+        song.inLibrary ? 'fa-heart' : 'fa-circle-minus'
+      );
+
+      updatePlayerUI();
+      renderAllViews();
+    }
+
+    function toggleCurrentTrackLibrary() {
+      if (!currentTrack) return;
+      const existing = songs.find(s => s.id === currentTrack.id);
+      if (!existing) {
+        currentTrack.inLibrary = true;
+        songs.unshift(currentTrack);
+        saveLibrarySet();
+        showToast(`「${currentTrack.title}」をライブラリに追加しました`, 'fa-heart');
+        updatePlayerUI();
+        renderAllViews();
+        return;
+      }
+      toggleSongLibrary(currentTrack.id);
+    }
+
+    function toggleShuffle() {
+      isShuffle = !isShuffle;
+      updateShuffleRepeatButtons();
+      showToast(isShuffle ? 'シャッフル再生: ON' : 'シャッフル再生: OFF', 'fa-shuffle');
+    }
+
+    function toggleRepeat() {
+      if (repeatMode === 'off') repeatMode = 'all';
+      else if (repeatMode === 'all') repeatMode = 'one';
+      else repeatMode = 'off';
+      updateShuffleRepeatButtons();
+      const labels = { off: 'リピート: OFF', all: '全曲リピート', one: '1曲リピート' };
+      showToast(labels[repeatMode], 'fa-repeat');
+    }
+
+    function updateShuffleRepeatButtons() {
+      const btnShuffle = document.getElementById('btnShuffle');
+      const btnRepeat = document.getElementById('btnRepeat');
+      if (btnShuffle) {
+        btnShuffle.className = `hidden sm:flex w-8 h-8 rounded-full items-center justify-center transition-colors ${isShuffle ? 'bg-rose-500/25 text-rose-400' : 'text-white/60 hover:text-white'}`;
+      }
+      if (btnRepeat) {
+        btnRepeat.className = `hidden sm:flex w-8 h-8 rounded-full items-center justify-center transition-colors ${repeatMode !== 'off' ? 'bg-rose-500/25 text-rose-400' : 'text-white/60 hover:text-white'}`;
+        btnRepeat.innerHTML = repeatMode === 'one'
+          ? '<span class="text-[10px] font-extrabold">1</span>'
+          : '<i class="fa-solid fa-repeat text-xs"></i>';
+      }
+    }
+
+    function seekAudio(percentVal) {
+      if (!audioPlayer.duration || isNaN(audioPlayer.duration)) return;
+      audioPlayer.currentTime = (percentVal / 100) * audioPlayer.duration;
+    }
+
+    function changeVolume(val) {
+      audioPlayer.volume = parseFloat(val);
+      audioPlayer.muted = false;
+      updateVolumeIcon();
+    }
+
+    function toggleMute() {
+      audioPlayer.muted = !audioPlayer.muted;
+      updateVolumeIcon();
+    }
+
+    function updateVolumeIcon() {
+      const icon = document.getElementById('volumeIcon');
+      if (!icon) return;
+      if (audioPlayer.muted || audioPlayer.volume === 0) {
+        icon.className = 'fa-solid fa-volume-xmark text-rose-400';
+      } else if (audioPlayer.volume < 0.5) {
+        icon.className = 'fa-solid fa-volume-low';
+      } else {
+        icon.className = 'fa-solid fa-volume-high';
+      }
+    }
+
+    function updatePlayerUI() {
+      const playIcon = document.getElementById('playPauseIcon');
+      const fsPlayIcon = document.getElementById('fsPlayPauseIcon');
+      if (playIcon) {
+        playIcon.className = isPlaying ? 'fa-solid fa-pause text-sm' : 'fa-solid fa-play text-sm ml-0.5';
+      }
+      if (fsPlayIcon) {
+        fsPlayIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play ml-1';
+      }
+
+      if (!currentTrack) return;
+
+      document.getElementById('miniPlayerTitle').textContent = currentTrack.title;
+      document.getElementById('miniPlayerArtist').textContent = currentTrack.artist;
+      document.getElementById('miniPlayerArt').style.background = currentTrack.gradient;
+
+      const libIconHtml = `<i class="fa-solid ${currentTrack.inLibrary ? 'fa-check text-rose-400' : 'fa-plus'} text-xs"></i>`;
+      document.getElementById('miniPlayerLibBtn').innerHTML = libIconHtml;
+      document.getElementById('fsPlayerLibBtn').innerHTML = `<i class="fa-solid ${currentTrack.inLibrary ? 'fa-check text-rose-400' : 'fa-plus'}"></i>`;
+
+      document.getElementById('fsPlayerTitle').textContent = currentTrack.title;
+      document.getElementById('fsPlayerArtist').textContent = currentTrack.artist;
+      document.getElementById('fsPlayerArt').style.background = currentTrack.gradient;
+    }
+
+    audioPlayer.addEventListener('timeupdate', () => {
+      const cur = audioPlayer.currentTime || 0;
+      const dur = audioPlayer.duration || 0;
+      const pct = dur > 0 ? (cur / dur) * 100 : 0;
+
+      document.getElementById('playerSeekBar').value = pct;
+      document.getElementById('fsSeekBar').value = pct;
+
+      const curFormatted = formatSeconds(cur);
+      const remFormatted = dur > 0 ? '-' + formatSeconds(Math.max(0, dur - cur)) : '-0:00';
+
+      document.getElementById('playerCurrentTime').textContent = curFormatted;
+      document.getElementById('playerRemainingTime').textContent = remFormatted;
+      document.getElementById('fsCurrentTime').textContent = curFormatted;
+      document.getElementById('fsRemainingTime').textContent = remFormatted;
+    });
+
+    audioPlayer.addEventListener('ended', () => {
+      if (repeatMode === 'one') {
+        audioPlayer.currentTime = 0;
+        audioPlayer.play().catch(() => {});
+      } else {
+        nextTrack();
+      }
+    });
+
+    /*************************************************************************
+     * 10. ビジュアライザー
+     *************************************************************************/
+    function initWebAudioVisualizer() {
+      if (visualizerInitialized) {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+        return;
+      }
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        mediaSource = audioCtx.createMediaElementSource(audioPlayer);
+        mediaSource.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        visualizerInitialized = true;
+      } catch (e) {
+        visualizerInitialized = true;
+      }
+    }
+
+    function startVisualizerLoop() {
+      const miniCanvas = document.getElementById('miniVisualizerCanvas');
+      const fsCanvas = document.getElementById('fsVisualizerCanvas');
+      const miniCtx = miniCanvas ? miniCanvas.getContext('2d') : null;
+      const fsCtx = fsCanvas ? fsCanvas.getContext('2d') : null;
+      const dataArray = new Uint8Array(32);
+
+      function renderFrame() {
+        requestAnimationFrame(renderFrame);
+
+        if (analyser && isPlaying) {
+          analyser.getByteFrequencyData(dataArray);
+        }
+
+        if (miniCtx) {
+          miniCtx.clearRect(0, 0, miniCanvas.width, miniCanvas.height);
+          const barCount = 12;
+          const barWidth = 3;
+          const gap = 2;
+          for (let i = 0; i < barCount; i++) {
+            let val = dataArray[i] || 0;
+            if (isPlaying && val < 15) {
+              val = 60 + Math.sin(Date.now() * 0.01 + i) * 50;
+            } else if (!isPlaying) {
+              val = 15;
+            }
+            const h = Math.max(3, (val / 255) * miniCanvas.height);
+            const x = i * (barWidth + gap);
+            const y = miniCanvas.height - h;
+            miniCtx.fillStyle = i % 2 === 0 ? '#FA2D48' : '#5AC8FA';
+            miniCtx.beginPath();
+            miniCtx.roundRect(x, y, barWidth, h, 2);
+            miniCtx.fill();
+          }
+        }
+
+        if (fsCtx) {
+          fsCtx.clearRect(0, 0, fsCanvas.width, fsCanvas.height);
+          const barCount = 28;
+          const totalWidth = fsCanvas.width;
+          const barWidth = (totalWidth / barCount) - 4;
+          for (let i = 0; i < barCount; i++) {
+            let val = dataArray[i % 20] || 0;
+            if (isPlaying && val < 15) {
+              val = 90 + Math.sin(Date.now() * 0.008 + i * 0.6) * 70;
+            } else if (!isPlaying) {
+              val = 14;
+            }
+            const h = Math.max(4, (val / 255) * fsCanvas.height);
+            const x = i * (barWidth + 4);
+            const y = (fsCanvas.height - h) / 2;
+            const grad = fsCtx.createLinearGradient(0, y, 0, y + h);
+            grad.addColorStop(0, '#FF375F');
+            grad.addColorStop(1, '#5AC8FA');
+            fsCtx.fillStyle = grad;
+            fsCtx.beginPath();
+            fsCtx.roundRect(x, y, barWidth, h, 4);
+            fsCtx.fill();
+          }
+        }
+      }
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    /*************************************************************************
+     * 11. タブ切り替え & フルスクリーンプレイヤー
+     *************************************************************************/
+    function switchTab(tabName) {
+      currentTab = tabName;
+      const tabs = ['home', 'podcast', 'library', 'search'];
+      const titles = {
+        home: 'ホーム',
+        podcast: 'ポッドキャスト',
+        library: 'ライブラリ',
+        search: '検索'
+      };
+
+      tabs.forEach(t => {
+        const sec = document.getElementById(`tab-${t}`);
+        if (sec) sec.classList.toggle('hidden', t !== tabName);
+
+        const dBtn = document.getElementById(`nav-desktop-${t}`);
+        if (dBtn) dBtn.classList.toggle('active', t === tabName);
+
+        const mBtn = document.getElementById(`nav-mobile-${t}`);
+        if (mBtn) {
+          mBtn.className = t === tabName
+            ? 'flex flex-col items-center py-1 px-3 rounded-xl text-rose-400'
+            : 'flex flex-col items-center py-1 px-3 rounded-xl text-white/60';
+        }
+      });
+
+      document.getElementById('headerTabTitle').textContent = titles[tabName];
+
+      if (tabName === 'podcast') {
+        renderPodcastShowsGrid();
+        const activeShow = podcastShows.find(s => s.id === activePodcastFeedId);
+        if (activeShow && (!podcastEpisodesByFeed[activePodcastFeedId] || podcastEpisodesByFeed[activePodcastFeedId].length === 0)) {
+          fetchPodcastRssFeed(activeShow);
+        } else {
+          renderActivePodcastEpisodes();
+        }
+      }
+
+      if (tabName === 'search') {
+        setTimeout(() => document.getElementById('mainSearchInput')?.focus(), 50);
+      }
+    }
+
+    function toggleFullscreenPlayer(show) {
+      const modal = document.getElementById('fullscreenPlayerModal');
+      if (show) {
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+      } else {
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+      }
+    }
+
+    /*************************************************************************
+     * 12. ユーティリティ
+     *************************************************************************/
+    function formatSeconds(sec) {
+      if (!sec || isNaN(sec)) return '0:00';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function stripHtmlTags(str) {
+      if (!str) return '';
+      const doc = new DOMParser().parseFromString(str, 'text/html');
+      return doc.body.textContent || '';
+    }
+
+    function showToast(message, iconClass = 'fa-check-circle') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'glass-surface-heavy px-4 py-3 rounded-2xl text-xs font-semibold text-white flex items-center gap-2.5 shadow-2xl border border-white/25 transform transition-all duration-300 translate-y-2 opacity-0';
+      toast.innerHTML = `<i class="fa-solid ${iconClass} text-rose-400 text-sm"></i><span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    /*************************************************************************
+     * 13. 初期化
+     *************************************************************************/
+    window.addEventListener('DOMContentLoaded', () => {
+      buildSongsFromCodeConfig();
+
+      if (songs.length > 0) {
+        currentTrack = songs[0];
+        updatePlayerUI();
+      }
+
+      renderAllViews();
+      startVisualizerLoop();
+
+      if (podcastShows.length > 0) {
+        fetchPodcastRssFeed(podcastShows[0]);
+      }
+    });
+  </script>
+</body>
+</html>
