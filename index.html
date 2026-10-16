@@ -1,464 +1,20 @@
-<!DOCTYPE html>
-<html lang="ja" class="dark">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Takaneko music</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter & Noto Sans JP -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'Noto Sans JP', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-          },
-          colors: {
-            appleRed: '#FA2D48',
-            applePink: '#FF375F',
-            appleCyan: '#5AC8FA',
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    :root {
-      --orb-1: #ff2a5f;
-      --orb-2: #7928ca;
-      --orb-3: #00d2ff;
-      --orb-4: #ff7b00;
-    }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #07080f;
-      color: #ffffff;
-      font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
-      overflow: hidden;
-      user-select: none;
-    }
-
-    /* ==========================================
-       Lightweight Ambient Background (GPU Optimized)
-       ========================================== */
-    .glass-bg-container {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 15% 15%, color-mix(in srgb, var(--orb-1) 32%, transparent) 0%, transparent 55%),
-        radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--orb-2) 32%, transparent) 0%, transparent 55%),
-        radial-gradient(circle at 60% 35%, color-mix(in srgb, var(--orb-3) 20%, transparent) 0%, transparent 50%),
-        radial-gradient(circle at 25% 80%, color-mix(in srgb, var(--orb-4) 18%, transparent) 0%, transparent 45%),
-        radial-gradient(circle at 50% 20%, #131629 0%, #06070c 100%);
-      pointer-events: none;
-      transition: background 0.8s ease;
-    }
-
-    /* ==========================================
-       Lightweight Glass Surfaces & Components
-       ========================================== */
-    .glass-surface {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.04) 100%);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
-    }
-
-    .glass-surface-heavy {
-      background: linear-gradient(145deg, rgba(24, 26, 40, 0.88) 0%, rgba(12, 13, 22, 0.94) 100%);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
-    }
-
-    .glass-card {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.28);
-      transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-    }
-
-    .glass-card:hover {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%);
-      border-color: rgba(255, 255, 255, 0.24);
-      transform: translateY(-2px);
-    }
-
-    .glass-pill-btn {
-      background: rgba(255, 255, 255, 0.11);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      transition: background-color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
-    }
-
-    .glass-pill-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      border-color: rgba(255, 255, 255, 0.32);
-    }
-
-    .glass-pill-btn:active {
-      transform: scale(0.96);
-    }
-
-    .apple-accent-btn {
-      background: linear-gradient(135deg, #FA2D48 0%, #FF375F 50%, #D91B5C 100%);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 6px 16px -3px rgba(250, 45, 72, 0.45);
-      transition: transform 0.15s ease, filter 0.15s ease;
-    }
-
-    .apple-accent-btn:hover {
-      filter: brightness(1.08);
-      transform: scale(1.02);
-    }
-
-    .apple-accent-btn:active {
-      transform: scale(0.97);
-    }
-
-    /* Navigation Active State */
-    .nav-item {
-      transition: background-color 0.15s ease, color 0.15s ease;
-      border: 1px solid transparent;
-    }
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.07);
-    }
-    .nav-item.active {
-      background: linear-gradient(135deg, rgba(250, 45, 72, 0.26) 0%, rgba(255, 55, 95, 0.1) 100%);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-    }
-    .nav-item.active .nav-icon {
-      color: #FA2D48;
-    }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.16);
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* Custom Range Sliders (Seek & Volume) */
-    input[type="range"].apple-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      background: transparent;
-      cursor: pointer;
-    }
-    input[type="range"].apple-slider::-webkit-slider-runnable-track {
-      height: 5px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.2);
-    }
-    input[type="range"].apple-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #ffffff;
-      margin-top: -3.5px;
-      transition: transform 0.15s ease, background-color 0.15s ease;
-    }
-    input[type="range"].apple-slider:hover::-webkit-slider-thumb {
-      transform: scale(1.25);
-      background: #FA2D48;
-    }
-
-    /* Playing Equalizer Bars Icon */
-    .eq-bars {
-      display: inline-flex;
-      align-items: flex-end;
-      gap: 2px;
-      height: 14px;
-      width: 14px;
-    }
-    .eq-bar {
-      width: 3px;
-      background: #FA2D48;
-      border-radius: 2px;
-      animation: eqBounce 0.8s ease-in-out infinite alternate;
-    }
-    .eq-bar:nth-child(1) { height: 40%; animation-delay: 0s; }
-    .eq-bar:nth-child(2) { height: 100%; animation-delay: 0.2s; }
-    .eq-bar:nth-child(3) { height: 65%; animation-delay: 0.4s; }
-    @keyframes eqBounce {
-      0% { height: 25%; }
-      100% { height: 100%; }
-    }
-  </style>
-</head>
-<body class="h-screen w-screen overflow-hidden select-none">
-
-  <!-- =========================================================
-       NATIVE HTML5 AUDIO ELEMENT (Direct output, no CORS muting)
-       ========================================================= -->
-  <audio id="takanekoAudio" preload="metadata" playsinline></audio>
-
-  <!-- =========================================================
-       LIGHTWEIGHT AMBIENT BACKGROUND
-       ========================================================= -->
-  <div class="glass-bg-container"></div>
-
-  <!-- =========================================================
-       MAIN APPLICATION LAYOUT
-       ========================================================= -->
-  <div class="relative z-10 flex h-full w-full p-0 md:p-3 gap-3">
-
-    <!-- =======================================================
-         LEFT SIDEBAR (Desktop Navigation)
-         ======================================================= -->
-    <aside class="hidden md:flex flex-col w-64 lg:w-72 h-full glass-surface rounded-3xl p-5 shrink-0 justify-between">
-      <div>
-        <!-- Brand Logo: Takaneko music with takaneko.png -->
-        <div class="flex items-center gap-3 px-2 py-2 mb-6 cursor-pointer group" onclick="switchTab('home')">
-          <img
-            src="takaneko.png"
-            alt="Takaneko music"
-            class="w-10 h-10 rounded-2xl object-cover shadow-lg border border-white/25 group-hover:scale-105 transition-transform bg-rose-500/20 shrink-0"
-            onerror="this.onerror=null; this.src='https://placehold.co/80x80/FA2D48/ffffff?text=T';"
-          />
-          <div class="min-w-0">
-            <div class="flex items-center gap-1.5">
-              <span class="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-pink-200">
-                Takaneko
-              </span>
-              <span class="font-medium text-xl tracking-tight text-rose-400">music</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Primary 4 Tabs -->
-        <div class="space-y-1.5">
-          <button onclick="switchTab('home')" id="nav-desktop-home" class="nav-item active w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80">
-            <i class="fa-solid fa-house nav-icon text-base w-5 text-center"></i>
-            <span>ホーム</span>
-          </button>
-
-          <button onclick="switchTab('podcast')" id="nav-desktop-podcast" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80">
-            <i class="fa-solid fa-podcast nav-icon text-base w-5 text-center"></i>
-            <span>ポッドキャスト</span>
-          </button>
-
-          <button onclick="switchTab('library')" id="nav-desktop-library" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80 justify-between">
-            <div class="flex items-center gap-3.5">
-              <i class="fa-solid fa-layer-group nav-icon text-base w-5 text-center"></i>
-              <span>ライブラリ</span>
-            </div>
-            <span id="sidebarLibraryCount" class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-white/75 font-semibold">0</span>
-          </button>
-
-          <button onclick="switchTab('search')" id="nav-desktop-search" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-medium text-white/80">
-            <i class="fa-solid fa-magnifying-glass nav-icon text-base w-5 text-center"></i>
-            <span>検索</span>
-          </button>
-        </div>
-      </div>
-
+<!-- ... existing code ... -->
       <!-- Subtle Footer Brand Note -->
-      <div class="px-3 py-2 text-[11px] text-white/35 font-medium">
-        Takaneko music
+      <div class="px-3 py-2 space-y-1.5">
+        <div id="sidebarPageSavedBadge" class="hidden items-center gap-1.5 text-[11px] text-emerald-300/90 font-semibold">
+          <i class="fa-solid fa-mobile-screen-button text-[10px]"></i>
+          <span>ページ全体をデバイス保存済み</span>
+        </div>
+        <div class="text-[11px] text-white/35 font-medium">
+          Takaneko music
+        </div>
       </div>
     </aside>
 
     <!-- =======================================================
          MAIN CONTENT VIEWPORT
          ======================================================= -->
-    <main class="flex-1 h-full glass-surface md:rounded-3xl flex flex-col overflow-hidden relative">
-
-      <!-- Top Translucent Glass Header -->
-      <header class="sticky top-0 z-20 px-5 md:px-8 py-3.5 flex items-center justify-between border-b border-white/10 bg-black/20">
-        <!-- Mobile Logo / Desktop Current Tab Title -->
-        <div class="flex items-center gap-3">
-          <div class="flex md:hidden items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
-            <img
-              src="takaneko.png"
-              alt="Takaneko music"
-              class="w-8 h-8 rounded-xl object-cover shadow border border-white/25 bg-rose-500/20 shrink-0"
-              onerror="this.onerror=null; this.src='https://placehold.co/64x64/FA2D48/ffffff?text=T';"
-            />
-            <span class="font-extrabold text-base tracking-tight">Takaneko <span class="text-rose-400 font-medium">music</span></span>
-          </div>
-          <div class="hidden md:flex items-center gap-3">
-            <h1 id="headerTabTitle" class="text-xl font-bold tracking-tight text-white">ホーム</h1>
-          </div>
-        </div>
-
-        <!-- Right Quick Search Input -->
-        <div class="flex items-center gap-2.5">
-          <div class="flex items-center glass-pill-btn rounded-full px-3.5 py-1.5 gap-2 w-48 sm:w-64 focus-within:ring-2 focus-within:ring-rose-500/50">
-            <i class="fa-solid fa-magnifying-glass text-white/50 text-xs"></i>
-            <input
-              id="headerQuickSearch"
-              type="text"
-              placeholder="曲名で検索..."
-              oninput="handleQuickSearchInput(this.value)"
-              class="bg-transparent border-none outline-none text-xs text-white placeholder-white/45 w-full"
-            />
-          </div>
-        </div>
-      </header>
-
-      <!-- Scrollable Tab Content Container -->
-      <div id="mainScrollArea" class="flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 pt-6 pb-44 space-y-8">
-
-        <!-- ===================================================
-             TAB 1: ホーム (HOME - Featured Songs)
-             =================================================== -->
-        <section id="tab-home" class="space-y-8">
-          <!-- Apple Music Style Top Hero Banner -->
-          <div id="heroFeaturedCard" class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden flex flex-col justify-between min-h-[240px] group">
-            <div id="heroFeaturedBg" class="absolute inset-0 opacity-35 bg-gradient-to-br from-rose-500 via-purple-600 to-cyan-500 pointer-events-none"></div>
-            <div class="relative z-10 flex items-start justify-between gap-4">
-              <div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/15 border border-white/25 text-white mb-3">
-                  <i class="fa-solid fa-star text-amber-300"></i>
-                  注目の曲
-                </span>
-                <h2 id="heroSongTitle" class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight line-clamp-2">
-                  Takaneko music
-                </h2>
-                <p id="heroSongArtist" class="text-sm sm:text-base text-white/75 mt-1 font-medium">
-                  Takaneko music
-                </p>
-              </div>
-              <div id="heroSongArt" class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl shadow-2xl border border-white/30 shrink-0 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-rose-500 to-indigo-600">
-                <img
-                  src="takaneko.png"
-                  alt="Takaneko music"
-                  class="w-full h-full object-cover"
-                  onerror="this.onerror=null; this.src='https://placehold.co/200x200/FA2D48/ffffff?text=T';"
-                />
-              </div>
-            </div>
-
-            <div class="relative z-10 flex flex-wrap items-center gap-3 mt-6">
-              <button id="heroPlayBtn" onclick="playFeaturedHero()" class="apple-accent-btn px-6 py-2.5 rounded-full text-sm font-bold flex items-center gap-2.5 shadow-xl">
-                <i class="fa-solid fa-play text-xs"></i>
-                <span>再生</span>
-              </button>
-              <button id="heroAddLibBtn" onclick="toggleHeroLibrary()" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 text-white">
-                <i class="fa-solid fa-plus"></i>
-                <span>ライブラリに追加</span>
-              </button>
-              <button id="heroOfflineBtn" onclick="toggleHeroOffline()" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 text-white">
-                <i class="fa-solid fa-arrow-down"></i>
-                <span>オフライン保存</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Section: 注目の曲 (Featured Grid) -->
-          <div>
-            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
-              <div>
-                <h2 class="text-lg sm:text-xl font-bold tracking-tight flex items-center gap-2">
-                  <span>注目のアップロードされた曲</span>
-                  <span id="featuredUploadsCount" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300">0曲</span>
-                </h2>
-              </div>
-              <div class="flex flex-wrap items-center gap-2">
-                <button onclick="rescanGitHubMp3Files()" id="btnRescanMp3" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 text-white/85">
-                  <i id="rescanIcon" class="fa-solid fa-rotate text-[10px] text-emerald-400"></i>
-                  <span>再スキャン</span>
-                </button>
-                <button onclick="playAllSongs(false)" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
-                  <i class="fa-solid fa-play text-[10px] text-rose-400"></i>
-                  <span>すべて再生</span>
-                </button>
-                <button onclick="playAllSongs(true)" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
-                  <i class="fa-solid fa-shuffle text-[10px] text-cyan-400"></i>
-                  <span>シャッフル</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Featured Cards Grid -->
-            <div id="featuredSongsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-
-          <!-- Section: すべての曲一覧 (List View) -->
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h2 class="text-lg font-bold tracking-tight">曲一覧</h2>
-            </div>
-            <div id="homeTrackList" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-        </section>
-
-        <!-- ===================================================
-             TAB 2: ポッドキャスト (PODCAST - RSS Feeds)
-             =================================================== -->
-        <section id="tab-podcast" class="hidden space-y-6">
-          <!-- Podcast Shows Selector -->
-          <div>
-            <div class="flex items-center justify-between mb-4">
-              <div>
-                <h2 class="text-xl sm:text-2xl font-extrabold tracking-tight">ポッドキャスト</h2>
-                <p class="text-xs text-white/55 mt-0.5">番組を選択してエピソードを再生</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <span id="podcastStatusText" class="text-xs text-emerald-300/80"></span>
-                <button onclick="refreshAllPodcastFeeds()" class="glass-pill-btn px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5">
-                  <i class="fa-solid fa-rotate text-[11px]"></i>
-                  <span>更新</span>
-                </button>
-              </div>
-            </div>
-            <div id="podcastShowsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <!-- Populated by JS from PODCAST_RSS_FEEDS -->
-            </div>
-          </div>
-
-          <!-- Active Podcast Show Details & Episodes List -->
-          <div id="podcastEpisodesSection" class="space-y-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 id="activePodcastTitle" class="text-lg font-bold">エピソード一覧</h3>
-              </div>
-              <span id="activePodcastEpisodeCount" class="text-xs px-3 py-1 rounded-full bg-white/10 text-white/75 font-semibold">0 エピソード</span>
-            </div>
-
-            <div id="podcastEpisodesList" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
-              <!-- Episodes populated by JS -->
-            </div>
-          </div>
-        </section>
-
+<!-- ... existing code ... -->
         <!-- ===================================================
              TAB 3: ライブラリ (LIBRARY - User's Added Tracks & Offline)
              =================================================== -->
@@ -466,10 +22,14 @@
           <div class="glass-card rounded-3xl p-6 flex flex-col gap-4">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <div class="flex items-center gap-2.5">
+                <div class="flex flex-wrap items-center gap-2">
                   <h2 class="text-2xl font-extrabold tracking-tight">ライブラリ</h2>
                   <span id="offlineSavedBadge" class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300">
                     オフライン保存: 0件
+                  </span>
+                  <span id="devicePageSavedBadge" class="hidden text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 items-center gap-1">
+                    <i class="fa-solid fa-circle-check text-[10px]"></i>
+                    <span>ページ全体をデバイスに保存済み</span>
                   </span>
                 </div>
                 <p class="text-xs sm:text-sm text-white/65 mt-1">
@@ -477,285 +37,9 @@
                 </p>
               </div>
               <div class="flex flex-wrap items-center gap-2 shrink-0">
-                <button onclick="playLibraryTracks(false)" class="apple-accent-btn px-5 py-2.5 rounded-full text-xs font-bold flex items-center gap-2">
-                  <i class="fa-solid fa-play"></i>
-                  <span>再生</span>
-                </button>
-                <button onclick="playLibraryTracks(true)" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2">
-                  <i class="fa-solid fa-shuffle text-cyan-400"></i>
-                  <span>シャッフル</span>
-                </button>
-                <button onclick="downloadAllLibraryTracksOffline()" class="glass-pill-btn px-4 py-2.5 rounded-full text-xs font-semibold flex items-center gap-2 text-cyan-300 border-cyan-400/30">
-                  <i class="fa-solid fa-cloud-arrow-down"></i>
-                  <span>一括オフライン保存</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Library Filter Pills -->
-            <div class="flex flex-wrap items-center gap-2 text-xs pt-1 border-t border-white/10">
-              <button onclick="setLibraryFilter('all')" id="lib-filter-all" class="glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white">
-                すべて
-              </button>
-              <button onclick="setLibraryFilter('songs')" id="lib-filter-songs" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
-                曲
-              </button>
-              <button onclick="setLibraryFilter('podcast')" id="lib-filter-podcast" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
-                ポッドキャスト
-              </button>
-              <button onclick="setLibraryFilter('offline')" id="lib-filter-offline" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75 flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-check text-cyan-400 text-[10px]"></i>
-                <span>オフライン保存済み</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Library Empty State -->
-          <div id="libraryEmptyState" class="hidden glass-card rounded-3xl p-12 text-center space-y-4">
-            <div class="w-16 h-16 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center mx-auto text-white/50 text-2xl">
-              <i class="fa-solid fa-layer-group"></i>
-            </div>
-            <div>
-              <h3 class="text-base font-bold text-white">ライブラリにまだ曲がありません</h3>
-              <p class="text-xs text-white/55 mt-1 max-w-md mx-auto">
-                ホームや検索画面にある曲の「＋」ボタンを押すと、ライブラリに追加してここから聴けるようになります。
-              </p>
-            </div>
-            <div class="flex justify-center pt-2">
-              <button onclick="switchTab('home')" class="apple-accent-btn px-5 py-2 rounded-full text-xs font-semibold">
-                ホームの曲を見る
-              </button>
-            </div>
-          </div>
-
-          <div id="librarySongsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <!-- Populated by JS -->
-          </div>
-
-          <div id="libraryTracksList" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
-            <!-- Populated by JS -->
-          </div>
-        </section>
-
-        <!-- ===================================================
-             TAB 4: 検索 (SEARCH - Search by Song Title)
-             =================================================== -->
-        <section id="tab-search" class="hidden space-y-6">
-          <!-- Search Bar -->
-          <div class="glass-card rounded-3xl p-6 space-y-4">
-            <h2 class="text-2xl font-extrabold tracking-tight">検索</h2>
-            <div class="flex items-center glass-surface rounded-2xl px-4 py-3.5 gap-3 border border-white/25 focus-within:border-rose-400 transition-all">
-              <i class="fa-solid fa-magnifying-glass text-rose-400 text-base"></i>
-              <input
-                id="mainSearchInput"
-                type="text"
-                placeholder="曲名を入力して検索..."
-                oninput="renderSearchResults(this.value)"
-                class="bg-transparent border-none outline-none text-sm sm:text-base text-white placeholder-white/45 w-full font-medium"
-              />
-              <button id="clearSearchBtn" onclick="clearSearchInput()" class="hidden w-6 h-6 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs text-white/80">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-
-            <!-- Filter Pills -->
-            <div class="flex flex-wrap items-center gap-2 text-xs">
-              <button onclick="setSearchFilter('all')" id="search-filter-all" class="glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white">
-                すべて
-              </button>
-              <button onclick="setSearchFilter('songs')" id="search-filter-songs" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
-                曲
-              </button>
-              <button onclick="setSearchFilter('library')" id="search-filter-library" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
-                ライブラリ追加済み
-              </button>
-              <button onclick="setSearchFilter('podcast')" id="search-filter-podcast" class="glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75">
-                ポッドキャスト
-              </button>
-            </div>
-          </div>
-
-          <!-- Search Results List -->
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
-              <h3 id="searchResultHeading" class="text-sm font-bold text-white/75">曲一覧</h3>
-              <span id="searchResultCount" class="text-xs text-white/50">0 件</span>
-            </div>
-            <div id="searchResultsContainer" class="glass-card rounded-3xl divide-y divide-white/10 overflow-hidden">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-        </section>
-
-      </div>
-    </main>
-  </div>
-
-  <!-- =========================================================
-       FLOATING PLAYER BAR (Apple Music Style)
-       ========================================================= -->
-  <div class="fixed bottom-16 md:bottom-5 left-2 right-2 md:left-72 lg:left-80 md:right-6 z-30 pointer-events-none flex justify-center">
-    <div class="w-full max-w-5xl glass-surface-heavy rounded-3xl p-2.5 sm:px-5 sm:py-3 pointer-events-auto shadow-2xl border border-white/25">
-
-      <!-- Top Slim Interactive Seek Bar -->
-      <div class="flex items-center gap-2.5 px-1 mb-1.5">
-        <span id="playerCurrentTime" class="text-[10px] font-mono text-white/60 w-9 text-right">0:00</span>
-        <input
-          id="playerSeekBar"
-          type="range"
-          min="0"
-          max="100"
-          value="0"
-          step="0.1"
-          oninput="seekAudio(this.value)"
-          class="apple-slider flex-1 h-1.5"
-        />
-        <span id="playerRemainingTime" class="text-[10px] font-mono text-white/60 w-10">-0:00</span>
-      </div>
-
-      <div class="flex items-center justify-between gap-3">
-        <!-- Left: Now Playing Artwork & Song Title -->
-        <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer group" onclick="toggleFullscreenPlayer(true)">
-          <div id="miniPlayerArt" class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shrink-0 overflow-hidden shadow-lg border border-white/25 flex items-center justify-center bg-gradient-to-br from-rose-500 to-indigo-600 relative">
-            <img
-              id="miniPlayerArtImg"
-              src="takaneko.png"
-              alt=""
-              class="w-full h-full object-cover"
-              onerror="this.onerror=null; this.src='https://placehold.co/96x96/FA2D48/ffffff?text=T';"
-            />
-            <i id="miniPlayerArtPodcastIcon" class="fa-solid fa-podcast text-white text-lg hidden"></i>
-            <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-              <i class="fa-solid fa-up-right-and-down-left-from-center text-white text-xs"></i>
-            </div>
-          </div>
-          <div class="min-w-0 flex-1">
-            <div class="flex items-center gap-2">
-              <p id="miniPlayerTitle" class="text-xs sm:text-sm font-bold text-white truncate">
-                曲を選択してください
-              </p>
-            </div>
-            <p id="miniPlayerArtist" class="text-[11px] text-white/60 truncate mt-0.5">
-              Takaneko music
-            </p>
-          </div>
-        </div>
-
-        <!-- Center: Playback Transport Controls -->
-        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
-          <button onclick="toggleShuffle()" id="btnShuffle" title="シャッフル" class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white/60 hover:text-white transition-colors">
-            <i class="fa-solid fa-shuffle text-xs"></i>
-          </button>
-
-          <button onclick="prevTrack()" title="前の曲" class="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-transform active:scale-90">
-            <i class="fa-solid fa-backward-step text-sm sm:text-base"></i>
-          </button>
-
-          <button onclick="togglePlayPause()" id="btnPlayPause" title="再生 / 一時停止" class="w-11 h-11 rounded-full apple-accent-btn flex items-center justify-center text-white shadow-lg">
-            <i id="playPauseIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
-          </button>
-
-          <button onclick="nextTrack()" title="次の曲" class="w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-transform active:scale-90">
-            <i class="fa-solid fa-forward-step text-sm sm:text-base"></i>
-          </button>
-
-          <button onclick="toggleRepeat()" id="btnRepeat" title="リピート" class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white/60 hover:text-white transition-colors">
-            <i class="fa-solid fa-repeat text-xs"></i>
-          </button>
-        </div>
-
-        <!-- Right: Library Add (+), Offline Save, Volume & Expand -->
-        <div class="flex items-center justify-end gap-2 flex-1">
-          <button id="miniPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" title="ライブラリに追加/解除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
-            <i class="fa-solid fa-plus text-xs"></i>
-          </button>
-
-          <button id="miniPlayerOfflineBtn" onclick="toggleCurrentTrackOffline()" title="オフライン保存/削除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
-            <i class="fa-solid fa-arrow-down text-xs"></i>
-          </button>
-
-          <div class="hidden md:flex items-center gap-2 w-28">
-            <button onclick="toggleMute()" class="text-white/65 hover:text-white text-xs w-4">
-              <i id="volumeIcon" class="fa-solid fa-volume-high"></i>
-            </button>
-            <input
-              id="volumeSlider"
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value="0.85"
-              oninput="changeVolume(this.value)"
-              class="apple-slider w-full"
-            />
-          </div>
-
-          <button onclick="toggleFullscreenPlayer(true)" title="フルスクリーン表示" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
-            <i class="fa-solid fa-expand text-xs"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- =========================================================
-       MOBILE BOTTOM TAB BAR (4 Tabs)
-       ========================================================= -->
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-30 glass-surface-heavy border-t border-white/20 px-3 py-1.5 flex items-center justify-around">
-    <button onclick="switchTab('home')" id="nav-mobile-home" class="flex flex-col items-center py-1 px-3 rounded-xl text-rose-400">
-      <i class="fa-solid fa-house text-base"></i>
-      <span class="text-[10px] font-semibold mt-0.5">ホーム</span>
-    </button>
-    <button onclick="switchTab('podcast')" id="nav-mobile-podcast" class="flex flex-col items-center py-1 px-3 rounded-xl text-white/60">
-      <i class="fa-solid fa-podcast text-base"></i>
-      <span class="text-[10px] font-semibold mt-0.5">ポッドキャスト</span>
-    </button>
-    <button onclick="switchTab('library')" id="nav-mobile-library" class="flex flex-col items-center py-1 px-3 rounded-xl text-white/60">
-      <i class="fa-solid fa-layer-group text-base"></i>
-      <span class="text-[10px] font-semibold mt-0.5">ライブラリ</span>
-    </button>
-    <button onclick="switchTab('search')" id="nav-mobile-search" class="flex flex-col items-center py-1 px-3 rounded-xl text-white/60">
-      <i class="fa-solid fa-magnifying-glass text-base"></i>
-      <span class="text-[10px] font-semibold mt-0.5">検索</span>
-    </button>
-  </nav>
-
-  <!-- =========================================================
-       FULLSCREEN PLAYER MODAL (Waveform Removed, Shuffle & Repeat Added)
-       ========================================================= -->
-  <div id="fullscreenPlayerModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-200 flex flex-col justify-between p-6 sm:p-10 glass-surface-heavy">
-    <div class="flex items-center justify-between max-w-4xl w-full mx-auto">
-      <div class="flex items-center gap-2.5">
-        <img
-          src="takaneko.png"
-          alt="Takaneko music"
-          class="w-7 h-7 rounded-lg object-cover border border-white/25 bg-rose-500/20"
-          onerror="this.onerror=null; this.src='https://placehold.co/56x56/FA2D48/ffffff?text=T';"
-        />
-        <span class="text-xs font-bold tracking-wider text-white/80">Takaneko music</span>
-      </div>
-      <button onclick="toggleFullscreenPlayer(false)" class="w-10 h-10 rounded-full glass-pill-btn flex items-center justify-center text-white">
-        <i class="fa-solid fa-chevron-down"></i>
-      </button>
-    </div>
-
-    <div class="max-w-4xl w-full mx-auto my-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-6">
-      <!-- Big Artwork -->
-      <div class="flex flex-col items-center">
-        <div id="fsPlayerArt" class="w-60 h-60 sm:w-80 sm:h-80 rounded-[36px] shadow-2xl border border-white/30 flex items-center justify-center overflow-hidden bg-gradient-to-br from-rose-500 to-indigo-600">
-          <img
-            id="fsPlayerArtImg"
-            src="takaneko.png"
-            alt="Takaneko music"
-            class="w-full h-full object-cover"
-            onerror="this.onerror=null; this.src='https://placehold.co/320x320/FA2D48/ffffff?text=T';"
-          />
-          <i id="fsPlayerArtPodcastIcon" class="fa-solid fa-podcast text-7xl text-white/95 hidden"></i>
-        </div>
-      </div>
-
+<!-- ... existing code ... -->
       <!-- Controls (Waveform Removed, Shuffle & Repeat Included) -->
-      <div class="space-y-7">
+      <div class="space-y-6">
         <div class="flex items-start justify-between gap-4">
           <div class="min-w-0">
             <h2 id="fsPlayerTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white truncate">
@@ -775,78 +59,28 @@
           </div>
         </div>
 
-        <!-- Seek Bar -->
-        <div class="space-y-2">
-          <input
-            id="fsSeekBar"
-            type="range"
-            min="0"
-            max="100"
-            value="0"
-            step="0.1"
-            oninput="seekAudio(this.value)"
-            class="apple-slider w-full"
-          />
-          <div class="flex justify-between text-xs font-mono text-white/55">
-            <span id="fsCurrentTime">0:00</span>
-            <span id="fsRemainingTime">-0:00</span>
+        <!-- Podcast Description Panel (Shown only when playing a Podcast) -->
+        <div id="fsPodcastDescriptionCard" class="hidden glass-surface rounded-2xl p-4 border border-white/15 space-y-2">
+          <div class="flex items-center justify-between gap-2 text-[11px] font-bold text-emerald-300">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-podcast"></i>
+              <span>ポッドキャストの説明</span>
+            </span>
+            <span id="fsPodcastPubDate" class="text-white/50 font-mono font-normal"></span>
+          </div>
+          <div id="fsPodcastDescriptionText" class="text-xs sm:text-sm text-white/85 leading-relaxed max-h-36 sm:max-h-44 overflow-y-auto whitespace-pre-line pr-1 select-text">
           </div>
         </div>
 
-        <!-- Transport Buttons with Shuffle & Repeat -->
-        <div class="flex items-center justify-between sm:justify-center gap-4 sm:gap-6">
-          <button onclick="toggleShuffle()" id="fsBtnShuffle" title="シャッフル" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white/70 hover:text-white transition-colors">
-            <i class="fa-solid fa-shuffle text-sm"></i>
-          </button>
-
-          <button onclick="prevTrack()" title="前の曲" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
-            <i class="fa-solid fa-backward-step"></i>
-          </button>
-
-          <button onclick="togglePlayPause()" title="再生 / 一時停止" class="w-16 h-16 rounded-full apple-accent-btn flex items-center justify-center text-white text-2xl shadow-2xl">
-            <i id="fsPlayPauseIcon" class="fa-solid fa-play ml-1"></i>
-          </button>
-
-          <button onclick="nextTrack()" title="次の曲" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
-            <i class="fa-solid fa-forward-step"></i>
-          </button>
-
-          <button onclick="toggleRepeat()" id="fsBtnRepeat" title="リピート" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white/70 hover:text-white transition-colors">
-            <i class="fa-solid fa-repeat text-sm"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="text-center text-[11px] text-white/40">
-      Takaneko music
-    </div>
-  </div>
-
-  <!-- =========================================================
-       TOAST NOTIFICATION CONTAINER
-       ========================================================= -->
-  <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2 pointer-events-none"></div>
-
-  <!-- =========================================================
-       APPLICATION JAVASCRIPT
-       ========================================================= -->
-  <script>
-    /*************************************************************************
-     * 1. MP3ファイル一覧の設定 (コード記述 + 同じフォルダの自動検出ハイブリッド)
-     *************************************************************************/
-    const MP3_FILES = [
-      'エンドレスラフター.mp3',
-    ];
-
-    /*************************************************************************
-     * 2. Spotify / Anchor 系ポッドキャストの RSS フィード設定 (コード記述用)
-     *************************************************************************/
+        <!-- Seek Bar -->
+        <div class="space-y-2">
+<!-- ... existing code ... -->
     const PODCAST_RSS_FEEDS = [
       {
         id: 'podcast-feed-1',
         name: 'Takaneko Podcast Channel',
         rssUrl: 'https://anchor.fm/s/1167d87c0/podcast/rss',
+        coverUrl: '',
         coverGradient: 'linear-gradient(135deg, #1db954 0%, #0f4c3a 100%)',
         orbColors: ['#1db954', '#00b4d8', '#095228', '#7209b7']
       }
@@ -880,9 +114,29 @@
       return `${type}:${cleanTitle}`;
     }
 
-    // 音楽は takaneko.png、ポッドキャストは Podcast アイコンを返す共通ヘルパー
+    function getPodcastCoverUrl(track) {
+      if (!track || track.type !== 'podcast') return '';
+      const sKey = getTrackStableKey(track);
+      const offlineEntry = offlineBlobUrlMap.get(sKey);
+      if (offlineEntry && offlineEntry.coverBlobUrl) {
+        return offlineEntry.coverBlobUrl;
+      }
+      if (track.coverUrl) return track.coverUrl;
+      const show = podcastShows.find(s => s.id === activePodcastFeedId || s.name === track.artist);
+      return show?.coverUrl || '';
+    }
+
+    // 音楽は takaneko.png、ポッドキャストはRSSのSpotifyアイコン(未取得時はPodcastアイコン)を返す共通ヘルパー
     function renderArtworkInnerHtml(track, iconSizeClass = 'text-2xl') {
       if (track && track.type === 'podcast') {
+        const coverUrl = getPodcastCoverUrl(track);
+        if (coverUrl) {
+          return `
+            <img src="${escapeHtml(coverUrl)}" alt="" loading="lazy" class="w-full h-full object-cover"
+                 onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.remove('hidden');" />
+            <i class="fa-solid fa-podcast ${iconSizeClass} text-white hidden"></i>
+          `;
+        }
         return `<i class="fa-solid fa-podcast ${iconSizeClass} text-white"></i>`;
       }
       return `<img src="takaneko.png" alt="" loading="lazy" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x200/FA2D48/ffffff?text=T';" />`;
@@ -894,6 +148,9 @@
     const LIBRARY_STORAGE_KEY_V3 = 'takaneko_music_library_store_v3';
     const LEGACY_LIBRARY_KEYS = ['takaneko_music_library_titles_v2', 'takaneko_music_library_ids_v1'];
     const DISCOVERED_CACHE_KEY = 'takaneko_music_discovered_mp3_cache_v3';
+    const PODCAST_CACHE_STORAGE_KEY = 'takaneko_music_podcast_rss_cache_v1';
+    const DEVICE_PAGE_CACHE_NAME = 'takaneko-music-device-page-v1';
+    const DEVICE_PAGE_SAVED_FLAG_KEY = 'takaneko_music_device_page_saved_v1';
 
     let songs = [];
     let podcastShows = [...PODCAST_RSS_FEEDS];
@@ -905,116 +162,7 @@
     const offlineDownloadingKeys = new Set();
 
     let currentTab = 'home';
-    let currentSearchFilter = 'all';
-    let currentLibraryFilter = 'all';
-
-    const audioPlayer = document.getElementById('takanekoAudio');
-    audioPlayer.volume = 0.85;
-    audioPlayer.muted = false;
-
-    let currentQueue = [];
-    let currentIndex = -1;
-    let currentTrack = null;
-    let currentUrlCandidateIndex = 0;
-    let isPlaying = false;
-    let isShuffle = false;
-    let repeatMode = 'off'; // 'off' | 'all' | 'one'
-    let lastDisplayedSecond = -1;
-
-    const COLOR_PALETTES = [
-      {
-        gradient: 'linear-gradient(135deg, #FF2A5F 0%, #7928CA 100%)',
-        orbs: ['#FF2A5F', '#7928CA', '#00D2FF', '#FF7B00']
-      },
-      {
-        gradient: 'linear-gradient(135deg, #00C6FF 0%, #0072FF 100%)',
-        orbs: ['#00C6FF', '#0072FF', '#7F00FF', '#00F5D4']
-      },
-      {
-        gradient: 'linear-gradient(135deg, #F857A6 0%, #FF5858 100%)',
-        orbs: ['#F857A6', '#FF5858', '#FF9966', '#8E2DE2']
-      },
-      {
-        gradient: 'linear-gradient(135deg, #43E97B 0%, #38F9D7 100%)',
-        orbs: ['#10B981', '#06B6D4', '#3B82F6', '#8B5CF6']
-      },
-      {
-        gradient: 'linear-gradient(135deg, #FA709A 0%, #FEE140 100%)',
-        orbs: ['#FA709A', '#F59E0B', '#EC4899', '#6366F1']
-      },
-      {
-        gradient: 'linear-gradient(135deg, #A18CD1 0%, #FBC2EB 100%)',
-        orbs: ['#A855F7', '#EC4899', '#6366F1', '#38BDF8']
-      }
-    ];
-
-    function loadLibraryStore() {
-      savedLibraryMap = {};
-      try {
-        const rawV3 = localStorage.getItem(LIBRARY_STORAGE_KEY_V3);
-        if (rawV3) {
-          const parsed = JSON.parse(rawV3);
-          if (parsed && typeof parsed === 'object') {
-            savedLibraryMap = parsed;
-          }
-        }
-        for (const legacyKey of LEGACY_LIBRARY_KEYS) {
-          const rawLegacy = localStorage.getItem(legacyKey);
-          if (rawLegacy) {
-            const arr = JSON.parse(rawLegacy);
-            if (Array.isArray(arr)) {
-              arr.forEach((item, idx) => {
-                let title = String(item);
-                if (title.startsWith('song-')) {
-                  const parts = title.split('-');
-                  title = decodeURIComponent(parts.slice(2).join('-') || title);
-                }
-                const cleanTitle = extractSongTitleFromFilename(title);
-                const sKey = getTrackStableKey(cleanTitle, 'song');
-                if (!savedLibraryMap[sKey]) {
-                  const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
-                  savedLibraryMap[sKey] = {
-                    id: 'lib-' + encodeURIComponent(sKey),
-                    stableKey: sKey,
-                    title: cleanTitle,
-                    artist: 'Takaneko music',
-                    type: 'song',
-                    audioUrl: buildAudioUrlCandidates(cleanTitle + '.mp3')[0],
-                    urlCandidates: buildAudioUrlCandidates(cleanTitle + '.mp3'),
-                    inLibrary: true,
-                    gradient: palette.gradient,
-                    orbColors: palette.orbs
-                  };
-                }
-              });
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('loadLibraryStore error:', e);
-      }
-    }
-
-    function saveLibraryStore() {
-      try {
-        localStorage.setItem(LIBRARY_STORAGE_KEY_V3, JSON.stringify(savedLibraryMap));
-      } catch (e) {
-        console.warn('saveLibraryStore error:', e);
-      }
-    }
-
-    function isTrackInLibrary(track) {
-      if (!track) return false;
-      const sKey = getTrackStableKey(track);
-      return Boolean(savedLibraryMap[sKey]);
-    }
-
-    function setTrackLibraryState(track, shouldBeInLibrary) {
-      if (!track) return;
-      const sKey = getTrackStableKey(track);
-      track.stableKey = sKey;
-      track.inLibrary = shouldBeInLibrary;
-
+<!-- ... existing code ... -->
       if (shouldBeInLibrary) {
         savedLibraryMap[sKey] = {
           id: track.id,
@@ -1024,6 +172,7 @@
           type: track.type || 'song',
           pubDate: track.pubDate || '',
           description: track.description || '',
+          coverUrl: track.coverUrl || '',
           audioUrl: track.audioUrl || '',
           urlCandidates: track.urlCandidates || (track.audioUrl ? [track.audioUrl] : []),
           inLibrary: true,
@@ -1033,26 +182,13 @@
       } else {
         delete savedLibraryMap[sKey];
       }
-
-      songs.forEach(s => {
-        if (getTrackStableKey(s) === sKey) s.inLibrary = shouldBeInLibrary;
-      });
-      Object.values(podcastEpisodesByFeed).forEach(epList => {
-        if (Array.isArray(epList)) {
-          epList.forEach(ep => {
-            if (getTrackStableKey(ep) === sKey) ep.inLibrary = shouldBeInLibrary;
-          });
-        }
-      });
-
-      saveLibraryStore();
-    }
-
+<!-- ... existing code ... -->
     /*************************************************************************
-     * 5. IndexedDB オフライン保存エンジン (曲・ポッドキャスト対応)
+     * 5. IndexedDB オフライン保存エンジン (曲・ポッドキャスト・ページ全体保存対応)
      *************************************************************************/
     const OFFLINE_DB_NAME = 'TakanekoOfflineDB_v1';
     const OFFLINE_STORE_NAME = 'offline_audio_store';
+    const OFFLINE_PAGE_STORE_NAME = 'offline_page_bundle_store';
 
     function openOfflineDB() {
       return new Promise((resolve, reject) => {
@@ -1060,16 +196,135 @@
           reject(new Error('IndexedDB is not supported'));
           return;
         }
-        const req = indexedDB.open(OFFLINE_DB_NAME, 1);
+        const req = indexedDB.open(OFFLINE_DB_NAME, 2);
         req.onupgradeneeded = (e) => {
           const db = e.target.result;
           if (!db.objectStoreNames.contains(OFFLINE_STORE_NAME)) {
             db.createObjectStore(OFFLINE_STORE_NAME, { keyPath: 'stableKey' });
           }
+          if (!db.objectStoreNames.contains(OFFLINE_PAGE_STORE_NAME)) {
+            db.createObjectStore(OFFLINE_PAGE_STORE_NAME, { keyPath: 'id' });
+          }
         };
         req.onsuccess = (e) => resolve(e.target.result);
         req.onerror = (e) => reject(e.target.error);
       });
+    }
+
+    function savePodcastCacheToLocalStorage() {
+      try {
+        const payload = {
+          shows: podcastShows.map(s => ({
+            id: s.id,
+            name: s.name,
+            rssUrl: s.rssUrl,
+            coverUrl: s.coverUrl || '',
+            coverGradient: s.coverGradient
+          })),
+          episodesByFeed: podcastEpisodesByFeed,
+          updatedAt: Date.now()
+        };
+        localStorage.setItem(PODCAST_CACHE_STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {}
+    }
+
+    function loadPodcastCacheFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(PODCAST_CACHE_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.shows)) {
+          parsed.shows.forEach(cachedShow => {
+            const target = podcastShows.find(s => s.id === cachedShow.id);
+            if (target) {
+              if (cachedShow.name) target.name = cachedShow.name;
+              if (cachedShow.coverUrl) target.coverUrl = cachedShow.coverUrl;
+            }
+          });
+        }
+        if (parsed && parsed.episodesByFeed && typeof parsed.episodesByFeed === 'object') {
+          podcastEpisodesByFeed = parsed.episodesByFeed;
+        }
+      } catch (e) {}
+    }
+
+    async function fetchImageBlobSafe(imageUrl) {
+      if (!imageUrl || imageUrl.startsWith('blob:') || imageUrl.startsWith('data:')) return null;
+      const targets = [
+        imageUrl,
+        `https://corsproxy.io/?${encodeURIComponent(imageUrl)}`,
+        `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(imageUrl)}`
+      ];
+      for (const u of targets) {
+        try {
+          const res = await fetch(u, { cache: 'force-cache' });
+          if (res.ok) {
+            const b = await res.blob();
+            if (b && b.size > 100 && b.type.startsWith('image/')) return b;
+          }
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    // 音楽やポッドキャストをオフライン保存した際、ページ全体とアセットもデバイスに保存する
+    async function cacheEntirePageOffline() {
+      try {
+        if ('caches' in window) {
+          const cache = await caches.open(DEVICE_PAGE_CACHE_NAME);
+          const coreUrls = [
+            window.location.href,
+            './',
+            'index.html',
+            'takaneko.png',
+            'https://cdn.tailwindcss.com',
+            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+          ];
+
+          podcastShows.forEach(s => {
+            if (s.coverUrl) coreUrls.push(s.coverUrl);
+          });
+          Object.values(podcastEpisodesByFeed).forEach(list => {
+            if (Array.isArray(list)) {
+              list.forEach(ep => {
+                if (ep.coverUrl && !coreUrls.includes(ep.coverUrl)) {
+                  coreUrls.push(ep.coverUrl);
+                }
+              });
+            }
+          });
+
+          await Promise.allSettled(
+            coreUrls.map(async (url) => {
+              try {
+                const req = new Request(url, { mode: 'no-cors' });
+                const res = await fetch(req);
+                await cache.put(url, res);
+              } catch (e) {}
+            })
+          );
+        }
+
+        savePodcastCacheToLocalStorage();
+        saveLibraryStore();
+
+        const db = await openOfflineDB();
+        if (db.objectStoreNames.contains(OFFLINE_PAGE_STORE_NAME)) {
+          const tx = db.transaction(OFFLINE_PAGE_STORE_NAME, 'readwrite');
+          const store = tx.objectStore(OFFLINE_PAGE_STORE_NAME);
+          const htmlSnapshot = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+          store.put({
+            id: 'main_page_bundle',
+            url: window.location.href,
+            html: htmlSnapshot,
+            savedAt: Date.now()
+          });
+        }
+
+        localStorage.setItem(DEVICE_PAGE_SAVED_FLAG_KEY, String(Date.now()));
+      } catch (e) {
+        console.warn('cacheEntirePageOffline warning:', e);
+      }
     }
 
     async function loadAllOfflineTracksFromIDB() {
@@ -1089,10 +344,20 @@
             if (oldEntry && oldEntry.blobUrl) {
               try { URL.revokeObjectURL(oldEntry.blobUrl); } catch (e) {}
             }
+            if (oldEntry && oldEntry.coverBlobUrl) {
+              try { URL.revokeObjectURL(oldEntry.coverBlobUrl); } catch (e) {}
+            }
             const blobUrl = URL.createObjectURL(rec.blob);
+            const coverBlobUrl = (rec.coverBlob instanceof Blob)
+              ? URL.createObjectURL(rec.coverBlob)
+              : '';
+            if (coverBlobUrl && rec.trackMeta) {
+              rec.trackMeta.coverUrl = coverBlobUrl;
+            }
             offlineBlobUrlMap.set(rec.stableKey, {
               stableKey: rec.stableKey,
               blobUrl: blobUrl,
+              coverBlobUrl: coverBlobUrl,
               size: rec.size || rec.blob.size || 0,
               savedAt: rec.savedAt || Date.now(),
               trackMeta: rec.trackMeta || null
@@ -1106,6 +371,12 @@
 
     async function saveTrackBlobToIDB(track, blob) {
       const sKey = getTrackStableKey(track);
+      const coverUrl = getPodcastCoverUrl(track) || track.coverUrl || '';
+      let coverBlob = null;
+      if (track.type === 'podcast' && coverUrl) {
+        coverBlob = await fetchImageBlobSafe(coverUrl);
+      }
+
       const trackMeta = {
         id: track.id || ('offline-' + encodeURIComponent(sKey)),
         stableKey: sKey,
@@ -1114,6 +385,7 @@
         type: track.type || 'song',
         pubDate: track.pubDate || '',
         description: track.description || '',
+        coverUrl: coverUrl,
         audioUrl: track.audioUrl || '',
         urlCandidates: track.urlCandidates || (track.audioUrl ? [track.audioUrl] : []),
         inLibrary: isTrackInLibrary(track),
@@ -1124,6 +396,7 @@
       const record = {
         stableKey: sKey,
         blob: blob,
+        coverBlob: coverBlob,
         size: blob.size || 0,
         savedAt: Date.now(),
         trackMeta: trackMeta
@@ -1140,141 +413,32 @@
 
       const old = offlineBlobUrlMap.get(sKey);
       if (old && old.blobUrl) {
-        try { URL.revokeObjectURL(oldEntry?.blobUrl); } catch (e) {}
+        try { URL.revokeObjectURL(old.blobUrl); } catch (e) {}
+      }
+      if (old && old.coverBlobUrl) {
+        try { URL.revokeObjectURL(old.coverBlobUrl); } catch (e) {}
       }
       const blobUrl = URL.createObjectURL(blob);
+      const coverBlobUrl = coverBlob ? URL.createObjectURL(coverBlob) : '';
       offlineBlobUrlMap.set(sKey, {
         stableKey: sKey,
         blobUrl: blobUrl,
+        coverBlobUrl: coverBlobUrl,
         size: record.size,
         savedAt: record.savedAt,
         trackMeta: trackMeta
       });
     }
-
-    async function deleteTrackBlobFromIDB(track) {
-      const sKey = getTrackStableKey(track);
-      const db = await openOfflineDB();
-      const tx = db.transaction(OFFLINE_STORE_NAME, 'readwrite');
-      const store = tx.objectStore(OFFLINE_STORE_NAME);
-      await new Promise((resolve, reject) => {
-        const req = store.delete(sKey);
-        req.onsuccess = () => resolve();
-        req.onerror = () => reject(req.error);
-      });
-
-      const existing = offlineBlobUrlMap.get(sKey);
-      if (existing && existing.blobUrl) {
-        try { URL.revokeObjectURL(existing.blobUrl); } catch (e) {}
-      }
-      offlineBlobUrlMap.delete(sKey);
-    }
-
-    function isTrackSavedOffline(track) {
-      if (!track) return false;
-      return offlineBlobUrlMap.has(getTrackStableKey(track));
-    }
-
-    function isTrackDownloadingOffline(track) {
-      if (!track) return false;
-      return offlineDownloadingKeys.has(getTrackStableKey(track));
-    }
-
-    function formatBytes(bytes) {
-      if (!bytes || bytes <= 0) return '';
-      const mb = bytes / (1024 * 1024);
-      if (mb >= 1) return `${mb.toFixed(1)} MB`;
-      const kb = bytes / 1024;
-      return `${Math.round(kb)} KB`;
-    }
-
-    async function fetchAudioBlobWithFallback(track) {
-      const rawCandidates = (track.urlCandidates && track.urlCandidates.length > 0)
-        ? [...track.urlCandidates]
-        : (track.audioUrl ? [track.audioUrl] : []);
-
-      const fetchTargets = [];
-      const addTarget = (u) => {
-        if (u && !u.startsWith('blob:') && !fetchTargets.includes(u)) {
-          fetchTargets.push(u);
-        }
-      };
-
-      rawCandidates.forEach(u => addTarget(u));
-      rawCandidates.forEach(u => {
-        if (/^https?:\/\//i.test(u)) {
-          addTarget(`https://corsproxy.io/?${encodeURIComponent(u)}`);
-          addTarget(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`);
-        }
-      });
-
-      for (const url of fetchTargets) {
-        try {
-          const res = await fetch(url, { cache: 'no-store' });
-          if (!res.ok) continue;
-          const blob = await res.blob();
-          if (blob && blob.size > 1024 && !String(blob.type).includes('text/html')) {
-            return blob.type && blob.type.startsWith('audio/')
-              ? blob
-              : new Blob([blob], { type: 'audio/mpeg' });
-          }
-        } catch (err) {}
-      }
-      throw new Error('音声データの取得に失敗しました');
-    }
-
-    async function toggleOfflineTrackById(trackId) {
-      const track = findTrackAnywhere(trackId);
-      if (!track) return;
-      await toggleOfflineTrack(track);
-    }
-
-    async function toggleHeroOffline() {
-      if (songs.length > 0) {
-        await toggleOfflineTrack(songs[0]);
-      }
-    }
-
-    async function toggleCurrentTrackOffline() {
-      if (!currentTrack) return;
-      await toggleOfflineTrack(currentTrack);
-    }
-
-    async function toggleOfflineTrack(track) {
-      if (!track) return;
-      const sKey = getTrackStableKey(track);
-
-      if (offlineDownloadingKeys.has(sKey)) {
-        return;
-      }
-
-      if (offlineBlobUrlMap.has(sKey)) {
-        try {
-          await deleteTrackBlobFromIDB(track);
-          showToast(`「${track.title}」のオフライン保存を削除しました`, 'fa-trash-can');
-          updatePlayerUI();
-          renderAllViews();
-          if (currentTab === 'podcast') renderActivePodcastEpisodes();
-        } catch (e) {
-          showToast('オフラインデータの削除に失敗しました', 'fa-circle-exclamation');
-        }
-        return;
-      }
-
-      offlineDownloadingKeys.add(sKey);
-      showToast(`「${track.title}」をオフライン保存しています...`, 'fa-cloud-arrow-down');
-      updatePlayerUI();
-      renderAllViews();
-      if (currentTab === 'podcast') renderActivePodcastEpisodes();
-
+<!-- ... existing code ... -->
       try {
         const blob = await fetchAudioBlobWithFallback(track);
         await saveTrackBlobToIDB(track, blob);
+        await cacheEntirePageOffline();
         if (!isTrackInLibrary(track)) {
           setTrackLibraryState(track, true);
         }
         const sizeLabel = formatBytes(blob.size);
-        showToast(`「${track.title}」をオフライン保存しました ${sizeLabel ? `(${sizeLabel})` : ''}`, 'fa-circle-check');
+        showToast(`「${track.title}」とページ全体をデバイスにオフライン保存しました ${sizeLabel ? `(${sizeLabel})` : ''}`, 'fa-circle-check');
       } catch (err) {
         showToast(`「${track.title}」のオフライン保存に失敗しました`, 'fa-circle-exclamation');
       } finally {
@@ -1284,645 +448,7 @@
         if (currentTab === 'podcast') renderActivePodcastEpisodes();
       }
     }
-
-    async function downloadAllLibraryTracksOffline() {
-      const libItems = getCombinedLibraryItems();
-      const pending = libItems.filter(item => !isTrackSavedOffline(item));
-      if (libItems.length === 0) {
-        showToast('ライブラリに曲やポッドキャストがありません', 'fa-layer-group');
-        return;
-      }
-      if (pending.length === 0) {
-        showToast('ライブラリのすべての曲がオフライン保存済みです', 'fa-circle-check');
-        return;
-      }
-
-      showToast(`${pending.length}件のトラックを順番にオフライン保存します...`, 'fa-cloud-arrow-down');
-      for (const item of pending) {
-        await toggleOfflineTrack(item);
-      }
-    }
-
-    /*************************************************************************
-     * 6. プレビュー環境用フォールバック音源生成 & URL候補構築
-     *************************************************************************/
-    const fallbackWavCache = new Map();
-    function getFallbackAudioBlobUrl(seedIndex = 0) {
-      if (fallbackWavCache.has(seedIndex)) return fallbackWavCache.get(seedIndex);
-      const chordSets = [
-        [261.63, 329.63, 293.66, 392.00],
-        [220.00, 261.63, 329.63, 293.66],
-        [293.66, 349.23, 440.00, 392.00],
-        [196.00, 246.94, 293.66, 329.63]
-      ];
-      const chordFreqs = chordSets[seedIndex % chordSets.length];
-      const tempoBpm = 112;
-      const durationSec = 16;
-      const sampleRate = 22050;
-      const numSamples = sampleRate * durationSec;
-      const buffer = new ArrayBuffer(44 + numSamples * 2);
-      const view = new DataView(buffer);
-
-      const writeStr = (offset, str) => {
-        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
-      };
-
-      writeStr(0, 'RIFF');
-      view.setUint32(4, 36 + numSamples * 2, true);
-      writeStr(8, 'WAVE');
-      writeStr(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, 1, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, sampleRate * 2, true);
-      view.setUint16(32, 2, true);
-      view.setUint16(34, 16, true);
-      writeStr(36, 'data');
-      view.setUint32(40, numSamples * 2, true);
-
-      const beatSec = 60 / tempoBpm;
-      for (let i = 0; i < numSamples; i++) {
-        const t = i / sampleRate;
-        const barIndex = Math.floor(t / (beatSec * 2)) % chordFreqs.length;
-        const root = chordFreqs[barIndex];
-        const arpStep = Math.floor(t / (beatSec / 2)) % 4;
-        const arpFreq = root * [1, 1.25, 1.5, 2][arpStep];
-        const pad = Math.sin(2 * Math.PI * root * t) * 0.22 + Math.sin(2 * Math.PI * (root * 1.5) * t) * 0.14;
-        const env = Math.exp(-(t % (beatSec / 2)) * 6.5);
-        const lead = Math.sin(2 * Math.PI * arpFreq * t) * env * 0.32;
-        const fadeOut = t > durationSec - 1.5 ? (durationSec - t) / 1.5 : 1;
-        const sample = Math.max(-1, Math.min(1, (pad + lead) * fadeOut));
-        view.setInt16(44 + i * 2, sample * 32767, true);
-      }
-
-      const url = URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
-      fallbackWavCache.set(seedIndex, url);
-      return url;
-    }
-
-    function getBaseDirectoryUrl() {
-      const loc = window.location;
-      let path = loc.pathname;
-      if (path.endsWith('/index.html') || path.endsWith('/index.htm')) {
-        path = path.substring(0, path.lastIndexOf('/') + 1);
-      } else if (!path.endsWith('/')) {
-        const lastSegment = path.substring(path.lastIndexOf('/') + 1);
-        if (lastSegment.includes('.')) {
-          path = path.substring(0, path.lastIndexOf('/') + 1);
-        } else {
-          path = path + '/';
-        }
-      }
-      return loc.origin + path;
-    }
-
-    function buildAudioUrlCandidates(fileNameOrPath, extraUrls = []) {
-      const baseDir = getBaseDirectoryUrl();
-      const candidates = [];
-
-      const addCandidate = (url) => {
-        if (url && typeof url === 'string' && !candidates.includes(url)) {
-          candidates.push(url);
-        }
-      };
-
-      if (/^https?:\/\//i.test(fileNameOrPath)) {
-        addCandidate(fileNameOrPath);
-      }
-
-      const rawName = String(fileNameOrPath).replace(/^\.\//, '');
-      let decodedName = rawName;
-      try {
-        decodedName = decodeURIComponent(rawName);
-      } catch (e) {}
-
-      const nfcName = decodedName.normalize('NFC');
-      const nfdName = decodedName.normalize('NFD');
-      const nfcEncoded = nfcName.split('/').map(seg => encodeURIComponent(seg)).join('/');
-      const nfdEncoded = nfdName.split('/').map(seg => encodeURIComponent(seg)).join('/');
-
-      addCandidate('./' + nfcName);
-      addCandidate(nfcName);
-      addCandidate('./' + nfcEncoded);
-      addCandidate(baseDir + nfcEncoded);
-      addCandidate(baseDir + nfcName);
-      addCandidate('./' + nfdName);
-      addCandidate('./' + nfdEncoded);
-      addCandidate(baseDir + nfdEncoded);
-
-      if (typeof extraUrls === 'string' && extraUrls) {
-        addCandidate(extraUrls);
-      } else if (Array.isArray(extraUrls)) {
-        extraUrls.forEach(u => addCandidate(u));
-      }
-
-      return candidates;
-    }
-
-    function buildAndMergeSongsList(discoveredItems = []) {
-      const uniqueMap = new Map();
-
-      const addEntry = (fileNameOrObj, extraUrls = [], customArtist = 'Takaneko music') => {
-        const rawPath = typeof fileNameOrObj === 'string'
-          ? fileNameOrObj
-          : (fileNameOrObj?.path || fileNameOrObj?.name || fileNameOrObj?.file || '');
-        if (!rawPath) return;
-
-        const title = extractSongTitleFromFilename(rawPath);
-        if (!title || title === 'Untitled') return;
-
-        const artist = (typeof fileNameOrObj === 'object' && fileNameOrObj?.artist)
-          ? fileNameOrObj.artist
-          : customArtist;
-
-        const urlsToAdd = Array.isArray(extraUrls)
-          ? extraUrls
-          : (typeof fileNameOrObj === 'object' && Array.isArray(fileNameOrObj?.extraUrls) ? fileNameOrObj.extraUrls : []);
-
-        if (!uniqueMap.has(title)) {
-          uniqueMap.set(title, {
-            name: rawPath.split('/').pop(),
-            path: rawPath,
-            artist: artist,
-            extraUrls: [...urlsToAdd]
-          });
-        } else {
-          const existing = uniqueMap.get(title);
-          urlsToAdd.forEach(u => {
-            if (u && !existing.extraUrls.includes(u)) existing.extraUrls.push(u);
-          });
-        }
-      };
-
-      if (Array.isArray(MP3_FILES)) {
-        MP3_FILES.forEach(entry => addEntry(entry));
-      }
-
-      if (Array.isArray(discoveredItems)) {
-        discoveredItems.forEach(item => addEntry(item));
-      }
-
-      Object.values(savedLibraryMap).forEach(meta => {
-        if (meta && meta.type !== 'podcast' && meta.title) {
-          addEntry(`${meta.title}.mp3`, meta.urlCandidates || [], meta.artist || 'Takaneko music');
-        }
-      });
-      offlineBlobUrlMap.forEach((entry) => {
-        if (entry?.trackMeta && entry.trackMeta.type !== 'podcast' && entry.trackMeta.title) {
-          addEntry(`${entry.trackMeta.title}.mp3`, entry.trackMeta.urlCandidates || [], entry.trackMeta.artist || 'Takaneko music');
-        }
-      });
-
-      const uniqueList = Array.from(uniqueMap.values());
-      songs = uniqueList.map((item, idx) => {
-        const songTitle = extractSongTitleFromFilename(item.name || item.path);
-        const sKey = getTrackStableKey(songTitle, 'song');
-        const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
-        const urlCandidates = buildAudioUrlCandidates(item.path || item.name, item.extraUrls);
-        const id = 'song-' + idx + '-' + encodeURIComponent(songTitle);
-        const inLib = Boolean(savedLibraryMap[sKey]);
-
-        const songObj = {
-          id: id,
-          stableKey: sKey,
-          title: songTitle,
-          artist: item.artist || 'Takaneko music',
-          type: 'song',
-          audioUrl: urlCandidates[0],
-          urlCandidates: urlCandidates,
-          seedIndex: idx,
-          isFeatured: true,
-          inLibrary: inLib,
-          gradient: palette.gradient,
-          orbColors: palette.orbs
-        };
-
-        if (inLib) {
-          savedLibraryMap[sKey] = {
-            ...savedLibraryMap[sKey],
-            id: id,
-            urlCandidates: urlCandidates,
-            audioUrl: urlCandidates[0]
-          };
-        }
-
-        return songObj;
-      });
-
-      saveLibraryStore();
-
-      if (songs.length > 0 && !currentTrack) {
-        currentTrack = songs[0];
-        updatePlayerUI();
-      }
-    }
-
-    /*************************************************************************
-     * 7. GitHub の index.html と同じフォルダにある .mp3 を自動認識して追加
-     *************************************************************************/
-    function parseGitHubRepoCandidatesFromLocation() {
-      const host = window.location.hostname.toLowerCase();
-      const pathSegments = window.location.pathname.split('/').filter(Boolean);
-
-      if (pathSegments.length > 0 && /\.html?$/i.test(pathSegments[pathSegments.length - 1])) {
-        pathSegments.pop();
-      }
-
-      const candidates = [];
-      const seen = new Set();
-      const addRepoCandidate = (owner, repo, dirPath = '') => {
-        if (!owner || !repo) return;
-        const cleanDir = String(dirPath || '').replace(/^\/+|\/+$/g, '');
-        const key = `${owner}/${repo}/${cleanDir}`.toLowerCase();
-        if (!seen.has(key)) {
-          seen.add(key);
-          candidates.push({ owner, repo, dirPath: cleanDir });
-        }
-      };
-
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const repoParam = params.get('repo') || document.querySelector('meta[name="github-repo"]')?.getAttribute('content');
-        if (repoParam && repoParam.includes('/')) {
-          const [o, r, ...rest] = repoParam.split('/');
-          addRepoCandidate(o, r, rest.join('/'));
-        }
-      } catch (e) {}
-
-      if (host.endsWith('.github.io')) {
-        const owner = host.replace(/\.github\.io$/, '');
-        if (pathSegments.length >= 1) {
-          addRepoCandidate(owner, pathSegments[0], pathSegments.slice(1).join('/'));
-          if (pathSegments.length > 1) {
-            addRepoCandidate(owner, pathSegments[0], '');
-          }
-        }
-        addRepoCandidate(owner, `${owner}.github.io`, pathSegments.join('/'));
-        if (pathSegments.length > 0) {
-          addRepoCandidate(owner, `${owner}.github.io`, '');
-        }
-      }
-
-      return candidates;
-    }
-
-    function buildGitHubAndCdnUrls(owner, repo, branch, filePath, apiDownloadUrl = '') {
-      const encodedPath = String(filePath).split('/').map(encodeURIComponent).join('/');
-      const ref = branch || 'HEAD';
-      const urls = [];
-      if (apiDownloadUrl) urls.push(apiDownloadUrl);
-      urls.push(`https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${encodedPath}`);
-      urls.push(`https://cdn.jsdelivr.net/gh/${owner}/${repo}@${ref}/${encodedPath}`);
-      return urls;
-    }
-
-    async function fetchMp3ListFromGitHubContentsApi(owner, repo, dirPath) {
-      const encodedDir = dirPath
-        ? dirPath.split('/').map(encodeURIComponent).join('/')
-        : '';
-      const branches = ['', 'main', 'master', 'gh-pages'];
-
-      for (const br of branches) {
-        try {
-          const refQuery = br ? `?ref=${encodeURIComponent(br)}&_t=${Date.now()}` : `?_t=${Date.now()}`;
-          const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedDir}${refQuery}`;
-          const res = await fetch(apiUrl, {
-            cache: 'no-store',
-            headers: { 'Accept': 'application/vnd.github.v3+json' }
-          });
-          if (!res.ok) continue;
-
-          const items = await res.json();
-          if (!Array.isArray(items)) continue;
-
-          const mp3Items = items
-            .filter(item => item && item.type === 'file' && /\.mp3$/i.test(item.name))
-            .map(item => ({
-              name: item.name,
-              path: item.name,
-              extraUrls: buildGitHubAndCdnUrls(owner, repo, br || 'HEAD', item.path || item.name, item.download_url)
-            }));
-
-          if (mp3Items.length > 0) return mp3Items;
-        } catch (e) {}
-      }
-      return [];
-    }
-
-    async function fetchMp3ListFromGitHubTreeApi(owner, repo, dirPath) {
-      const branches = ['HEAD', 'main', 'master', 'gh-pages'];
-      const prefix = dirPath ? dirPath.replace(/\/+$/, '') + '/' : '';
-
-      for (const br of branches) {
-        try {
-          const apiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/git/trees/${encodeURIComponent(br)}?recursive=1&_t=${Date.now()}`;
-          const res = await fetch(apiUrl, {
-            cache: 'no-store',
-            headers: { 'Accept': 'application/vnd.github.v3+json' }
-          });
-          if (!res.ok) continue;
-
-          const data = await res.json();
-          if (!data || !Array.isArray(data.tree)) continue;
-
-          let targetPrefix = prefix;
-          if (!targetPrefix) {
-            const indexNode = data.tree.find(n => n.type === 'blob' && /(^|\/)index\.html$/i.test(n.path));
-            if (indexNode && indexNode.path.includes('/')) {
-              targetPrefix = indexNode.path.substring(0, indexNode.path.lastIndexOf('/') + 1);
-            }
-          }
-
-          let mp3Nodes = data.tree.filter(node => {
-            if (node.type !== 'blob' || !/\.mp3$/i.test(node.path)) return false;
-            if (!targetPrefix) return !node.path.includes('/');
-            if (!node.path.startsWith(targetPrefix)) return false;
-            const rel = node.path.slice(targetPrefix.length);
-            return !rel.includes('/');
-          });
-
-          if (mp3Nodes.length === 0) {
-            mp3Nodes = data.tree.filter(node => node.type === 'blob' && /\.mp3$/i.test(node.path));
-          }
-
-          if (mp3Nodes.length > 0) {
-            return mp3Nodes.map(node => {
-              const relPath = (targetPrefix && node.path.startsWith(targetPrefix))
-                ? node.path.slice(targetPrefix.length)
-                : node.path;
-              return {
-                name: relPath.split('/').pop(),
-                path: relPath,
-                extraUrls: buildGitHubAndCdnUrls(owner, repo, br, node.path)
-              };
-            });
-          }
-        } catch (e) {}
-      }
-      return [];
-    }
-
-    async function fetchMp3ListFromJsDelivrFlatApi(owner, repo, dirPath) {
-      const branches = ['main', 'master', 'gh-pages'];
-      const prefix = dirPath ? '/' + dirPath.replace(/^\/+|\/+$/g, '') + '/' : '/';
-
-      for (const br of branches) {
-        try {
-          const apiUrl = `https://data.jsdelivr.com/v1/package/gh/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}@${encodeURIComponent(br)}/flat`;
-          const res = await fetch(apiUrl, { cache: 'no-store' });
-          if (!res.ok) continue;
-
-          const data = await res.json();
-          if (!data || !Array.isArray(data.files)) continue;
-
-          let targetPrefix = prefix;
-          if (targetPrefix === '/') {
-            const indexFile = data.files.find(f => f && /(^|\/)index\.html$/i.test(f.name));
-            if (indexFile && indexFile.name.lastIndexOf('/') > 0) {
-              targetPrefix = indexFile.name.substring(0, indexFile.name.lastIndexOf('/') + 1);
-            }
-          }
-
-          let mp3Files = data.files.filter(f => {
-            if (!f || !/\.mp3$/i.test(f.name)) return false;
-            if (!f.name.startsWith(targetPrefix)) return false;
-            const rel = f.name.slice(targetPrefix.length);
-            return !rel.includes('/');
-          });
-
-          if (mp3Files.length === 0) {
-            mp3Files = data.files.filter(f => f && /\.mp3$/i.test(f.name));
-          }
-
-          if (mp3Files.length > 0) {
-            return mp3Files.map(f => {
-              const cleanFull = f.name.replace(/^\/+/, '');
-              const relPath = f.name.startsWith(targetPrefix)
-                ? f.name.slice(targetPrefix.length)
-                : cleanFull;
-              return {
-                name: relPath.split('/').pop(),
-                path: relPath,
-                extraUrls: buildGitHubAndCdnUrls(owner, repo, br, cleanFull)
-              };
-            });
-          }
-        } catch (e) {}
-      }
-      return [];
-    }
-
-    async function discoverMp3FromUserRepositories(ownerList) {
-      for (const owner of ownerList) {
-        try {
-          const res = await fetch(`https://api.github.com/users/${encodeURIComponent(owner)}/repos?sort=updated&per_page=15&_t=${Date.now()}`, {
-            cache: 'no-store',
-            headers: { 'Accept': 'application/vnd.github.v3+json' }
-          });
-          if (!res.ok) continue;
-          const repos = await res.json();
-          if (!Array.isArray(repos)) continue;
-
-          repos.sort((a, b) => {
-            const aScore = /takaneko|music/i.test(a.name || '') ? 1 : 0;
-            const bScore = /takaneko|music/i.test(b.name || '') ? 1 : 0;
-            return bScore - aScore;
-          });
-
-          for (const r of repos.slice(0, 6)) {
-            if (!r || !r.name) continue;
-            const viaJsDelivr = await fetchMp3ListFromJsDelivrFlatApi(owner, r.name, '');
-            if (viaJsDelivr.length > 0) return viaJsDelivr;
-          }
-        } catch (e) {}
-      }
-      return [];
-    }
-
-    async function fetchMp3ListFromSameFolderHtmlOrJson() {
-      const results = [];
-      const baseDir = getBaseDirectoryUrl();
-
-      for (const jsonName of ['mp3.json', 'files.json']) {
-        try {
-          const res = await fetch(`${baseDir}${jsonName}?_t=${Date.now()}`, { cache: 'no-store' });
-          if (res.ok) {
-            const arr = await res.json();
-            if (Array.isArray(arr)) {
-              arr.forEach(item => {
-                const name = typeof item === 'string' ? item : (item?.name || item?.file || '');
-                if (/\.mp3$/i.test(name)) {
-                  results.push({ name, path: name, extraUrls: [] });
-                }
-              });
-              if (results.length > 0) return results;
-            }
-          }
-        } catch (e) {}
-      }
-
-      try {
-        const res = await fetch(baseDir, { cache: 'no-store' });
-        if (res.ok) {
-          const contentType = res.headers.get('content-type') || '';
-          if (contentType.includes('text/html')) {
-            const html = await res.text();
-            const doc = new DOMParser().parseFromString(html, 'text/html');
-            const links = Array.from(doc.querySelectorAll('a[href]'));
-            for (const a of links) {
-              const href = a.getAttribute('href') || '';
-              const cleanHref = href.split('?')[0].split('#')[0];
-              if (/\.mp3$/i.test(cleanHref)) {
-                let decodedHref = cleanHref;
-                try { decodedHref = decodeURIComponent(cleanHref); } catch (e) {}
-                const fileName = decodedHref.split('/').pop();
-                results.push({
-                  name: fileName,
-                  path: fileName,
-                  extraUrls: [new URL(cleanHref, baseDir).href]
-                });
-              }
-            }
-          }
-        }
-      } catch (e) {}
-
-      return results;
-    }
-
-    async function autoDiscoverMp3FilesInSameFolder(isManualRescan = false) {
-      const rescanIcon = document.getElementById('rescanIcon');
-      if (rescanIcon) rescanIcon.classList.add('fa-spin');
-
-      let discoveredItems = [];
-      const mergeDiscovered = (items) => {
-        if (!Array.isArray(items)) return;
-        for (const it of items) {
-          if (it && (it.name || it.path)) {
-            discoveredItems.push(it);
-          }
-        }
-      };
-
-      const repoCandidates = parseGitHubRepoCandidatesFromLocation();
-      for (const candidate of repoCandidates) {
-        const [contentsList, jsDelivrList] = await Promise.all([
-          fetchMp3ListFromGitHubContentsApi(candidate.owner, candidate.repo, candidate.dirPath),
-          fetchMp3ListFromJsDelivrFlatApi(candidate.owner, candidate.repo, candidate.dirPath)
-        ]);
-        mergeDiscovered(contentsList);
-        mergeDiscovered(jsDelivrList);
-
-        if (discoveredItems.length === 0) {
-          const treeList = await fetchMp3ListFromGitHubTreeApi(candidate.owner, candidate.repo, candidate.dirPath);
-          mergeDiscovered(treeList);
-        }
-        if (discoveredItems.length > 0) break;
-      }
-
-      if (discoveredItems.length === 0) {
-        const localList = await fetchMp3ListFromSameFolderHtmlOrJson();
-        mergeDiscovered(localList);
-      }
-
-      if (discoveredItems.length === 0) {
-        const ownersToScan = [...DEFAULT_GITHUB_OWNERS];
-        repoCandidates.forEach(c => {
-          if (c.owner && !ownersToScan.includes(c.owner)) ownersToScan.unshift(c.owner);
-        });
-        const repoScanList = await discoverMp3FromUserRepositories(ownersToScan);
-        mergeDiscovered(repoScanList);
-      }
-
-      if (discoveredItems.length > 0) {
-        try {
-          localStorage.setItem(DISCOVERED_CACHE_KEY, JSON.stringify(discoveredItems));
-        } catch (e) {}
-      } else {
-        try {
-          const cached = localStorage.getItem(DISCOVERED_CACHE_KEY);
-          if (cached) {
-            const parsed = JSON.parse(cached);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              mergeDiscovered(parsed);
-            }
-          }
-        } catch (e) {}
-      }
-
-      buildAndMergeSongsList(discoveredItems);
-
-      if (rescanIcon) rescanIcon.classList.remove('fa-spin');
-
-      if (isManualRescan) {
-        showToast(
-          songs.length > 0
-            ? `${songs.length}曲のMP3を認識して反映しました`
-            : 'MP3ファイルが見つかりませんでした',
-          songs.length > 0 ? 'fa-circle-check' : 'fa-circle-info'
-        );
-      }
-
-      renderAllViews();
-    }
-
-    function rescanGitHubMp3Files() {
-      autoDiscoverMp3FilesInSameFolder(true);
-    }
-
-    /*************************************************************************
-     * 8. UI レンダリング (音楽は takaneko.png、ポッドキャストは Podcast アイコン)
-     *************************************************************************/
-    function renderAllViews() {
-      renderHomeView();
-      renderLibraryView();
-      renderSearchResults(document.getElementById('mainSearchInput')?.value || '');
-      updateCountsAndBadges();
-    }
-
-    function getCombinedLibraryItems() {
-      const combinedMap = new Map();
-
-      Object.entries(savedLibraryMap).forEach(([sKey, meta]) => {
-        if (meta) {
-          combinedMap.set(sKey, { ...meta, stableKey: sKey, inLibrary: true });
-        }
-      });
-
-      songs.forEach(s => {
-        const sKey = getTrackStableKey(s);
-        if (s.inLibrary || combinedMap.has(sKey)) {
-          s.inLibrary = true;
-          combinedMap.set(sKey, s);
-        }
-      });
-
-      Object.values(podcastEpisodesByFeed).forEach(epList => {
-        if (Array.isArray(epList)) {
-          epList.forEach(ep => {
-            const sKey = getTrackStableKey(ep);
-            if (ep.inLibrary || combinedMap.has(sKey)) {
-              ep.inLibrary = true;
-              combinedMap.set(sKey, ep);
-            }
-          });
-        }
-      });
-
-      offlineBlobUrlMap.forEach((entry, sKey) => {
-        if (!combinedMap.has(sKey) && entry.trackMeta) {
-          combinedMap.set(sKey, {
-            ...entry.trackMeta,
-            stableKey: sKey,
-            inLibrary: Boolean(savedLibraryMap[sKey])
-          });
-        }
-      });
-
-      return Array.from(combinedMap.values());
-    }
-
+<!-- ... existing code ... -->
     function updateCountsAndBadges() {
       const allLibItems = getCombinedLibraryItems().filter(item => item.inLibrary || isTrackSavedOffline(item));
       document.getElementById('sidebarLibraryCount').textContent = allLibItems.length;
@@ -1938,376 +464,39 @@
       if (offlineBadge) {
         offlineBadge.textContent = `オフライン保存: ${offlineCount}件${sizeStr}`;
       }
+
+      const isPageSaved = offlineCount > 0 && Boolean(localStorage.getItem(DEVICE_PAGE_SAVED_FLAG_KEY));
+      const devicePageBadge = document.getElementById('devicePageSavedBadge');
+      const sidebarPageBadge = document.getElementById('sidebarPageSavedBadge');
+      if (devicePageBadge) {
+        devicePageBadge.classList.toggle('hidden', !isPageSaved);
+        devicePageBadge.classList.toggle('inline-flex', isPageSaved);
+      }
+      if (sidebarPageBadge) {
+        sidebarPageBadge.classList.toggle('hidden', !isPageSaved);
+        sidebarPageBadge.classList.toggle('flex', isPageSaved);
+      }
     }
-
-    function renderOfflineButtonHtml(track, compact = false) {
-      const isSaved = isTrackSavedOffline(track);
-      const isDownloading = isTrackDownloadingOffline(track);
-      const sKey = getTrackStableKey(track);
-      const sizeText = isSaved ? formatBytes(offlineBlobUrlMap.get(sKey)?.size || 0) : '';
-
-      if (isDownloading) {
-        return `
-          <button onclick="event.stopPropagation();"
-                  title="オフライン保存中..."
-                  class="${compact ? 'w-7 h-7' : 'px-3 py-1'} rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0">
-            <i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i>
-            ${compact ? '' : `<span class="hidden sm:inline">保存中</span>`}
-          </button>
-        `;
-      }
-
-      if (compact) {
-        return `
-          <button onclick="event.stopPropagation(); toggleOfflineTrackById('${track.id}')"
-                  title="${isSaved ? `オフライン保存済み ${sizeText} (クリックで削除)` : 'オフライン保存'}"
-                  class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${isSaved ? 'text-cyan-300 border-cyan-400/50 bg-cyan-500/20' : 'text-white/70'}">
-            <i class="fa-solid ${isSaved ? 'fa-cloud-arrow-down' : 'fa-arrow-down'} text-[11px]"></i>
-          </button>
-        `;
-      }
-
-      return `
-        <button onclick="event.stopPropagation(); toggleOfflineTrackById('${track.id}')"
-                title="${isSaved ? `オフライン保存済み ${sizeText} (クリックで削除)` : 'オフライン保存'}"
-                class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${isSaved ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40' : 'glass-pill-btn text-white/80'}">
-          <i class="fa-solid ${isSaved ? 'fa-circle-check' : 'fa-arrow-down'} text-[10px]"></i>
-          <span class="hidden sm:inline">${isSaved ? 'オフライン可' : 'オフライン保存'}</span>
-        </button>
-      `;
-    }
-
-    // --- ホーム画面のレンダリング ---
-    function renderHomeView() {
-      const gridEl = document.getElementById('featuredSongsGrid');
-      const listEl = document.getElementById('homeTrackList');
-
-      if (songs.length === 0) {
-        document.getElementById('heroSongTitle').textContent = 'Takaneko music';
-        document.getElementById('heroSongArtist').textContent = '同じフォルダの .mp3 を自動検出します';
-        gridEl.innerHTML = `
-          <div class="col-span-full glass-card rounded-3xl p-8 text-center space-y-3">
-            <p class="text-xs text-white/70">同じフォルダにある .mp3 ファイルを検索しています...</p>
-            <button onclick="rescanGitHubMp3Files()" class="glass-pill-btn px-4 py-2 rounded-full text-xs font-semibold text-rose-300">
-              <i class="fa-solid fa-rotate mr-1.5"></i>再スキャンする
-            </button>
-          </div>
-        `;
-        listEl.innerHTML = `
-          <div class="p-8 text-center text-xs text-white/55">
-            GitHubの index.html と同じフォルダに .mp3 ファイルを入れると自動的に表示されます。
-          </div>
-        `;
-        return;
-      }
-
-      const heroSong = songs[0];
-      document.getElementById('heroSongTitle').textContent = heroSong.title;
-      document.getElementById('heroSongArtist').textContent = heroSong.artist;
-      document.getElementById('heroFeaturedBg').style.background = heroSong.gradient;
-
-      const heroLibBtn = document.getElementById('heroAddLibBtn');
-      if (isTrackInLibrary(heroSong)) {
-        heroLibBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span>ライブラリ追加済み</span>`;
-      } else {
-        heroLibBtn.innerHTML = `<i class="fa-solid fa-plus"></i><span>ライブラリに追加</span>`;
-      }
-
-      const heroOffBtn = document.getElementById('heroOfflineBtn');
-      if (heroOffBtn) {
-        if (isTrackDownloadingOffline(heroSong)) {
-          heroOffBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-300"></i><span>保存中...</span>`;
-        } else if (isTrackSavedOffline(heroSong)) {
-          heroOffBtn.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-300"></i><span>オフライン保存済み</span>`;
-        } else {
-          heroOffBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i><span>オフライン保存</span>`;
-        }
-      }
-
-      // 注目のアップロードされた曲 (音楽アイコンはすべて takaneko.png)
-      gridEl.innerHTML = songs.map(song => {
-        const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(song);
-        const inLib = isTrackInLibrary(song);
-        const isOffline = isTrackSavedOffline(song);
-        return `
-          <div class="glass-card rounded-3xl p-3.5 flex flex-col justify-between group cursor-pointer relative"
-               onclick="playTrackById('${song.id}')">
-            <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
-                 style="background: ${song.gradient}">
-              ${renderArtworkInnerHtml(song, 'text-4xl')}
-
-              ${isOffline ? `
-                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/65 text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i>オフライン
-                </span>
-              ` : ''}
-
-              <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div class="w-12 h-12 rounded-full apple-accent-btn flex items-center justify-center text-white shadow-xl">
-                  <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'} text-base"></i>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-start justify-between gap-1.5">
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5">
-                  ${isCurrent && isPlaying ? `<div class="eq-bars shrink-0"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>` : ''}
-                  <h4 class="text-xs sm:text-sm font-bold text-white truncate" title="${escapeHtml(song.title)}">
-                    ${escapeHtml(song.title)}
-                  </h4>
-                </div>
-                <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(song.artist)}</p>
-              </div>
-
-              <div class="flex items-center gap-1 shrink-0">
-                <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
-                        title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
-                        class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${inLib ? 'text-rose-400 border-rose-400/40' : 'text-white/70'}">
-                  <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
-                </button>
-                ${renderOfflineButtonHtml(song, true)}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      listEl.innerHTML = songs.map((song, idx) => renderTrackRowHtml(song, idx + 1)).join('');
-    }
-
-    function renderTrackRowHtml(song, indexNum, showRemoveFromLib = false) {
-      const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(song);
-      const inLib = isTrackInLibrary(song);
-      const isOffline = isTrackSavedOffline(song);
-      const offlineEntry = offlineBlobUrlMap.get(getTrackStableKey(song));
-      const sizeStr = offlineEntry ? formatBytes(offlineEntry.size) : '';
-
-      return `
-        <div onclick="playTrackById('${song.id}')"
-             class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-white/[0.07] transition-colors cursor-pointer group ${isCurrent ? 'bg-white/[0.09]' : ''}">
-          <div class="flex items-center gap-3.5 min-w-0 flex-1">
-            <div class="w-6 text-center text-xs font-mono text-white/45 shrink-0">
-              ${isCurrent && isPlaying
-                ? `<div class="eq-bars mx-auto"><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div></div>`
-                : `<span>${indexNum}</span>`
-              }
-            </div>
-            <div class="w-10 h-10 rounded-xl shrink-0 overflow-hidden flex items-center justify-center shadow border border-white/20"
-                 style="background: ${song.gradient}">
-              ${renderArtworkInnerHtml(song, 'text-xs')}
-            </div>
-            <div class="min-w-0 flex-1">
-              <div class="flex items-center gap-2">
-                <p class="text-xs sm:text-sm font-semibold ${isCurrent ? 'text-rose-400' : 'text-white'} truncate">
-                  ${escapeHtml(song.title)}
-                </p>
-                ${isOffline ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-semibold shrink-0">オフライン可 ${sizeStr}</span>` : ''}
-              </div>
-              <p class="text-[11px] text-white/50 truncate">${escapeHtml(song.artist)}</p>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
-                    class="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all ${inLib ? 'bg-rose-500/20 text-rose-300 border border-rose-400/30' : 'glass-pill-btn text-white/80'}">
-              <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
-              <span class="hidden sm:inline">${inLib ? (showRemoveFromLib ? '解除' : '追加済み') : 'ライブラリ'}</span>
-            </button>
-            ${renderOfflineButtonHtml(song, false)}
-          </div>
-        </div>
-      `;
-    }
-
-    // --- ライブラリ画面のレンダリング ---
-    function setLibraryFilter(filter) {
-      currentLibraryFilter = filter;
-      ['all', 'songs', 'podcast', 'offline'].forEach(f => {
-        const btn = document.getElementById(`lib-filter-${f}`);
-        if (!btn) return;
-        if (f === filter) {
-          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white flex items-center gap-1.5';
-        } else {
-          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/75 flex items-center gap-1.5';
-        }
-      });
-      renderLibraryView();
-    }
-
-    function renderLibraryView() {
-      let libItems = getCombinedLibraryItems();
-
-      if (currentLibraryFilter === 'offline') {
-        libItems = libItems.filter(item => isTrackSavedOffline(item));
-      } else {
-        libItems = libItems.filter(item => item.inLibrary || isTrackSavedOffline(item));
-        if (currentLibraryFilter === 'songs') {
-          libItems = libItems.filter(item => item.type !== 'podcast');
-        } else if (currentLibraryFilter === 'podcast') {
-          libItems = libItems.filter(item => item.type === 'podcast');
-        }
-      }
-
-      const emptyEl = document.getElementById('libraryEmptyState');
-      const gridEl = document.getElementById('librarySongsGrid');
-      const listEl = document.getElementById('libraryTracksList');
-
-      if (libItems.length === 0) {
-        emptyEl.classList.remove('hidden');
-        gridEl.classList.add('hidden');
-        listEl.classList.add('hidden');
-        return;
-      }
-
-      emptyEl.classList.add('hidden');
-      gridEl.classList.remove('hidden');
-      listEl.classList.remove('hidden');
-
-      gridEl.innerHTML = libItems.map(item => {
-        const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(item);
-        const isOffline = isTrackSavedOffline(item);
-        const inLib = isTrackInLibrary(item);
-        return `
-          <div class="glass-card rounded-3xl p-3.5 flex flex-col justify-between group cursor-pointer"
-               onclick="playTrackById('${item.id}')">
-            <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
-                 style="background: ${item.gradient}">
-              ${renderArtworkInnerHtml(item, 'text-4xl')}
-              ${isOffline ? `
-                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/65 text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i>オフライン
-                </span>
-              ` : ''}
-              <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div class="w-11 h-11 rounded-full apple-accent-btn flex items-center justify-center text-white">
-                  <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'}"></i>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-start justify-between gap-1.5">
-              <div class="min-w-0 flex-1">
-                <h4 class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(item.title)}</h4>
-                <p class="text-[11px] text-white/55 truncate mt-0.5">${escapeHtml(item.artist)}</p>
-              </div>
-              <div class="flex items-center gap-1 shrink-0">
-                <button onclick="event.stopPropagation(); toggleSongLibrary('${item.id}')"
-                        title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
-                        class="w-7 h-7 rounded-full ${inLib ? 'bg-rose-500/20 border border-rose-400/30 text-rose-300' : 'glass-pill-btn text-white/70'} flex items-center justify-center shrink-0">
-                  <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
-                </button>
-                ${renderOfflineButtonHtml(item, true)}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      listEl.innerHTML = libItems.map((item, idx) => renderTrackRowHtml(item, idx + 1, true)).join('');
-    }
-
-    // --- 検索画面のレンダリング (曲名で検索) ---
-    function setSearchFilter(filter) {
-      currentSearchFilter = filter;
-      ['all', 'songs', 'library', 'podcast'].forEach(f => {
-        const btn = document.getElementById(`search-filter-${f}`);
-        if (!btn) return;
-        if (f === filter) {
-          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-semibold bg-rose-500/30 border-rose-400/50 text-white';
-        } else {
-          btn.className = 'glass-pill-btn px-3.5 py-1 rounded-full font-medium text-white/70';
-        }
-      });
-      renderSearchResults(document.getElementById('mainSearchInput').value);
-    }
-
-    function handleQuickSearchInput(val) {
-      if (currentTab !== 'search') {
-        switchTab('search');
-      }
-      const mainInput = document.getElementById('mainSearchInput');
-      mainInput.value = val;
-      renderSearchResults(val);
-    }
-
-    function clearSearchInput() {
-      const mainInput = document.getElementById('mainSearchInput');
-      const quickInput = document.getElementById('headerQuickSearch');
-      if (mainInput) mainInput.value = '';
-      if (quickInput) quickInput.value = '';
-      renderSearchResults('');
-    }
-
-    function renderSearchResults(query = '') {
-      const trimmed = query.trim().toLowerCase();
-      const clearBtn = document.getElementById('clearSearchBtn');
-      if (clearBtn) {
-        clearBtn.classList.toggle('hidden', trimmed.length === 0);
-      }
-
-      const poolMap = new Map();
-      songs.forEach(s => poolMap.set(getTrackStableKey(s), s));
-      Object.values(podcastEpisodesByFeed).forEach(epList => {
-        if (Array.isArray(epList)) {
-          epList.forEach(ep => poolMap.set(getTrackStableKey(ep), ep));
-        }
-      });
-      getCombinedLibraryItems().forEach(item => {
-        const k = getTrackStableKey(item);
-        if (!poolMap.has(k)) poolMap.set(k, item);
-      });
-
-      let pool = Array.from(poolMap.values());
-
-      if (currentSearchFilter === 'songs') {
-        pool = pool.filter(item => item.type !== 'podcast');
-      } else if (currentSearchFilter === 'library') {
-        pool = pool.filter(item => isTrackInLibrary(item) || isTrackSavedOffline(item));
-      } else if (currentSearchFilter === 'podcast') {
-        pool = pool.filter(item => item.type === 'podcast');
-      }
-
-      if (trimmed.length > 0) {
-        pool = pool.filter(item => item.title.toLowerCase().includes(trimmed));
-      }
-
-      document.getElementById('searchResultHeading').textContent =
-        trimmed ? `「${query}」の検索結果` : '曲一覧';
-      document.getElementById('searchResultCount').textContent = `${pool.length} 件`;
-
-      const container = document.getElementById('searchResultsContainer');
-      if (pool.length === 0) {
-        container.innerHTML = `
-          <div class="p-10 text-center space-y-2">
-            <i class="fa-solid fa-magnifying-glass text-2xl text-white/30"></i>
-            <p class="text-sm font-semibold text-white/80">一致する曲名が見つかりませんでした</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = pool.map((item, idx) => {
-        if (item.type === 'podcast') {
-          return renderPodcastEpisodeRowHtml(item, idx + 1);
-        }
-        return renderTrackRowHtml(item, idx + 1);
-      }).join('');
-    }
-
+<!-- ... existing code ... -->
     /*************************************************************************
-     * 9. ポッドキャスト RSS 取得 & 再生・オフライン保存処理 (Podcastアイコン統一)
+     * 9. ポッドキャスト RSS 取得 & 再生・オフライン保存処理 (Spotify RSSアイコン対応)
      *************************************************************************/
     function renderPodcastShowsGrid() {
       const grid = document.getElementById('podcastShowsGrid');
       grid.innerHTML = podcastShows.map(show => {
         const isActive = show.id === activePodcastFeedId;
         const epCount = (podcastEpisodesByFeed[show.id] || []).length;
+        const coverUrl = show.coverUrl || (podcastEpisodesByFeed[show.id]?.[0]?.coverUrl) || '';
         return `
           <div onclick="selectPodcastShow('${show.id}')"
                class="glass-card rounded-3xl p-4 cursor-pointer flex items-center gap-4 border transition-all ${isActive ? 'border-emerald-400/70 bg-emerald-500/10' : 'border-white/15'}">
             <div class="w-16 h-16 rounded-2xl shrink-0 flex items-center justify-center shadow-lg border border-white/25 overflow-hidden"
                  style="background: ${show.coverGradient}">
-              <i class="fa-solid fa-podcast text-2xl text-white"></i>
+              ${coverUrl
+                ? `<img src="${escapeHtml(coverUrl)}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.classList.remove('hidden');" />
+                   <i class="fa-solid fa-podcast text-2xl text-white hidden"></i>`
+                : `<i class="fa-solid fa-podcast text-2xl text-white"></i>`
+              }
             </div>
             <div class="min-w-0 flex-1">
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300">PODCAST</span>
@@ -2334,13 +523,30 @@
       }
     }
 
+    function extractXmlCoverImage(parentNode) {
+      if (!parentNode) return '';
+      const itunesImg = parentNode.getElementsByTagName('itunes:image')[0];
+      if (itunesImg && itunesImg.getAttribute('href')) {
+        return itunesImg.getAttribute('href').trim();
+      }
+      const imageUrlNode = parentNode.querySelector('image > url');
+      if (imageUrlNode && imageUrlNode.textContent) {
+        return imageUrlNode.textContent.trim();
+      }
+      return '';
+    }
+
     function parsePodcastXmlString(xmlString, show) {
       if (!xmlString) return [];
       const parser = new DOMParser();
       const xml = parser.parseFromString(xmlString, 'text/xml');
 
+      const channelNode = xml.querySelector('channel');
       const channelTitle = xml.querySelector('channel > title')?.textContent?.trim();
       if (channelTitle) show.name = channelTitle;
+
+      const channelCover = extractXmlCoverImage(channelNode);
+      if (channelCover) show.coverUrl = channelCover;
 
       const items = Array.from(xml.querySelectorAll('item'));
       return items.map((item, idx) => {
@@ -2351,7 +557,10 @@
         const title = item.querySelector('title')?.textContent?.trim() || `Episode ${idx + 1}`;
         const rawDate = item.querySelector('pubDate')?.textContent?.trim() || '';
         const pubDate = rawDate ? rawDate.slice(0, 16) : '';
-        const desc = stripHtmlTags(item.querySelector('description')?.textContent || '');
+        const rawDesc = item.querySelector('description')?.textContent ||
+                        item.getElementsByTagName('itunes:summary')[0]?.textContent || '';
+        const desc = stripHtmlTags(rawDesc).trim();
+        const epCover = extractXmlCoverImage(item) || show.coverUrl || '';
         const sKey = getTrackStableKey(title, 'podcast');
 
         return {
@@ -2361,6 +570,7 @@
           artist: show.name,
           pubDate: pubDate,
           description: desc,
+          coverUrl: epCover,
           audioUrl: audioUrl,
           urlCandidates: [audioUrl],
           type: 'podcast',
@@ -2392,11 +602,13 @@
           const data = await res.json();
           if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
             if (data.feed && data.feed.title) show.name = data.feed.title;
+            if (data.feed && data.feed.image) show.coverUrl = data.feed.image;
 
             parsedEpisodes = data.items.map((item, idx) => {
               let audioLink = (item.enclosure && item.enclosure.link) || item.link || '';
               audioLink = audioLink.replace(/&amp;/g, '&').trim();
               const title = item.title || `Episode ${idx + 1}`;
+              const epCover = item.thumbnail || (item.enclosure && item.enclosure.thumbnail) || show.coverUrl || '';
               const sKey = getTrackStableKey(title, 'podcast');
               return {
                 id: `${show.id}-ep-${idx}`,
@@ -2404,7 +616,8 @@
                 title: title,
                 artist: show.name,
                 pubDate: item.pubDate ? item.pubDate.split(' ')[0] : '',
-                description: stripHtmlTags(item.description || ''),
+                description: stripHtmlTags(item.description || item.content || '').trim(),
+                coverUrl: epCover,
                 audioUrl: audioLink,
                 urlCandidates: [audioLink],
                 type: 'podcast',
@@ -2418,77 +631,37 @@
       } catch (e) {}
 
       // 2. allorigins raw XML
-      if (parsedEpisodes.length === 0) {
-        try {
-          const rawUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(rawUrl, { cache: 'no-store' });
-          if (res.ok) {
-            const xmlText = await res.text();
-            parsedEpisodes = parsePodcastXmlString(xmlText, show);
-          }
-        } catch (e) {}
-      }
-
-      // 3. corsproxy.io XML
-      if (parsedEpisodes.length === 0) {
-        try {
-          const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(proxyUrl, { cache: 'no-store' });
-          if (res.ok) {
-            const xmlText = await res.text();
-            parsedEpisodes = parsePodcastXmlString(xmlText, show);
-          }
-        } catch (e) {}
-      }
-
-      // 4. codetabs proxy XML
-      if (parsedEpisodes.length === 0) {
-        try {
-          const proxyUrl = `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(show.rssUrl)}`;
-          const res = await fetch(proxyUrl, { cache: 'no-store' });
-          if (res.ok) {
-            const xmlText = await res.text();
-            parsedEpisodes = parsePodcastXmlString(xmlText, show);
-          }
-        } catch (e) {}
-      }
-
+<!-- ... existing code ... -->
       // 5. オフライン保存済みエピソードの復元
       if (parsedEpisodes.length === 0) {
-        const offlineEps = [];
-        offlineBlobUrlMap.forEach((entry) => {
-          if (entry?.trackMeta && entry.trackMeta.type === 'podcast') {
-            offlineEps.push(entry.trackMeta);
+        if (Array.isArray(podcastEpisodesByFeed[show.id]) && podcastEpisodesByFeed[show.id].length > 0) {
+          parsedEpisodes = podcastEpisodesByFeed[show.id];
+        } else {
+          const offlineEps = [];
+          offlineBlobUrlMap.forEach((entry) => {
+            if (entry?.trackMeta && entry.trackMeta.type === 'podcast') {
+              offlineEps.push(entry.trackMeta);
+            }
+          });
+          if (offlineEps.length > 0) {
+            parsedEpisodes = offlineEps;
           }
-        });
-        if (offlineEps.length > 0) {
-          parsedEpisodes = offlineEps;
         }
       }
 
       statusEl.textContent = '';
       podcastEpisodesByFeed[show.id] = parsedEpisodes;
+      savePodcastCacheToLocalStorage();
+      if (offlineBlobUrlMap.size > 0) {
+        cacheEntirePageOffline();
+      }
       renderPodcastShowsGrid();
       renderActivePodcastEpisodes();
       renderAllViews();
     }
 
     function renderActivePodcastEpisodes() {
-      const show = podcastShows.find(s => s.id === activePodcastFeedId);
-      const episodes = podcastEpisodesByFeed[activePodcastFeedId] || [];
-
-      document.getElementById('activePodcastTitle').textContent = show ? show.name : 'エピソード一覧';
-      document.getElementById('activePodcastEpisodeCount').textContent = `${episodes.length} エピソード`;
-
-      const listEl = document.getElementById('podcastEpisodesList');
-      if (episodes.length === 0) {
-        listEl.innerHTML = `<div class="p-8 text-center text-xs text-white/50">エピソードが見つかりませんでした。「更新」ボタンを押して再試行してください。</div>`;
-        return;
-      }
-
-      listEl.innerHTML = episodes.map((ep, idx) => renderPodcastEpisodeRowHtml(ep, idx + 1)).join('');
-    }
-
+<!-- ... existing code ... -->
     function renderPodcastEpisodeRowHtml(ep, num) {
       const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(ep);
       const inLib = isTrackInLibrary(ep);
@@ -2500,401 +673,13 @@
         <div onclick="playPodcastEpisode('${ep.id}')"
              class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 hover:bg-white/[0.07] transition-colors cursor-pointer ${isCurrent ? 'bg-white/[0.09]' : ''}">
           <div class="flex items-start gap-3.5 min-w-0 flex-1">
-            <div class="w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center shadow border border-white/20 mt-0.5"
+            <div class="w-11 h-11 rounded-2xl shrink-0 overflow-hidden flex items-center justify-center shadow border border-white/20 mt-0.5"
                  style="background: ${ep.gradient}">
-              <i class="fa-solid fa-podcast text-white text-sm"></i>
+              ${renderArtworkInnerHtml(ep, 'text-sm')}
             </div>
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="text-[10px] font-mono text-emerald-300/90 bg-emerald-500/15 px-2 py-0.5 rounded-full">EP.${num}</span>
-                ${ep.pubDate ? `<span class="text-[10px] text-white/45">${escapeHtml(ep.pubDate)}</span>` : ''}
-                ${isOffline ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-semibold">オフライン可 ${sizeStr}</span>` : ''}
-              </div>
-              <h4 class="text-xs sm:text-sm font-bold ${isCurrent ? 'text-emerald-300' : 'text-white'} truncate mt-1">
-                ${escapeHtml(ep.title)}
-              </h4>
-              <p class="text-[11px] text-white/55 line-clamp-1 mt-0.5">
-                ${escapeHtml(ep.description || ep.artist)}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-end gap-2 shrink-0">
-            <button onclick="event.stopPropagation(); toggleSongLibrary('${ep.id}')"
-                    title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
-                    class="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 ${inLib ? 'bg-rose-500/20 text-rose-300 border border-rose-400/30' : 'glass-pill-btn text-white/80'}">
-              <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[10px]"></i>
-              <span class="hidden md:inline">${inLib ? '追加済み' : 'ライブラリ'}</span>
-            </button>
-            ${renderOfflineButtonHtml(ep, false)}
-            <button class="apple-accent-btn px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0">
-              <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play'} text-[10px]"></i>
-              <span>${isCurrent && isPlaying ? '再生中' : '再生'}</span>
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
-    function refreshAllPodcastFeeds() {
-      const show = podcastShows.find(s => s.id === activePodcastFeedId);
-      if (show) {
-        fetchPodcastRssFeed(show);
-      }
-    }
-
-    /*************************************************************************
-     * 10. オーディオプレイヤー制御 (オフラインBlob最優先 + URL自動フォールバック)
-     *************************************************************************/
-    function findTrackAnywhere(trackId) {
-      let found = songs.find(s => s.id === trackId);
-      if (found) return found;
-      for (const epList of Object.values(podcastEpisodesByFeed)) {
-        found = epList.find(ep => ep.id === trackId);
-        if (found) return found;
-      }
-      const libItems = getCombinedLibraryItems();
-      found = libItems.find(item => item.id === trackId);
-      if (found) return found;
-      return null;
-    }
-
-    function playTrackById(trackId) {
-      const track = findTrackAnywhere(trackId);
-      if (!track) return;
-
-      if (currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(track)) {
-        togglePlayPause();
-        return;
-      }
-
-      if (track.type === 'podcast') {
-        playPodcastEpisode(track.id);
-        return;
-      }
-
-      currentQueue = songs.length > 0 ? [...songs] : getCombinedLibraryItems();
-      currentIndex = currentQueue.findIndex(s => getTrackStableKey(s) === getTrackStableKey(track));
-      if (currentIndex === -1) {
-        currentQueue.unshift(track);
-        currentIndex = 0;
-      }
-      loadAndPlayTrack(track);
-    }
-
-    function playPodcastEpisode(episodeId) {
-      const ep = findTrackAnywhere(episodeId);
-      if (!ep) return;
-
-      if (currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(ep)) {
-        togglePlayPause();
-        return;
-      }
-
-      const feedEpisodes = podcastEpisodesByFeed[activePodcastFeedId] || [ep];
-      currentQueue = feedEpisodes.length > 0 ? [...feedEpisodes] : [ep];
-      currentIndex = currentQueue.findIndex(item => getTrackStableKey(item) === getTrackStableKey(ep));
-      if (currentIndex === -1) {
-        currentQueue.unshift(ep);
-        currentIndex = 0;
-      }
-      loadAndPlayTrack(ep);
-    }
-
-    function getEffectivePlaybackCandidates(track) {
-      const list = [];
-      const sKey = getTrackStableKey(track);
-
-      const offlineEntry = offlineBlobUrlMap.get(sKey);
-      if (offlineEntry && offlineEntry.blobUrl) {
-        list.push(offlineEntry.blobUrl);
-      }
-
-      if (Array.isArray(track.urlCandidates)) {
-        track.urlCandidates.forEach(u => {
-          if (u && !list.includes(u)) list.push(u);
-        });
-      }
-      if (track.audioUrl && !list.includes(track.audioUrl)) {
-        list.push(track.audioUrl);
-      }
-      return list;
-    }
-
-    function loadAndPlayTrack(track) {
-      currentTrack = track;
-      currentUrlCandidateIndex = 0;
-      lastDisplayedSecond = -1;
-
-      audioPlayer.muted = false;
-      const volSlider = document.getElementById('volumeSlider');
-      if (volSlider && parseFloat(volSlider.value) > 0) {
-        audioPlayer.volume = parseFloat(volSlider.value);
-      } else {
-        audioPlayer.volume = 0.85;
-      }
-      updateVolumeIcon();
-
-      if (track.orbColors && track.orbColors.length >= 4) {
-        document.documentElement.style.setProperty('--orb-1', track.orbColors[0]);
-        document.documentElement.style.setProperty('--orb-2', track.orbColors[1]);
-        document.documentElement.style.setProperty('--orb-3', track.orbColors[2]);
-        document.documentElement.style.setProperty('--orb-4', track.orbColors[3]);
-      }
-
-      tryPlayCurrentCandidate();
-    }
-
-    function tryPlayCurrentCandidate() {
-      if (!currentTrack) return;
-      const candidates = getEffectivePlaybackCandidates(currentTrack);
-
-      if (currentUrlCandidateIndex >= candidates.length) {
-        // プレビュー環境等で実ファイルがまだ配置されていない場合でも再生テスト可能なフォールバック音源を使用
-        const fallbackUrl = getFallbackAudioBlobUrl(currentTrack.seedIndex || 0);
-        audioPlayer.src = fallbackUrl;
-        audioPlayer.play().then(() => {
-          isPlaying = true;
-          updatePlayerUI();
-          renderAllViews();
-          if (currentTab === 'podcast') renderActivePodcastEpisodes();
-        }).catch(() => {
-          isPlaying = false;
-          updatePlayerUI();
-          renderAllViews();
-        });
-        return;
-      }
-
-      const targetUrl = candidates[currentUrlCandidateIndex];
-      audioPlayer.pause();
-      audioPlayer.removeAttribute('crossorigin');
-      audioPlayer.src = targetUrl;
-      audioPlayer.load();
-
-      const playPromise = audioPlayer.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          isPlaying = true;
-          updatePlayerUI();
-          renderAllViews();
-          if (currentTab === 'podcast') renderActivePodcastEpisodes();
-        }).catch(() => {
-          currentUrlCandidateIndex++;
-          tryPlayCurrentCandidate();
-        });
-      }
-    }
-
-    function togglePlayPause() {
-      if (!currentTrack) {
-        if (songs.length > 0) {
-          playTrackById(songs[0].id);
-        } else {
-          const libItems = getCombinedLibraryItems();
-          if (libItems.length > 0) playTrackById(libItems[0].id);
-        }
-        return;
-      }
-
-      if (!audioPlayer.src) {
-        loadAndPlayTrack(currentTrack);
-        return;
-      }
-
-      if (audioPlayer.paused) {
-        audioPlayer.muted = false;
-        audioPlayer.play().then(() => {
-          isPlaying = true;
-          updatePlayerUI();
-          renderAllViews();
-          if (currentTab === 'podcast') renderActivePodcastEpisodes();
-        }).catch(() => {
-          loadAndPlayTrack(currentTrack);
-        });
-      } else {
-        audioPlayer.pause();
-        isPlaying = false;
-        updatePlayerUI();
-        renderAllViews();
-        if (currentTab === 'podcast') renderActivePodcastEpisodes();
-      }
-    }
-
-    function prevTrack() {
-      if (currentQueue.length === 0) currentQueue = songs.length > 0 ? [...songs] : getCombinedLibraryItems();
-      if (currentQueue.length === 0) return;
-
-      if (audioPlayer.currentTime > 3) {
-        audioPlayer.currentTime = 0;
-        return;
-      }
-
-      currentIndex = (currentIndex - 1 + currentQueue.length) % currentQueue.length;
-      loadAndPlayTrack(currentQueue[currentIndex]);
-    }
-
-    function nextTrack() {
-      if (currentQueue.length === 0) currentQueue = songs.length > 0 ? [...songs] : getCombinedLibraryItems();
-      if (currentQueue.length === 0) return;
-
-      if (isShuffle) {
-        currentIndex = Math.floor(Math.random() * currentQueue.length);
-      } else {
-        currentIndex = (currentIndex + 1) % currentQueue.length;
-      }
-      loadAndPlayTrack(currentQueue[currentIndex]);
-    }
-
-    function playAllSongs(shuffle = false) {
-      if (songs.length === 0) return;
-      isShuffle = shuffle;
-      updateShuffleRepeatButtons();
-      currentQueue = [...songs];
-      currentIndex = shuffle ? Math.floor(Math.random() * currentQueue.length) : 0;
-      loadAndPlayTrack(currentQueue[currentIndex]);
-    }
-
-    function playLibraryTracks(shuffle = false) {
-      let libTracks = getCombinedLibraryItems().filter(item => item.inLibrary || isTrackSavedOffline(item));
-      if (currentLibraryFilter === 'offline') {
-        libTracks = libTracks.filter(item => isTrackSavedOffline(item));
-      } else if (currentLibraryFilter === 'songs') {
-        libTracks = libTracks.filter(item => item.type !== 'podcast');
-      } else if (currentLibraryFilter === 'podcast') {
-        libTracks = libTracks.filter(item => item.type === 'podcast');
-      }
-
-      if (libTracks.length === 0) {
-        showToast('再生できるライブラリ曲がありません。「＋」ボタンで曲を追加してください。', 'fa-layer-group');
-        return;
-      }
-      isShuffle = shuffle;
-      updateShuffleRepeatButtons();
-      currentQueue = [...libTracks];
-      currentIndex = shuffle ? Math.floor(Math.random() * currentQueue.length) : 0;
-      loadAndPlayTrack(currentQueue[currentIndex]);
-    }
-
-    function playFeaturedHero() {
-      if (songs.length > 0) {
-        playTrackById(songs[0].id);
-      }
-    }
-
-    function toggleHeroLibrary() {
-      if (songs.length > 0) {
-        toggleSongLibrary(songs[0].id);
-      }
-    }
-
-    function toggleSongLibrary(trackId) {
-      const track = findTrackAnywhere(trackId);
-      if (!track) return;
-
-      const nextState = !isTrackInLibrary(track);
-      setTrackLibraryState(track, nextState);
-
-      showToast(
-        nextState
-          ? `「${track.title}」をライブラリに追加しました`
-          : `「${track.title}」をライブラリから解除しました`,
-        nextState ? 'fa-heart' : 'fa-circle-minus'
-      );
-
-      updatePlayerUI();
-      renderAllViews();
-      if (currentTab === 'podcast') renderActivePodcastEpisodes();
-    }
-
-    function toggleCurrentTrackLibrary() {
-      if (!currentTrack) return;
-      const nextState = !isTrackInLibrary(currentTrack);
-      setTrackLibraryState(currentTrack, nextState);
-
-      showToast(
-        nextState
-          ? `「${currentTrack.title}」をライブラリに追加しました`
-          : `「${currentTrack.title}」をライブラリから解除しました`,
-        nextState ? 'fa-heart' : 'fa-circle-minus'
-      );
-
-      updatePlayerUI();
-      renderAllViews();
-      if (currentTab === 'podcast') renderActivePodcastEpisodes();
-    }
-
-    function toggleShuffle() {
-      isShuffle = !isShuffle;
-      updateShuffleRepeatButtons();
-      showToast(isShuffle ? 'シャッフル再生: ON' : 'シャッフル再生: OFF', 'fa-shuffle');
-    }
-
-    function toggleRepeat() {
-      if (repeatMode === 'off') repeatMode = 'all';
-      else if (repeatMode === 'all') repeatMode = 'one';
-      else repeatMode = 'off';
-      updateShuffleRepeatButtons();
-      const labels = { off: 'リピート: OFF', all: '全曲リピート', one: '1曲リピート' };
-      showToast(labels[repeatMode], 'fa-repeat');
-    }
-
-    // ミニプレイヤーと全画面プレイヤー両方のシャッフル・リピート表示を同期更新
-    function updateShuffleRepeatButtons() {
-      const btnShuffle = document.getElementById('btnShuffle');
-      const btnRepeat = document.getElementById('btnRepeat');
-      const fsBtnShuffle = document.getElementById('fsBtnShuffle');
-      const fsBtnRepeat = document.getElementById('fsBtnRepeat');
-
-      if (btnShuffle) {
-        btnShuffle.className = `hidden sm:flex w-8 h-8 rounded-full items-center justify-center transition-colors ${isShuffle ? 'bg-rose-500/25 text-rose-400' : 'text-white/60 hover:text-white'}`;
-      }
-      if (fsBtnShuffle) {
-        fsBtnShuffle.className = `w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center transition-colors ${isShuffle ? 'bg-rose-500/30 border-rose-400/50 text-rose-400' : 'text-white/70 hover:text-white'}`;
-      }
-
-      if (btnRepeat) {
-        btnRepeat.className = `hidden sm:flex w-8 h-8 rounded-full items-center justify-center transition-colors ${repeatMode !== 'off' ? 'bg-rose-500/25 text-rose-400' : 'text-white/60 hover:text-white'}`;
-        btnRepeat.innerHTML = repeatMode === 'one'
-          ? '<span class="text-[10px] font-extrabold">1</span>'
-          : '<i class="fa-solid fa-repeat text-xs"></i>';
-      }
-      if (fsBtnRepeat) {
-        fsBtnRepeat.className = `w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center transition-colors ${repeatMode !== 'off' ? 'bg-rose-500/30 border-rose-400/50 text-rose-400' : 'text-white/70 hover:text-white'}`;
-        fsBtnRepeat.innerHTML = repeatMode === 'one'
-          ? '<span class="text-xs font-extrabold">1</span>'
-          : '<i class="fa-solid fa-repeat text-sm"></i>';
-      }
-    }
-
-    function seekAudio(percentVal) {
-      if (!audioPlayer.duration || isNaN(audioPlayer.duration)) return;
-      audioPlayer.currentTime = (percentVal / 100) * audioPlayer.duration;
-    }
-
-    function changeVolume(val) {
-      audioPlayer.volume = parseFloat(val);
-      audioPlayer.muted = false;
-      updateVolumeIcon();
-    }
-
-    function toggleMute() {
-      audioPlayer.muted = !audioPlayer.muted;
-      updateVolumeIcon();
-    }
-
-    function updateVolumeIcon() {
-      const icon = document.getElementById('volumeIcon');
-      if (!icon) return;
-      if (audioPlayer.muted || audioPlayer.volume === 0) {
-        icon.className = 'fa-solid fa-volume-xmark text-rose-400';
-      } else if (audioPlayer.volume < 0.5) {
-        icon.className = 'fa-solid fa-volume-low';
-      } else {
-        icon.className = 'fa-solid fa-volume-high';
-      }
-    }
-
+<!-- ... existing code ... -->
     function updatePlayerUI() {
       const playIcon = document.getElementById('playPauseIcon');
       const fsPlayIcon = document.getElementById('fsPlayPauseIcon');
@@ -2911,194 +696,83 @@
       const isOffline = isTrackSavedOffline(currentTrack);
       const isDownloading = isTrackDownloadingOffline(currentTrack);
       const isPodcast = currentTrack.type === 'podcast';
+      const podcastCoverUrl = isPodcast ? getPodcastCoverUrl(currentTrack) : '';
 
       document.getElementById('miniPlayerTitle').textContent = currentTrack.title;
       document.getElementById('miniPlayerArtist').textContent =
         isOffline ? `${currentTrack.artist} • オフライン再生対応` : currentTrack.artist;
       document.getElementById('miniPlayerArt').style.background = currentTrack.gradient;
 
-      // 音楽は takaneko.png、ポッドキャストは Podcast アイコンに切り替え
+      // 音楽は takaneko.png、ポッドキャストはRSSのSpotifyアイコン(取得できない場合のみPodcastアイコン)を表示
       const miniImg = document.getElementById('miniPlayerArtImg');
       const miniPodIcon = document.getElementById('miniPlayerArtPodcastIcon');
       const fsImg = document.getElementById('fsPlayerArtImg');
       const fsPodIcon = document.getElementById('fsPlayerArtPodcastIcon');
 
       if (miniImg && miniPodIcon) {
-        miniImg.classList.toggle('hidden', isPodcast);
-        miniPodIcon.classList.toggle('hidden', !isPodcast);
+        if (isPodcast) {
+          if (podcastCoverUrl) {
+            miniImg.src = podcastCoverUrl;
+            miniImg.classList.remove('hidden');
+            miniPodIcon.classList.add('hidden');
+          } else {
+            miniImg.classList.add('hidden');
+            miniPodIcon.classList.remove('hidden');
+          }
+        } else {
+          miniImg.src = 'takaneko.png';
+          miniImg.classList.remove('hidden');
+          miniPodIcon.classList.add('hidden');
+        }
       }
+
       if (fsImg && fsPodIcon) {
-        fsImg.classList.toggle('hidden', isPodcast);
-        fsPodIcon.classList.toggle('hidden', !isPodcast);
+        if (isPodcast) {
+          if (podcastCoverUrl) {
+            fsImg.src = podcastCoverUrl;
+            fsImg.classList.remove('hidden');
+            fsPodIcon.classList.add('hidden');
+          } else {
+            fsImg.classList.add('hidden');
+            fsPodIcon.classList.remove('hidden');
+          }
+        } else {
+          fsImg.src = 'takaneko.png';
+          fsImg.classList.remove('hidden');
+          fsPodIcon.classList.add('hidden');
+        }
+      }
+
+      // 全画面表示時のポッドキャスト説明パネル表示切り替え
+      const fsDescCard = document.getElementById('fsPodcastDescriptionCard');
+      const fsDescText = document.getElementById('fsPodcastDescriptionText');
+      const fsPubDate = document.getElementById('fsPodcastPubDate');
+      if (fsDescCard && fsDescText) {
+        if (isPodcast) {
+          fsDescCard.classList.remove('hidden');
+          fsDescText.textContent = currentTrack.description || 'このエピソードの説明文はありません。';
+          if (fsPubDate) {
+            fsPubDate.textContent = currentTrack.pubDate ? `配信日: ${currentTrack.pubDate}` : '';
+          }
+        } else {
+          fsDescCard.classList.add('hidden');
+        }
       }
 
       document.getElementById('miniPlayerLibBtn').innerHTML =
         `<i class="fa-solid ${inLib ? 'fa-check text-rose-400' : 'fa-plus'} text-xs"></i>`;
-      document.getElementById('fsPlayerLibBtn').innerHTML =
-        `<i class="fa-solid ${inLib ? 'fa-check text-rose-400' : 'fa-plus'}"></i>`;
-
-      const miniOffBtn = document.getElementById('miniPlayerOfflineBtn');
-      const fsOffBtn = document.getElementById('fsPlayerOfflineBtn');
-      if (miniOffBtn) {
-        if (isDownloading) {
-          miniOffBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-300 text-xs"></i>`;
-        } else if (isOffline) {
-          miniOffBtn.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-300 text-xs"></i>`;
-        } else {
-          miniOffBtn.innerHTML = `<i class="fa-solid fa-arrow-down text-xs"></i>`;
-        }
-      }
-      if (fsOffBtn) {
-        if (isDownloading) {
-          fsOffBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-300"></i>`;
-        } else if (isOffline) {
-          fsOffBtn.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-300"></i>`;
-        } else {
-          fsOffBtn.innerHTML = `<i class="fa-solid fa-arrow-down"></i>`;
-        }
-      }
-
-      document.getElementById('fsPlayerTitle').textContent = currentTrack.title;
-      document.getElementById('fsPlayerArtist').textContent =
-        isOffline ? `${currentTrack.artist} • オフライン保存済み` : currentTrack.artist;
-      document.getElementById('fsPlayerArt').style.background = currentTrack.gradient;
-    }
-
-    // 軽量化: 秒数が変化したときのみテキストDOMを更新
-    audioPlayer.addEventListener('timeupdate', () => {
-      const cur = audioPlayer.currentTime || 0;
-      const dur = audioPlayer.duration || 0;
-      const pct = dur > 0 ? (cur / dur) * 100 : 0;
-
-      document.getElementById('playerSeekBar').value = pct;
-      document.getElementById('fsSeekBar').value = pct;
-
-      const curSecInt = Math.floor(cur);
-      if (curSecInt !== lastDisplayedSecond) {
-        lastDisplayedSecond = curSecInt;
-        const curFormatted = formatSeconds(curSecInt);
-        const remFormatted = dur > 0 ? '-' + formatSeconds(Math.max(0, Math.floor(dur - cur))) : '-0:00';
-
-        document.getElementById('playerCurrentTime').textContent = curFormatted;
-        document.getElementById('playerRemainingTime').textContent = remFormatted;
-        document.getElementById('fsCurrentTime').textContent = curFormatted;
-        document.getElementById('fsRemainingTime').textContent = remFormatted;
-      }
-    });
-
-    audioPlayer.addEventListener('ended', () => {
-      if (repeatMode === 'one') {
-        audioPlayer.currentTime = 0;
-        audioPlayer.play().catch(() => {});
-      } else {
-        nextTrack();
-      }
-    });
-
-    /*************************************************************************
-     * 11. タブ切り替え & フルスクリーンプレイヤー
-     *************************************************************************/
-    function switchTab(tabName) {
-      currentTab = tabName;
-      const tabs = ['home', 'podcast', 'library', 'search'];
-      const titles = {
-        home: 'ホーム',
-        podcast: 'ポッドキャスト',
-        library: 'ライブラリ',
-        search: '検索'
-      };
-
-      tabs.forEach(t => {
-        const sec = document.getElementById(`tab-${t}`);
-        if (sec) sec.classList.toggle('hidden', t !== tabName);
-
-        const dBtn = document.getElementById(`nav-desktop-${t}`);
-        if (dBtn) dBtn.classList.toggle('active', t === tabName);
-
-        const mBtn = document.getElementById(`nav-mobile-${t}`);
-        if (mBtn) {
-          mBtn.className = t === tabName
-            ? 'flex flex-col items-center py-1 px-3 rounded-xl text-rose-400'
-            : 'flex flex-col items-center py-1 px-3 rounded-xl text-white/60';
-        }
-      });
-
-      document.getElementById('headerTabTitle').textContent = titles[tabName];
-
-      if (tabName === 'podcast') {
-        renderPodcastShowsGrid();
-        const activeShow = podcastShows.find(s => s.id === activePodcastFeedId);
-        if (activeShow && (!podcastEpisodesByFeed[activePodcastFeedId] || podcastEpisodesByFeed[activePodcastFeedId].length === 0)) {
-          fetchPodcastRssFeed(activeShow);
-        } else {
-          renderActivePodcastEpisodes();
-        }
-      }
-
-      if (tabName === 'search') {
-        setTimeout(() => document.getElementById('mainSearchInput')?.focus(), 50);
-      }
-    }
-
-    function toggleFullscreenPlayer(show) {
-      const modal = document.getElementById('fullscreenPlayerModal');
-      if (show) {
-        modal.classList.remove('hidden');
-        requestAnimationFrame(() => modal.classList.remove('opacity-0'));
-      } else {
-        modal.classList.add('opacity-0');
-        setTimeout(() => modal.classList.add('hidden'), 200);
-      }
-    }
-
-    /*************************************************************************
-     * 12. ユーティリティ
-     *************************************************************************/
-    function formatSeconds(sec) {
-      if (!sec || isNaN(sec)) return '0:00';
-      const m = Math.floor(sec / 60);
-      const s = Math.floor(sec % 60);
-      return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function stripHtmlTags(str) {
-      if (!str) return '';
-      const doc = new DOMParser().parseFromString(str, 'text/html');
-      return doc.body.textContent || '';
-    }
-
-    function showToast(message, iconClass = 'fa-check-circle') {
-      const container = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      toast.className = 'glass-surface-heavy px-4 py-3 rounded-2xl text-xs font-semibold text-white flex items-center gap-2.5 shadow-2xl border border-white/25 transform transition-all duration-200 translate-y-2 opacity-0';
-      toast.innerHTML = `<i class="fa-solid ${iconClass} text-rose-400 text-sm"></i><span>${escapeHtml(message)}</span>`;
-      container.appendChild(toast);
-
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
-
-      setTimeout(() => {
-        toast.classList.add('opacity-0', '-translate-y-2');
-        setTimeout(() => toast.remove(), 200);
-      }, 2800);
-    }
-
+<!-- ... existing code ... -->
     /*************************************************************************
      * 13. 初期化
      *************************************************************************/
     window.addEventListener('DOMContentLoaded', async () => {
       loadLibraryStore();
+      loadPodcastCacheFromLocalStorage();
       await loadAllOfflineTracksFromIDB();
+
+      if (offlineBlobUrlMap.size > 0) {
+        cacheEntirePageOffline();
+      }
 
       buildAndMergeSongsList([]);
       updateShuffleRepeatButtons();
