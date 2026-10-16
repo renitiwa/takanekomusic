@@ -758,6 +758,10 @@
           </button>
 
           <button onclick="toggleRepeat()" id="btnRepeat" title="リピート" class="hidden sm:flex w-8 h-8 rounded-full items-center justify-center text-white/60 hover:text-white transition-colors">
+            <i class="fa-solid fa-repeat text-xs"></i>
+          </button>
+        </div>
+
         <!-- Right: Library Add (+), Offline Save, Mini Visualizer, Volume & Expand -->
         <div class="flex items-center justify-end gap-2 flex-1">
           <button id="miniPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" title="ライブラリに追加/解除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
@@ -917,7 +921,21 @@
        ========================================================= -->
   <script>
     /*************************************************************************
-     * 1. Spotify / Anchor 系ポッドキャストの RSS フィード設定
+     * 1. MP3ファイル一覧の設定 (コード記述 + 同じフォルダの自動検出ハイブリッド)
+     * -----------------------------------------------------------------------
+     * ここに記述した .mp3 ファイルはページ読み込みと同時に100%確実に表示・再生されます。
+     * さらに、GitHubの同じフォルダに入れた他の .mp3 ファイルも自動スキャンして追加されます。
+     * 表示される曲名は自動的にフォルダパスと末尾の「.mp3」を除いた名前になります。
+     *************************************************************************/
+    const MP3_FILES = [
+      'エンドレスラフター.mp3',
+      // 新しい曲を追加する場合は、同じフォルダに .mp3 を入れるか、以下のように追記してください:
+      // '美しく生きろ.mp3',
+      // '恋を知った世界.mp3',
+    ];
+
+    /*************************************************************************
+     * 2. Spotify / Anchor 系ポッドキャストの RSS フィード設定 (コード記述用)
      *************************************************************************/
     const PODCAST_RSS_FEEDS = [
       {
@@ -929,11 +947,11 @@
       }
     ];
 
-    // GitHubのデフォルト検索対象オーナー（カスタムドメインやプレビュー環境でも自動検出できるよう設定）
+    // GitHubのデフォルト検索対象オーナー
     const DEFAULT_GITHUB_OWNERS = ['sirokumacook'];
 
     /*************************************************************************
-     * 2. ファイル名からフォルダパスと .mp3 を除去して曲名にする関数
+     * 3. ファイル名からフォルダパスと .mp3 を除去して曲名にする関数
      *************************************************************************/
     function extractSongTitleFromFilename(filePath) {
       if (!filePath) return 'Untitled';
@@ -1430,32 +1448,141 @@
         decodedName = decodeURIComponent(rawName);
       } catch (e) {}
 
-      // 1. 同じフォルダの NFC (Windows / 標準 UTF-8) URL
-      const nfcEncoded = decodedName.normalize('NFC').split('/').map(seg => encodeURIComponent(seg)).join('/');
-      addCandidate(baseDir + nfcEncoded);
+      const nfcName = decodedName.normalize('NFC');
+      const nfdName = decodedName.normalize('NFD');
+      const nfcEncoded = nfcName.split('/').map(seg => encodeURIComponent(seg)).join('/');
+      const nfdEncoded = nfdName.split('/').map(seg => encodeURIComponent(seg)).join('/');
 
-      // 2. 同じフォルダの NFD (macOS 濁点・半濁点分離 UTF-8) URL
-      const nfdEncoded = decodedName.normalize('NFD').split('/').map(seg => encodeURIComponent(seg)).join('/');
+      // 1. 直接の相対パス（ブラウザ標準の解決・最も確実）
+      addCandidate('./' + nfcName);
+      addCandidate(nfcName);
+      addCandidate('./' + nfcEncoded);
+
+      // 2. 同じフォルダの NFC (Windows / 標準 UTF-8) 完全URL
+      addCandidate(baseDir + nfcEncoded);
+      addCandidate(baseDir + nfcName);
+
+      // 3. 同じフォルダの NFD (macOS 濁点・半濁点分離 UTF-8) URL
+      addCandidate('./' + nfdName);
+      addCandidate('./' + nfdEncoded);
       addCandidate(baseDir + nfdEncoded);
 
-      // 3. GitHub Raw URL や jsDelivr CDN URL (GitHubへアップロード直後でPagesビルド前でも即時再生可能)
+      // 4. GitHub Raw URL や jsDelivr CDN URL
       if (typeof extraUrls === 'string' && extraUrls) {
         addCandidate(extraUrls);
       } else if (Array.isArray(extraUrls)) {
         extraUrls.forEach(u => addCandidate(u));
       }
 
-      // 4. そのままの相対パス
-      addCandidate('./' + nfcEncoded);
-      addCandidate(baseDir + rawName);
-      addCandidate(rawName);
-
       return candidates;
     }
 
     /*************************************************************************
-     * 6. GitHub の index.html と同じフォルダにある .mp3 を確実に自動認識
-     *    (キャッシュ無効化 + 複数ブランチ + jsDelivr API + リポジトリ自動探索)
+     * 5.5 コード内の MP3_FILES と自動検出結果を統合して曲リストを構築する関数
+     *************************************************************************/
+    function buildAndMergeSongsList(discoveredItems = []) {
+      const uniqueMap = new Map();
+
+      const addEntry = (fileNameOrObj, extraUrls = [], customArtist = 'Takaneko music') => {
+        const rawPath = typeof fileNameOrObj === 'string'
+          ? fileNameOrObj
+          : (fileNameOrObj?.path || fileNameOrObj?.name || fileNameOrObj?.file || '');
+        if (!rawPath) return;
+
+        const title = extractSongTitleFromFilename(rawPath);
+        if (!title || title === 'Untitled') return;
+
+        const artist = (typeof fileNameOrObj === 'object' && fileNameOrObj?.artist)
+          ? fileNameOrObj.artist
+          : customArtist;
+
+        const urlsToAdd = Array.isArray(extraUrls)
+          ? extraUrls
+          : (typeof fileNameOrObj === 'object' && Array.isArray(fileNameOrObj?.extraUrls) ? fileNameOrObj.extraUrls : []);
+
+        if (!uniqueMap.has(title)) {
+          uniqueMap.set(title, {
+            name: rawPath.split('/').pop(),
+            path: rawPath,
+            artist: artist,
+            extraUrls: [...urlsToAdd]
+          });
+        } else {
+          const existing = uniqueMap.get(title);
+          urlsToAdd.forEach(u => {
+            if (u && !existing.extraUrls.includes(u)) existing.extraUrls.push(u);
+          });
+        }
+      };
+
+      // 1. まずコード冒頭の MP3_FILES を最優先で登録 (100%確実に表示)
+      if (Array.isArray(MP3_FILES)) {
+        MP3_FILES.forEach(entry => addEntry(entry));
+      }
+
+      // 2. 自動スキャンで見つかった同じフォルダの .mp3 をマージ
+      if (Array.isArray(discoveredItems)) {
+        discoveredItems.forEach(item => addEntry(item));
+      }
+
+      // 3. ライブラリやオフライン保存に存在する曲も欠落しないようマージ
+      Object.values(savedLibraryMap).forEach(meta => {
+        if (meta && meta.type !== 'podcast' && meta.title) {
+          addEntry(`${meta.title}.mp3`, meta.urlCandidates || [], meta.artist || 'Takaneko music');
+        }
+      });
+      offlineBlobUrlMap.forEach((entry) => {
+        if (entry?.trackMeta && entry.trackMeta.type !== 'podcast' && entry.trackMeta.title) {
+          addEntry(`${entry.trackMeta.title}.mp3`, entry.trackMeta.urlCandidates || [], entry.trackMeta.artist || 'Takaneko music');
+        }
+      });
+
+      const uniqueList = Array.from(uniqueMap.values());
+      songs = uniqueList.map((item, idx) => {
+        const songTitle = extractSongTitleFromFilename(item.name || item.path);
+        const sKey = getTrackStableKey(songTitle, 'song');
+        const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+        const urlCandidates = buildAudioUrlCandidates(item.path || item.name, item.extraUrls);
+        const id = 'song-' + idx + '-' + encodeURIComponent(songTitle);
+        const inLib = Boolean(savedLibraryMap[sKey]);
+
+        const songObj = {
+          id: id,
+          stableKey: sKey,
+          title: songTitle,
+          artist: item.artist || 'Takaneko music',
+          type: 'song',
+          audioUrl: urlCandidates[0],
+          urlCandidates: urlCandidates,
+          seedIndex: idx,
+          isFeatured: true,
+          inLibrary: inLib,
+          gradient: palette.gradient,
+          orbColors: palette.orbs
+        };
+
+        if (inLib) {
+          savedLibraryMap[sKey] = {
+            ...savedLibraryMap[sKey],
+            id: id,
+            urlCandidates: urlCandidates,
+            audioUrl: urlCandidates[0]
+          };
+        }
+
+        return songObj;
+      });
+
+      saveLibraryStore();
+
+      if (songs.length > 0 && !currentTrack) {
+        currentTrack = songs[0];
+        updatePlayerUI();
+      }
+    }
+
+    /*************************************************************************
+     * 6. GitHub の index.html と同じフォルダにある .mp3 を自動認識して追加
      *************************************************************************/
     function parseGitHubRepoCandidatesFromLocation() {
       const host = window.location.hostname.toLowerCase();
@@ -1812,7 +1939,11 @@
 
       // Step 5: 同じフォルダに直接配置されたファイルのHEADプローブ + オフライン保存済み/ライブラリ保存済みの曲を統合
       try {
-        const probeNames = new Set(['エンドレスラフター.mp3']);
+        const probeNames = new Set(
+          Array.isArray(MP3_FILES)
+            ? MP3_FILES.map(e => (typeof e === 'string' ? e : e.file)).filter(Boolean)
+            : ['エンドレスラフター.mp3']
+        );
         Object.values(savedLibraryMap).forEach(meta => {
           if (meta && meta.type !== 'podcast' && meta.title) {
             probeNames.add(`${meta.title}.mp3`);
@@ -1854,81 +1985,16 @@
         }
       } catch (e) {}
 
-      // 重複を排除して songs 配列を構築 (同じ曲名ならextraUrlsをマージ)
-      const uniqueMap = new Map();
-      for (const item of discoveredItems) {
-        const title = extractSongTitleFromFilename(item.name || item.path);
-        if (!title || title === 'Untitled') continue;
-        if (!uniqueMap.has(title)) {
-          uniqueMap.set(title, {
-            name: item.name || (title + '.mp3'),
-            path: item.path || item.name || (title + '.mp3'),
-            extraUrls: Array.isArray(item.extraUrls)
-              ? [...item.extraUrls]
-              : (item.downloadUrl ? [item.downloadUrl] : [])
-          });
-        } else {
-          const existing = uniqueMap.get(title);
-          const moreUrls = Array.isArray(item.extraUrls)
-            ? item.extraUrls
-            : (item.downloadUrl ? [item.downloadUrl] : []);
-          moreUrls.forEach(u => {
-            if (u && !existing.extraUrls.includes(u)) existing.extraUrls.push(u);
-          });
-        }
-      }
-
-      const uniqueList = Array.from(uniqueMap.values());
-      songs = uniqueList.map((item, idx) => {
-        const songTitle = extractSongTitleFromFilename(item.name || item.path);
-        const sKey = getTrackStableKey(songTitle, 'song');
-        const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
-        const urlCandidates = buildAudioUrlCandidates(item.path || item.name, item.extraUrls);
-        const id = 'song-' + idx + '-' + encodeURIComponent(songTitle);
-        const inLib = Boolean(savedLibraryMap[sKey]);
-
-        const songObj = {
-          id: id,
-          stableKey: sKey,
-          title: songTitle,
-          artist: 'Takaneko music',
-          type: 'song',
-          audioUrl: urlCandidates[0],
-          urlCandidates: urlCandidates,
-          seedIndex: idx,
-          isFeatured: true,
-          inLibrary: inLib,
-          gradient: palette.gradient,
-          orbColors: palette.orbs
-        };
-
-        // ライブラリに登録済みの曲であれば最新URL候補をライブラリ側にも反映
-        if (inLib) {
-          savedLibraryMap[sKey] = {
-            ...savedLibraryMap[sKey],
-            id: id,
-            urlCandidates: urlCandidates,
-            audioUrl: urlCandidates[0]
-          };
-        }
-
-        return songObj;
-      });
-
-      saveLibraryStore();
-
-      if (songs.length > 0 && !currentTrack) {
-        currentTrack = songs[0];
-        updatePlayerUI();
-      }
+      // コード内の MP3_FILES と自動検出した discoveredItems を重複なく統合
+      buildAndMergeSongsList(discoveredItems);
 
       if (rescanIcon) rescanIcon.classList.remove('fa-spin');
 
       if (isManualRescan) {
         showToast(
           songs.length > 0
-            ? `${songs.length}曲のMP3を検出して反映しました`
-            : '同じフォルダにMP3ファイルが見つかりませんでした',
+            ? `${songs.length}曲のMP3を認識して反映しました`
+            : 'MP3ファイルが見つかりませんでした',
           songs.length > 0 ? 'fa-circle-check' : 'fa-circle-info'
         );
       }
@@ -3214,13 +3280,15 @@
       loadLibraryStore();
       await loadAllOfflineTracksFromIDB();
 
+      // 2. コード内の MP3_FILES を即座に登録して画面に表示 (API待ちなしで100%確実に表示)
+      buildAndMergeSongsList([]);
       renderAllViews();
       startVisualizerLoop();
 
-      // 2. GitHub の index.html と同じフォルダにある .mp3 を自動検出して曲リストへ追加
-      await autoDiscoverMp3FilesInSameFolder(false);
+      // 3. GitHub の index.html と同じフォルダにある他の .mp3 もバックグラウンドで自動検出して追加
+      autoDiscoverMp3FilesInSameFolder(false);
 
-      // 3. ポッドキャスト RSS をバックグラウンド取得
+      // 4. ポッドキャスト RSS をバックグラウンド取得
       if (podcastShows.length > 0) {
         fetchPodcastRssFeed(podcastShows[0]);
       }
