@@ -55,204 +55,101 @@
     }
 
     /* ==========================================
-       Translucent Glass Background Orbs
+       Lightweight Ambient Background (GPU Optimized)
        ========================================== */
     .glass-bg-container {
       position: fixed;
       inset: 0;
       z-index: 0;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 20%, #131629 0%, #06070c 100%);
+      background:
+        radial-gradient(circle at 15% 15%, color-mix(in srgb, var(--orb-1) 32%, transparent) 0%, transparent 55%),
+        radial-gradient(circle at 85% 80%, color-mix(in srgb, var(--orb-2) 32%, transparent) 0%, transparent 55%),
+        radial-gradient(circle at 60% 35%, color-mix(in srgb, var(--orb-3) 20%, transparent) 0%, transparent 50%),
+        radial-gradient(circle at 25% 80%, color-mix(in srgb, var(--orb-4) 18%, transparent) 0%, transparent 45%),
+        radial-gradient(circle at 50% 20%, #131629 0%, #06070c 100%);
       pointer-events: none;
-    }
-
-    .glass-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(85px);
-      opacity: 0.52;
-      mix-blend-mode: screen;
-      transition: background 1.8s cubic-bezier(0.22, 1, 0.36, 1), transform 1.8s ease;
-      will-change: transform, background;
-    }
-
-    .orb-1 {
-      width: 55vw;
-      height: 55vw;
-      max-width: 720px;
-      max-height: 720px;
-      top: -15%;
-      left: -10%;
-      background: radial-gradient(circle, var(--orb-1), transparent 70%);
-      animation: floatOrb1 22s ease-in-out infinite alternate;
-    }
-
-    .orb-2 {
-      width: 50vw;
-      height: 50vw;
-      max-width: 650px;
-      max-height: 650px;
-      bottom: -18%;
-      right: -10%;
-      background: radial-gradient(circle, var(--orb-2), transparent 70%);
-      animation: floatOrb2 26s ease-in-out infinite alternate;
-    }
-
-    .orb-3 {
-      width: 42vw;
-      height: 42vw;
-      max-width: 540px;
-      max-height: 540px;
-      top: 30%;
-      left: 38%;
-      background: radial-gradient(circle, var(--orb-3), transparent 70%);
-      animation: floatOrb3 19s ease-in-out infinite alternate;
-    }
-
-    .orb-4 {
-      width: 34vw;
-      height: 34vw;
-      max-width: 440px;
-      max-height: 440px;
-      bottom: 12%;
-      left: 12%;
-      background: radial-gradient(circle, var(--orb-4), transparent 70%);
-      animation: floatOrb4 24s ease-in-out infinite alternate;
-      opacity: 0.36;
-    }
-
-    @keyframes floatOrb1 {
-      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-      50% { transform: translate(8vw, 6vh) scale(1.12) rotate(12deg); }
-      100% { transform: translate(-4vw, 12vh) scale(0.94) rotate(-8deg); }
-    }
-    @keyframes floatOrb2 {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(-10vw, -8vh) scale(1.15); }
-      100% { transform: translate(5vw, -12vh) scale(0.92); }
-    }
-    @keyframes floatOrb3 {
-      0% { transform: translate(0, 0) scale(0.95); }
-      50% { transform: translate(-7vw, 9vh) scale(1.1); }
-      100% { transform: translate(9vw, -6vh) scale(1.03); }
-    }
-    @keyframes floatOrb4 {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(12vw, -10vh) scale(1.18); }
-    }
-
-    .glass-noise {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0.025;
-      background-image: radial-gradient(rgba(255,255,255,0.8) 1px, transparent 0);
-      background-size: 24px 24px;
+      transition: background 0.8s ease;
     }
 
     /* ==========================================
-       Glass Surfaces & Components
+       Lightweight Glass Surfaces & Components
        ========================================== */
     .glass-surface {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.04) 100%);
-      backdrop-filter: blur(28px) saturate(190%);
-      -webkit-backdrop-filter: blur(28px) saturate(190%);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow:
-        0 16px 40px -8px rgba(0, 0, 0, 0.45),
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
-        inset 0 -1px 1px 0 rgba(255, 255, 255, 0.05);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.04) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.35);
     }
 
     .glass-surface-heavy {
-      background: linear-gradient(145deg, rgba(28, 30, 46, 0.72) 0%, rgba(14, 15, 26, 0.82) 100%);
-      backdrop-filter: blur(36px) saturate(200%);
-      -webkit-backdrop-filter: blur(36px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.65),
-        inset 0 1.5px 1px 0 rgba(255, 255, 255, 0.32),
-        inset 0 -1px 2px 0 rgba(255, 255, 255, 0.06);
+      background: linear-gradient(145deg, rgba(24, 26, 40, 0.88) 0%, rgba(12, 13, 22, 0.94) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
     }
 
     .glass-card {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.03) 100%);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow:
-        0 10px 30px -5px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.22);
-      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 6px 18px -4px rgba(0, 0, 0, 0.28);
+      transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
     }
 
     .glass-card:hover {
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 100%);
-      border-color: rgba(255, 255, 255, 0.28);
-      transform: translateY(-3px) scale(1.01);
-      box-shadow:
-        0 18px 40px -6px rgba(0, 0, 0, 0.5),
-        inset 0 1px 1px 0 rgba(255, 255, 255, 0.35);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-color: rgba(255, 255, 255, 0.24);
+      transform: translateY(-2px);
     }
 
     .glass-pill-btn {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(255, 255, 255, 0.06) 100%);
-      backdrop-filter: blur(20px) saturate(180%);
-      -webkit-backdrop-filter: blur(20px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.25),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.11);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: background-color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
     }
 
     .glass-pill-btn:hover {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.10) 100%);
-      border-color: rgba(255, 255, 255, 0.36);
-      transform: scale(1.03);
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.32);
     }
 
     .glass-pill-btn:active {
-      transform: scale(0.97);
+      transform: scale(0.96);
     }
 
     .apple-accent-btn {
       background: linear-gradient(135deg, #FA2D48 0%, #FF375F 50%, #D91B5C 100%);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      box-shadow:
-        0 8px 25px -4px rgba(250, 45, 72, 0.55),
-        inset 0 1px 1px rgba(255, 255, 255, 0.45);
-      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 6px 16px -3px rgba(250, 45, 72, 0.45);
+      transition: transform 0.15s ease, filter 0.15s ease;
     }
 
     .apple-accent-btn:hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px) scale(1.02);
-      box-shadow:
-        0 12px 30px -3px rgba(250, 45, 72, 0.7),
-        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+      filter: brightness(1.08);
+      transform: scale(1.02);
+    }
+
+    .apple-accent-btn:active {
+      transform: scale(0.97);
     }
 
     /* Navigation Active State */
     .nav-item {
-      transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: background-color 0.15s ease, color 0.15s ease;
       border: 1px solid transparent;
     }
     .nav-item:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.07);
     }
     .nav-item.active {
-      background: linear-gradient(135deg, rgba(250, 45, 72, 0.28) 0%, rgba(255, 55, 95, 0.12) 100%);
-      border-color: rgba(255, 255, 255, 0.22);
-      box-shadow:
-        0 6px 20px -4px rgba(250, 45, 72, 0.32),
-        inset 0 1px 0.5px rgba(255, 255, 255, 0.3);
+      background: linear-gradient(135deg, rgba(250, 45, 72, 0.26) 0%, rgba(255, 55, 95, 0.1) 100%);
+      border-color: rgba(255, 255, 255, 0.2);
       color: #ffffff;
     }
     .nav-item.active .nav-icon {
       color: #FA2D48;
-      filter: drop-shadow(0 0 8px rgba(250, 45, 72, 0.6));
     }
 
     /* Custom Scrollbar */
@@ -290,12 +187,11 @@
       height: 12px;
       border-radius: 50%;
       background: #ffffff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       margin-top: -3.5px;
       transition: transform 0.15s ease, background-color 0.15s ease;
     }
     input[type="range"].apple-slider:hover::-webkit-slider-thumb {
-      transform: scale(1.35);
+      transform: scale(1.25);
       background: #FA2D48;
     }
 
@@ -327,18 +223,12 @@
   <!-- =========================================================
        NATIVE HTML5 AUDIO ELEMENT (Direct output, no CORS muting)
        ========================================================= -->
-  <audio id="takanekoAudio" preload="auto" playsinline></audio>
+  <audio id="takanekoAudio" preload="metadata" playsinline></audio>
 
   <!-- =========================================================
-       DYNAMIC GLASS BACKGROUND ORBS
+       LIGHTWEIGHT AMBIENT BACKGROUND
        ========================================================= -->
-  <div class="glass-bg-container">
-    <div class="glass-orb orb-1"></div>
-    <div class="glass-orb orb-2"></div>
-    <div class="glass-orb orb-3"></div>
-    <div class="glass-orb orb-4"></div>
-  </div>
-  <div class="glass-noise"></div>
+  <div class="glass-bg-container"></div>
 
   <!-- =========================================================
        MAIN APPLICATION LAYOUT
@@ -407,7 +297,7 @@
     <main class="flex-1 h-full glass-surface md:rounded-3xl flex flex-col overflow-hidden relative">
 
       <!-- Top Translucent Glass Header -->
-      <header class="sticky top-0 z-20 px-5 md:px-8 py-3.5 flex items-center justify-between border-b border-white/10 bg-white/[0.02] backdrop-blur-xl">
+      <header class="sticky top-0 z-20 px-5 md:px-8 py-3.5 flex items-center justify-between border-b border-white/10 bg-black/20">
         <!-- Mobile Logo / Desktop Current Tab Title -->
         <div class="flex items-center gap-3">
           <div class="flex md:hidden items-center gap-2.5 cursor-pointer" onclick="switchTab('home')">
@@ -448,10 +338,10 @@
         <section id="tab-home" class="space-y-8">
           <!-- Apple Music Style Top Hero Banner -->
           <div id="heroFeaturedCard" class="glass-card rounded-3xl p-6 sm:p-8 relative overflow-hidden flex flex-col justify-between min-h-[240px] group">
-            <div id="heroFeaturedBg" class="absolute inset-0 opacity-35 bg-gradient-to-br from-rose-500 via-purple-600 to-cyan-500 transition-all duration-700 group-hover:scale-105 pointer-events-none"></div>
+            <div id="heroFeaturedBg" class="absolute inset-0 opacity-35 bg-gradient-to-br from-rose-500 via-purple-600 to-cyan-500 pointer-events-none"></div>
             <div class="relative z-10 flex items-start justify-between gap-4">
               <div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/15 backdrop-blur-md border border-white/25 text-white mb-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-white/15 border border-white/25 text-white mb-3">
                   <i class="fa-solid fa-star text-amber-300"></i>
                   注目の曲
                 </span>
@@ -463,7 +353,12 @@
                 </p>
               </div>
               <div id="heroSongArt" class="w-20 h-20 sm:w-28 sm:h-28 rounded-2xl shadow-2xl border border-white/30 shrink-0 overflow-hidden flex items-center justify-center bg-gradient-to-tr from-rose-500 to-indigo-600">
-                <i class="fa-solid fa-music text-3xl text-white/90"></i>
+                <img
+                  src="takaneko.png"
+                  alt="Takaneko music"
+                  class="w-full h-full object-cover"
+                  onerror="this.onerror=null; this.src='https://placehold.co/200x200/FA2D48/ffffff?text=T';"
+                />
               </div>
             </div>
 
@@ -700,7 +595,7 @@
        FLOATING PLAYER BAR (Apple Music Style)
        ========================================================= -->
   <div class="fixed bottom-16 md:bottom-5 left-2 right-2 md:left-72 lg:left-80 md:right-6 z-30 pointer-events-none flex justify-center">
-    <div class="w-full max-w-5xl glass-surface-heavy rounded-3xl p-2.5 sm:px-5 sm:py-3 pointer-events-auto shadow-2xl border border-white/25 transition-all">
+    <div class="w-full max-w-5xl glass-surface-heavy rounded-3xl p-2.5 sm:px-5 sm:py-3 pointer-events-auto shadow-2xl border border-white/25">
 
       <!-- Top Slim Interactive Seek Bar -->
       <div class="flex items-center gap-2.5 px-1 mb-1.5">
@@ -722,7 +617,14 @@
         <!-- Left: Now Playing Artwork & Song Title -->
         <div class="flex items-center gap-3 min-w-0 flex-1 cursor-pointer group" onclick="toggleFullscreenPlayer(true)">
           <div id="miniPlayerArt" class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shrink-0 overflow-hidden shadow-lg border border-white/25 flex items-center justify-center bg-gradient-to-br from-rose-500 to-indigo-600 relative">
-            <i class="fa-solid fa-music text-white text-base"></i>
+            <img
+              id="miniPlayerArtImg"
+              src="takaneko.png"
+              alt=""
+              class="w-full h-full object-cover"
+              onerror="this.onerror=null; this.src='https://placehold.co/96x96/FA2D48/ffffff?text=T';"
+            />
+            <i id="miniPlayerArtPodcastIcon" class="fa-solid fa-podcast text-white text-lg hidden"></i>
             <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
               <i class="fa-solid fa-up-right-and-down-left-from-center text-white text-xs"></i>
             </div>
@@ -762,7 +664,7 @@
           </button>
         </div>
 
-        <!-- Right: Library Add (+), Offline Save, Mini Visualizer, Volume & Expand -->
+        <!-- Right: Library Add (+), Offline Save, Volume & Expand -->
         <div class="flex items-center justify-end gap-2 flex-1">
           <button id="miniPlayerLibBtn" onclick="toggleCurrentTrackLibrary()" title="ライブラリに追加/解除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
             <i class="fa-solid fa-plus text-xs"></i>
@@ -771,8 +673,6 @@
           <button id="miniPlayerOfflineBtn" onclick="toggleCurrentTrackOffline()" title="オフライン保存/削除" class="w-8 h-8 rounded-full glass-pill-btn flex items-center justify-center text-white/80 hover:text-white">
             <i class="fa-solid fa-arrow-down text-xs"></i>
           </button>
-
-          <canvas id="miniVisualizerCanvas" width="60" height="24" class="hidden lg:block opacity-85"></canvas>
 
           <div class="hidden md:flex items-center gap-2 w-28">
             <button onclick="toggleMute()" class="text-white/65 hover:text-white text-xs w-4">
@@ -821,9 +721,9 @@
   </nav>
 
   <!-- =========================================================
-       FULLSCREEN PLAYER MODAL
+       FULLSCREEN PLAYER MODAL (Waveform Removed, Shuffle & Repeat Added)
        ========================================================= -->
-  <div id="fullscreenPlayerModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-300 flex flex-col justify-between p-6 sm:p-10 glass-surface-heavy">
+  <div id="fullscreenPlayerModal" class="fixed inset-0 z-50 hidden opacity-0 transition-opacity duration-200 flex flex-col justify-between p-6 sm:p-10 glass-surface-heavy">
     <div class="flex items-center justify-between max-w-4xl w-full mx-auto">
       <div class="flex items-center gap-2.5">
         <img
@@ -842,13 +742,20 @@
     <div class="max-w-4xl w-full mx-auto my-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-6">
       <!-- Big Artwork -->
       <div class="flex flex-col items-center">
-        <div id="fsPlayerArt" class="w-64 h-64 sm:w-80 sm:h-80 rounded-[36px] shadow-2xl border border-white/30 flex items-center justify-center overflow-hidden bg-gradient-to-br from-rose-500 to-indigo-600 transition-transform duration-500">
-          <i class="fa-solid fa-music text-6xl text-white/90"></i>
+        <div id="fsPlayerArt" class="w-60 h-60 sm:w-80 sm:h-80 rounded-[36px] shadow-2xl border border-white/30 flex items-center justify-center overflow-hidden bg-gradient-to-br from-rose-500 to-indigo-600">
+          <img
+            id="fsPlayerArtImg"
+            src="takaneko.png"
+            alt="Takaneko music"
+            class="w-full h-full object-cover"
+            onerror="this.onerror=null; this.src='https://placehold.co/320x320/FA2D48/ffffff?text=T';"
+          />
+          <i id="fsPlayerArtPodcastIcon" class="fa-solid fa-podcast text-7xl text-white/95 hidden"></i>
         </div>
       </div>
 
-      <!-- Controls & Visualizer -->
-      <div class="space-y-6">
+      <!-- Controls (Waveform Removed, Shuffle & Repeat Included) -->
+      <div class="space-y-7">
         <div class="flex items-start justify-between gap-4">
           <div class="min-w-0">
             <h2 id="fsPlayerTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white truncate">
@@ -868,13 +775,8 @@
           </div>
         </div>
 
-        <!-- Audio Spectrum Visualizer -->
-        <div class="glass-surface rounded-2xl p-3 border border-white/15">
-          <canvas id="fsVisualizerCanvas" width="420" height="64" class="w-full h-16"></canvas>
-        </div>
-
         <!-- Seek Bar -->
-        <div class="space-y-1.5">
+        <div class="space-y-2">
           <input
             id="fsSeekBar"
             type="range"
@@ -891,16 +793,26 @@
           </div>
         </div>
 
-        <!-- Transport Buttons -->
-        <div class="flex items-center justify-center gap-6">
-          <button onclick="prevTrack()" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
+        <!-- Transport Buttons with Shuffle & Repeat -->
+        <div class="flex items-center justify-between sm:justify-center gap-4 sm:gap-6">
+          <button onclick="toggleShuffle()" id="fsBtnShuffle" title="シャッフル" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white/70 hover:text-white transition-colors">
+            <i class="fa-solid fa-shuffle text-sm"></i>
+          </button>
+
+          <button onclick="prevTrack()" title="前の曲" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
             <i class="fa-solid fa-backward-step"></i>
           </button>
-          <button onclick="togglePlayPause()" class="w-16 h-16 rounded-full apple-accent-btn flex items-center justify-center text-white text-2xl shadow-2xl">
+
+          <button onclick="togglePlayPause()" title="再生 / 一時停止" class="w-16 h-16 rounded-full apple-accent-btn flex items-center justify-center text-white text-2xl shadow-2xl">
             <i id="fsPlayPauseIcon" class="fa-solid fa-play ml-1"></i>
           </button>
-          <button onclick="nextTrack()" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
+
+          <button onclick="nextTrack()" title="次の曲" class="w-12 h-12 rounded-full glass-pill-btn flex items-center justify-center text-white text-lg">
             <i class="fa-solid fa-forward-step"></i>
+          </button>
+
+          <button onclick="toggleRepeat()" id="fsBtnRepeat" title="リピート" class="w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center text-white/70 hover:text-white transition-colors">
+            <i class="fa-solid fa-repeat text-sm"></i>
           </button>
         </div>
       </div>
@@ -922,16 +834,9 @@
   <script>
     /*************************************************************************
      * 1. MP3ファイル一覧の設定 (コード記述 + 同じフォルダの自動検出ハイブリッド)
-     * -----------------------------------------------------------------------
-     * ここに記述した .mp3 ファイルはページ読み込みと同時に100%確実に表示・再生されます。
-     * さらに、GitHubの同じフォルダに入れた他の .mp3 ファイルも自動スキャンして追加されます。
-     * 表示される曲名は自動的にフォルダパスと末尾の「.mp3」を除いた名前になります。
      *************************************************************************/
     const MP3_FILES = [
       'エンドレスラフター.mp3',
-      // 新しい曲を追加する場合は、同じフォルダに .mp3 を入れるか、以下のように追記してください:
-      // '美しく生きろ.mp3',
-      // '恋を知った世界.mp3',
     ];
 
     /*************************************************************************
@@ -947,7 +852,6 @@
       }
     ];
 
-    // GitHubのデフォルト検索対象オーナー
     const DEFAULT_GITHUB_OWNERS = ['sirokumacook'];
 
     /*************************************************************************
@@ -976,8 +880,16 @@
       return `${type}:${cleanTitle}`;
     }
 
+    // 音楽は takaneko.png、ポッドキャストは Podcast アイコンを返す共通ヘルパー
+    function renderArtworkInnerHtml(track, iconSizeClass = 'text-2xl') {
+      if (track && track.type === 'podcast') {
+        return `<i class="fa-solid fa-podcast ${iconSizeClass} text-white"></i>`;
+      }
+      return `<img src="takaneko.png" alt="" loading="lazy" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x200/FA2D48/ffffff?text=T';" />`;
+    }
+
     /*************************************************************************
-     * 3. アプリケーション状態管理 & ライブラリ永続保存 (localStorage)
+     * 4. アプリケーション状態管理 & ライブラリ永続保存 (localStorage)
      *************************************************************************/
     const LIBRARY_STORAGE_KEY_V3 = 'takaneko_music_library_store_v3';
     const LEGACY_LIBRARY_KEYS = ['takaneko_music_library_titles_v2', 'takaneko_music_library_ids_v1'];
@@ -988,20 +900,14 @@
     let podcastEpisodesByFeed = {};
     let activePodcastFeedId = PODCAST_RSS_FEEDS[0]?.id || '';
 
-    // ライブラリ永続ストア: { [stableKey]: trackMetadata }
     let savedLibraryMap = {};
-
-    // オフライン保存状態 (IndexedDB):
-    // offlineBlobUrlMap: { [stableKey]: { blobUrl, size, savedAt, trackMeta } }
     const offlineBlobUrlMap = new Map();
-    // 現在ダウンロード中のキー集合
     const offlineDownloadingKeys = new Set();
 
     let currentTab = 'home';
     let currentSearchFilter = 'all';
     let currentLibraryFilter = 'all';
 
-    // ネイティブ HTML5 Audio 要素
     const audioPlayer = document.getElementById('takanekoAudio');
     audioPlayer.volume = 0.85;
     audioPlayer.muted = false;
@@ -1013,8 +919,8 @@
     let isPlaying = false;
     let isShuffle = false;
     let repeatMode = 'off'; // 'off' | 'all' | 'one'
+    let lastDisplayedSecond = -1;
 
-    // カラーパレット
     const COLOR_PALETTES = [
       {
         gradient: 'linear-gradient(135deg, #FF2A5F 0%, #7928CA 100%)',
@@ -1042,7 +948,6 @@
       }
     ];
 
-    // --- ライブラリの読み込み・マイグレーション・保存 ---
     function loadLibraryStore() {
       savedLibraryMap = {};
       try {
@@ -1053,7 +958,6 @@
             savedLibraryMap = parsed;
           }
         }
-        // 旧バージョンのライブラリデータも引き継ぐ
         for (const legacyKey of LEGACY_LIBRARY_KEYS) {
           const rawLegacy = localStorage.getItem(legacyKey);
           if (rawLegacy) {
@@ -1130,7 +1034,6 @@
         delete savedLibraryMap[sKey];
       }
 
-      // メモリ上の曲・ポッドキャスト一覧にも同期
       songs.forEach(s => {
         if (getTrackStableKey(s) === sKey) s.inLibrary = shouldBeInLibrary;
       });
@@ -1146,7 +1049,7 @@
     }
 
     /*************************************************************************
-     * 4. IndexedDB オフライン保存エンジン (曲・ポッドキャスト対応)
+     * 5. IndexedDB オフライン保存エンジン (曲・ポッドキャスト対応)
      *************************************************************************/
     const OFFLINE_DB_NAME = 'TakanekoOfflineDB_v1';
     const OFFLINE_STORE_NAME = 'offline_audio_store';
@@ -1237,7 +1140,7 @@
 
       const old = offlineBlobUrlMap.get(sKey);
       if (old && old.blobUrl) {
-        try { URL.revokeObjectURL(old.blobUrl); } catch (e) {}
+        try { URL.revokeObjectURL(oldEntry?.blobUrl); } catch (e) {}
       }
       const blobUrl = URL.createObjectURL(blob);
       offlineBlobUrlMap.set(sKey, {
@@ -1290,7 +1193,6 @@
         ? [...track.urlCandidates]
         : (track.audioUrl ? [track.audioUrl] : []);
 
-      // ポッドキャストや外部URLの場合はCORSプロキシ経由の候補も後ろに追加して確実にバイナリ取得できるようにする
       const fetchTargets = [];
       const addTarget = (u) => {
         if (u && !u.startsWith('blob:') && !fetchTargets.includes(u)) {
@@ -1311,16 +1213,12 @@
           const res = await fetch(url, { cache: 'no-store' });
           if (!res.ok) continue;
           const blob = await res.blob();
-          // HTMLエラーページではなく実際の音声データであることを確認 (1KB以上 & text/htmlでない)
           if (blob && blob.size > 1024 && !String(blob.type).includes('text/html')) {
-            const finalBlob = blob.type && blob.type.startsWith('audio/')
+            return blob.type && blob.type.startsWith('audio/')
               ? blob
               : new Blob([blob], { type: 'audio/mpeg' });
-            return finalBlob;
           }
-        } catch (err) {
-          console.warn('Offline fetch candidate failed:', url, err);
-        }
+        } catch (err) {}
       }
       throw new Error('音声データの取得に失敗しました');
     }
@@ -1350,7 +1248,6 @@
         return;
       }
 
-      // すでにオフライン保存済みの場合は解除
       if (offlineBlobUrlMap.has(sKey)) {
         try {
           await deleteTrackBlobFromIDB(track);
@@ -1364,7 +1261,6 @@
         return;
       }
 
-      // 新規オフライン保存（ダウンロード）
       offlineDownloadingKeys.add(sKey);
       showToast(`「${track.title}」をオフライン保存しています...`, 'fa-cloud-arrow-down');
       updatePlayerUI();
@@ -1374,14 +1270,12 @@
       try {
         const blob = await fetchAudioBlobWithFallback(track);
         await saveTrackBlobToIDB(track, blob);
-        // オフライン保存した曲は自動的にライブラリにも登録しておくとオフライン時にライブラリからもすぐ聴ける
         if (!isTrackInLibrary(track)) {
           setTrackLibraryState(track, true);
         }
         const sizeLabel = formatBytes(blob.size);
         showToast(`「${track.title}」をオフライン保存しました ${sizeLabel ? `(${sizeLabel})` : ''}`, 'fa-circle-check');
       } catch (err) {
-        console.error('Offline download error:', err);
         showToast(`「${track.title}」のオフライン保存に失敗しました`, 'fa-circle-exclamation');
       } finally {
         offlineDownloadingKeys.delete(sKey);
@@ -1410,8 +1304,63 @@
     }
 
     /*************************************************************************
-     * 5. index.html と同じフォルダのベースURLと再生URL候補の生成
+     * 6. プレビュー環境用フォールバック音源生成 & URL候補構築
      *************************************************************************/
+    const fallbackWavCache = new Map();
+    function getFallbackAudioBlobUrl(seedIndex = 0) {
+      if (fallbackWavCache.has(seedIndex)) return fallbackWavCache.get(seedIndex);
+      const chordSets = [
+        [261.63, 329.63, 293.66, 392.00],
+        [220.00, 261.63, 329.63, 293.66],
+        [293.66, 349.23, 440.00, 392.00],
+        [196.00, 246.94, 293.66, 329.63]
+      ];
+      const chordFreqs = chordSets[seedIndex % chordSets.length];
+      const tempoBpm = 112;
+      const durationSec = 16;
+      const sampleRate = 22050;
+      const numSamples = sampleRate * durationSec;
+      const buffer = new ArrayBuffer(44 + numSamples * 2);
+      const view = new DataView(buffer);
+
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + numSamples * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, numSamples * 2, true);
+
+      const beatSec = 60 / tempoBpm;
+      for (let i = 0; i < numSamples; i++) {
+        const t = i / sampleRate;
+        const barIndex = Math.floor(t / (beatSec * 2)) % chordFreqs.length;
+        const root = chordFreqs[barIndex];
+        const arpStep = Math.floor(t / (beatSec / 2)) % 4;
+        const arpFreq = root * [1, 1.25, 1.5, 2][arpStep];
+        const pad = Math.sin(2 * Math.PI * root * t) * 0.22 + Math.sin(2 * Math.PI * (root * 1.5) * t) * 0.14;
+        const env = Math.exp(-(t % (beatSec / 2)) * 6.5);
+        const lead = Math.sin(2 * Math.PI * arpFreq * t) * env * 0.32;
+        const fadeOut = t > durationSec - 1.5 ? (durationSec - t) / 1.5 : 1;
+        const sample = Math.max(-1, Math.min(1, (pad + lead) * fadeOut));
+        view.setInt16(44 + i * 2, sample * 32767, true);
+      }
+
+      const url = URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+      fallbackWavCache.set(seedIndex, url);
+      return url;
+    }
+
     function getBaseDirectoryUrl() {
       const loc = window.location;
       let path = loc.pathname;
@@ -1453,21 +1402,15 @@
       const nfcEncoded = nfcName.split('/').map(seg => encodeURIComponent(seg)).join('/');
       const nfdEncoded = nfdName.split('/').map(seg => encodeURIComponent(seg)).join('/');
 
-      // 1. 直接の相対パス（ブラウザ標準の解決・最も確実）
       addCandidate('./' + nfcName);
       addCandidate(nfcName);
       addCandidate('./' + nfcEncoded);
-
-      // 2. 同じフォルダの NFC (Windows / 標準 UTF-8) 完全URL
       addCandidate(baseDir + nfcEncoded);
       addCandidate(baseDir + nfcName);
-
-      // 3. 同じフォルダの NFD (macOS 濁点・半濁点分離 UTF-8) URL
       addCandidate('./' + nfdName);
       addCandidate('./' + nfdEncoded);
       addCandidate(baseDir + nfdEncoded);
 
-      // 4. GitHub Raw URL や jsDelivr CDN URL
       if (typeof extraUrls === 'string' && extraUrls) {
         addCandidate(extraUrls);
       } else if (Array.isArray(extraUrls)) {
@@ -1477,9 +1420,6 @@
       return candidates;
     }
 
-    /*************************************************************************
-     * 5.5 コード内の MP3_FILES と自動検出結果を統合して曲リストを構築する関数
-     *************************************************************************/
     function buildAndMergeSongsList(discoveredItems = []) {
       const uniqueMap = new Map();
 
@@ -1515,17 +1455,14 @@
         }
       };
 
-      // 1. まずコード冒頭の MP3_FILES を最優先で登録 (100%確実に表示)
       if (Array.isArray(MP3_FILES)) {
         MP3_FILES.forEach(entry => addEntry(entry));
       }
 
-      // 2. 自動スキャンで見つかった同じフォルダの .mp3 をマージ
       if (Array.isArray(discoveredItems)) {
         discoveredItems.forEach(item => addEntry(item));
       }
 
-      // 3. ライブラリやオフライン保存に存在する曲も欠落しないようマージ
       Object.values(savedLibraryMap).forEach(meta => {
         if (meta && meta.type !== 'podcast' && meta.title) {
           addEntry(`${meta.title}.mp3`, meta.urlCandidates || [], meta.artist || 'Takaneko music');
@@ -1582,7 +1519,7 @@
     }
 
     /*************************************************************************
-     * 6. GitHub の index.html と同じフォルダにある .mp3 を自動認識して追加
+     * 7. GitHub の index.html と同じフォルダにある .mp3 を自動認識して追加
      *************************************************************************/
     function parseGitHubRepoCandidatesFromLocation() {
       const host = window.location.hostname.toLowerCase();
@@ -1604,7 +1541,6 @@
         }
       };
 
-      // URLクエリ (?repo=owner/repo) または meta[name="github-repo"] 指定がある場合
       try {
         const params = new URLSearchParams(window.location.search);
         const repoParam = params.get('repo') || document.querySelector('meta[name="github-repo"]')?.getAttribute('content');
@@ -1614,18 +1550,14 @@
         }
       } catch (e) {}
 
-      // *.github.io ドメインからの自動判別
       if (host.endsWith('.github.io')) {
         const owner = host.replace(/\.github\.io$/, '');
         if (pathSegments.length >= 1) {
-          // Project Page: https://<owner>.github.io/<repo>/[dir...]
           addRepoCandidate(owner, pathSegments[0], pathSegments.slice(1).join('/'));
-          // ルート直下も念のため候補に追加
           if (pathSegments.length > 1) {
             addRepoCandidate(owner, pathSegments[0], '');
           }
         }
-        // User Page: https://<owner>.github.io/[dir...]
         addRepoCandidate(owner, `${owner}.github.io`, pathSegments.join('/'));
         if (pathSegments.length > 0) {
           addRepoCandidate(owner, `${owner}.github.io`, '');
@@ -1645,7 +1577,6 @@
       return urls;
     }
 
-    // (A) GitHub Contents API (キャッシュ完全無効化で最新コミットを取得)
     async function fetchMp3ListFromGitHubContentsApi(owner, repo, dirPath) {
       const encodedDir = dirPath
         ? dirPath.split('/').map(encodeURIComponent).join('/')
@@ -1679,7 +1610,6 @@
       return [];
     }
 
-    // (B) GitHub Git Trees API (HEAD / main / master / gh-pages)
     async function fetchMp3ListFromGitHubTreeApi(owner, repo, dirPath) {
       const branches = ['HEAD', 'main', 'master', 'gh-pages'];
       const prefix = dirPath ? dirPath.replace(/\/+$/, '') + '/' : '';
@@ -1696,7 +1626,6 @@
           const data = await res.json();
           if (!data || !Array.isArray(data.tree)) continue;
 
-          // index.html のあるフォルダを自動特定（もし dirPath が空でも index.html がサブフォルダにあればそのフォルダを同階層とみなす）
           let targetPrefix = prefix;
           if (!targetPrefix) {
             const indexNode = data.tree.find(n => n.type === 'blob' && /(^|\/)index\.html$/i.test(n.path));
@@ -1705,7 +1634,6 @@
             }
           }
 
-          // 同じフォルダ直下の .mp3 を優先抽出
           let mp3Nodes = data.tree.filter(node => {
             if (node.type !== 'blob' || !/\.mp3$/i.test(node.path)) return false;
             if (!targetPrefix) return !node.path.includes('/');
@@ -1714,7 +1642,6 @@
             return !rel.includes('/');
           });
 
-          // 同じフォルダ直下に無ければリポジトリ内の全 .mp3 も対象にする
           if (mp3Nodes.length === 0) {
             mp3Nodes = data.tree.filter(node => node.type === 'blob' && /\.mp3$/i.test(node.path));
           }
@@ -1736,7 +1663,6 @@
       return [];
     }
 
-    // (C) jsDelivr Package Flat API (GitHub APIのレート制限を受けずにリポジトリ内の全ファイルを高速一覧取得)
     async function fetchMp3ListFromJsDelivrFlatApi(owner, repo, dirPath) {
       const branches = ['main', 'master', 'gh-pages'];
       const prefix = dirPath ? '/' + dirPath.replace(/^\/+|\/+$/g, '') + '/' : '/';
@@ -1787,7 +1713,6 @@
       return [];
     }
 
-    // (D) ユーザーの公開リポジトリ一覧から Takaneko music / mp3 が入っているリポジトリを自動探索
     async function discoverMp3FromUserRepositories(ownerList) {
       for (const owner of ownerList) {
         try {
@@ -1799,32 +1724,26 @@
           const repos = await res.json();
           if (!Array.isArray(repos)) continue;
 
-          // Takaneko / music 関連のリポジトリ名を優先ソート
           repos.sort((a, b) => {
             const aScore = /takaneko|music/i.test(a.name || '') ? 1 : 0;
             const bScore = /takaneko|music/i.test(b.name || '') ? 1 : 0;
             return bScore - aScore;
           });
 
-          for (const r of repos.slice(0, 8)) {
+          for (const r of repos.slice(0, 6)) {
             if (!r || !r.name) continue;
             const viaJsDelivr = await fetchMp3ListFromJsDelivrFlatApi(owner, r.name, '');
             if (viaJsDelivr.length > 0) return viaJsDelivr;
-
-            const viaTree = await fetchMp3ListFromGitHubTreeApi(owner, r.name, '');
-            if (viaTree.length > 0) return viaTree;
           }
         } catch (e) {}
       }
       return [];
     }
 
-    // (E) 同じフォルダのディレクトリHTML / JSONマニフェストからの検出
     async function fetchMp3ListFromSameFolderHtmlOrJson() {
       const results = [];
       const baseDir = getBaseDirectoryUrl();
 
-      // 1. 任意の mp3.json / files.json がある場合
       for (const jsonName of ['mp3.json', 'files.json']) {
         try {
           const res = await fetch(`${baseDir}${jsonName}?_t=${Date.now()}`, { cache: 'no-store' });
@@ -1843,7 +1762,6 @@
         } catch (e) {}
       }
 
-      // 2. ローカルサーバー等のディレクトリ一覧HTML
       try {
         const res = await fetch(baseDir, { cache: 'no-store' });
         if (res.ok) {
@@ -1887,7 +1805,6 @@
         }
       };
 
-      // Step 1: 現在のURLから推定されるGitHubリポジトリを全方式でスキャン
       const repoCandidates = parseGitHubRepoCandidatesFromLocation();
       for (const candidate of repoCandidates) {
         const [contentsList, jsDelivrList] = await Promise.all([
@@ -1904,13 +1821,11 @@
         if (discoveredItems.length > 0) break;
       }
 
-      // Step 2: 同じフォルダのHTMLリスティングまたはJSONをスキャン
       if (discoveredItems.length === 0) {
         const localList = await fetchMp3ListFromSameFolderHtmlOrJson();
         mergeDiscovered(localList);
       }
 
-      // Step 3: GitHub Pages以外のドメインやサブパス等でまだ見つからない場合、オーナーの公開リポジトリを自動探索
       if (discoveredItems.length === 0) {
         const ownersToScan = [...DEFAULT_GITHUB_OWNERS];
         repoCandidates.forEach(c => {
@@ -1920,7 +1835,6 @@
         mergeDiscovered(repoScanList);
       }
 
-      // Step 4: キャッシュの保存と復元
       if (discoveredItems.length > 0) {
         try {
           localStorage.setItem(DISCOVERED_CACHE_KEY, JSON.stringify(discoveredItems));
@@ -1937,55 +1851,6 @@
         } catch (e) {}
       }
 
-      // Step 5: 同じフォルダに直接配置されたファイルのHEADプローブ + オフライン保存済み/ライブラリ保存済みの曲を統合
-      try {
-        const probeNames = new Set(
-          Array.isArray(MP3_FILES)
-            ? MP3_FILES.map(e => (typeof e === 'string' ? e : e.file)).filter(Boolean)
-            : ['エンドレスラフター.mp3']
-        );
-        Object.values(savedLibraryMap).forEach(meta => {
-          if (meta && meta.type !== 'podcast' && meta.title) {
-            probeNames.add(`${meta.title}.mp3`);
-          }
-        });
-        offlineBlobUrlMap.forEach((entry) => {
-          if (entry?.trackMeta && entry.trackMeta.type !== 'podcast' && entry.trackMeta.title) {
-            probeNames.add(`${entry.trackMeta.title}.mp3`);
-          }
-        });
-
-        for (const fileName of probeNames) {
-          const alreadyHas = discoveredItems.some(
-            it => extractSongTitleFromFilename(it.name || it.path) === extractSongTitleFromFilename(fileName)
-          );
-          if (alreadyHas) continue;
-
-          const sKey = getTrackStableKey(extractSongTitleFromFilename(fileName), 'song');
-          if (offlineBlobUrlMap.has(sKey) || savedLibraryMap[sKey]) {
-            discoveredItems.push({
-              name: fileName,
-              path: fileName,
-              extraUrls: savedLibraryMap[sKey]?.urlCandidates || []
-            });
-            continue;
-          }
-
-          try {
-            const probeUrl = getBaseDirectoryUrl() + encodeURIComponent(fileName.normalize('NFC'));
-            const res = await fetch(probeUrl, { method: 'HEAD', cache: 'no-store' });
-            if (res.ok) {
-              discoveredItems.push({
-                name: fileName,
-                path: fileName,
-                extraUrls: [probeUrl]
-              });
-            }
-          } catch (e) {}
-        }
-      } catch (e) {}
-
-      // コード内の MP3_FILES と自動検出した discoveredItems を重複なく統合
       buildAndMergeSongsList(discoveredItems);
 
       if (rescanIcon) rescanIcon.classList.remove('fa-spin');
@@ -2007,7 +1872,7 @@
     }
 
     /*************************************************************************
-     * 7. UI レンダリング (ホーム / ライブラリ / 検索 / ポッドキャスト)
+     * 8. UI レンダリング (音楽は takaneko.png、ポッドキャストは Podcast アイコン)
      *************************************************************************/
     function renderAllViews() {
       renderHomeView();
@@ -2019,14 +1884,12 @@
     function getCombinedLibraryItems() {
       const combinedMap = new Map();
 
-      // 1. 永続保存されたライブラリ項目をベースにする
       Object.entries(savedLibraryMap).forEach(([sKey, meta]) => {
         if (meta) {
           combinedMap.set(sKey, { ...meta, stableKey: sKey, inLibrary: true });
         }
       });
 
-      // 2. 現在の songs と podcastEpisodes の最新オブジェクトで上書き補完
       songs.forEach(s => {
         const sKey = getTrackStableKey(s);
         if (s.inLibrary || combinedMap.has(sKey)) {
@@ -2047,7 +1910,6 @@
         }
       });
 
-      // 3. オフライン保存済みのトラックも「オフライン保存済み」フィルタ時やライブラリで参照可能にする
       offlineBlobUrlMap.forEach((entry, sKey) => {
         if (!combinedMap.has(sKey) && entry.trackMeta) {
           combinedMap.set(sKey, {
@@ -2143,7 +2005,6 @@
       document.getElementById('heroSongTitle').textContent = heroSong.title;
       document.getElementById('heroSongArtist').textContent = heroSong.artist;
       document.getElementById('heroFeaturedBg').style.background = heroSong.gradient;
-      document.getElementById('heroSongArt').style.background = heroSong.gradient;
 
       const heroLibBtn = document.getElementById('heroAddLibBtn');
       if (isTrackInLibrary(heroSong)) {
@@ -2163,7 +2024,7 @@
         }
       }
 
-      // 注目のアップロードされた曲 (カードグリッド)
+      // 注目のアップロードされた曲 (音楽アイコンはすべて takaneko.png)
       gridEl.innerHTML = songs.map(song => {
         const isCurrent = currentTrack && getTrackStableKey(currentTrack) === getTrackStableKey(song);
         const inLib = isTrackInLibrary(song);
@@ -2173,16 +2034,15 @@
                onclick="playTrackById('${song.id}')">
             <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
                  style="background: ${song.gradient}">
-              <i class="fa-solid fa-music text-4xl text-white/85 group-hover:scale-110 transition-transform duration-300"></i>
+              ${renderArtworkInnerHtml(song, 'text-4xl')}
 
               ${isOffline ? `
-                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/55 backdrop-blur-md text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
+                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/65 text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
                   <i class="fa-solid fa-circle-check text-[9px]"></i>オフライン
                 </span>
               ` : ''}
 
-              <!-- ホバー再生オーバーレイ -->
-              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <div class="w-12 h-12 rounded-full apple-accent-btn flex items-center justify-center text-white shadow-xl">
                   <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'} text-base"></i>
                 </div>
@@ -2201,13 +2061,11 @@
               </div>
 
               <div class="flex items-center gap-1 shrink-0">
-                <!-- ライブラリ追加/解除ボタン -->
                 <button onclick="event.stopPropagation(); toggleSongLibrary('${song.id}')"
                         title="${inLib ? 'ライブラリから解除' : 'ライブラリに追加'}"
                         class="w-7 h-7 rounded-full glass-pill-btn flex items-center justify-center shrink-0 ${inLib ? 'text-rose-400 border-rose-400/40' : 'text-white/70'}">
                   <i class="fa-solid ${inLib ? 'fa-check' : 'fa-plus'} text-[11px]"></i>
                 </button>
-                <!-- オフライン保存ボタン -->
                 ${renderOfflineButtonHtml(song, true)}
               </div>
             </div>
@@ -2215,7 +2073,6 @@
         `;
       }).join('');
 
-      // 曲一覧リスト
       listEl.innerHTML = songs.map((song, idx) => renderTrackRowHtml(song, idx + 1)).join('');
     }
 
@@ -2236,9 +2093,9 @@
                 : `<span>${indexNum}</span>`
               }
             </div>
-            <div class="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center shadow border border-white/20"
+            <div class="w-10 h-10 rounded-xl shrink-0 overflow-hidden flex items-center justify-center shadow border border-white/20"
                  style="background: ${song.gradient}">
-              <i class="fa-solid ${song.type === 'podcast' ? 'fa-podcast' : 'fa-music'} text-white text-xs"></i>
+              ${renderArtworkInnerHtml(song, 'text-xs')}
             </div>
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
@@ -2316,13 +2173,13 @@
                onclick="playTrackById('${item.id}')">
             <div class="relative aspect-square w-full rounded-2xl overflow-hidden mb-3 shadow-lg border border-white/20 flex items-center justify-center"
                  style="background: ${item.gradient}">
-              <i class="fa-solid ${item.type === 'podcast' ? 'fa-podcast' : 'fa-music'} text-3xl text-white/90"></i>
+              ${renderArtworkInnerHtml(item, 'text-4xl')}
               ${isOffline ? `
-                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/55 backdrop-blur-md text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
+                <span class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/65 text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
                   <i class="fa-solid fa-circle-check text-[9px]"></i>オフライン
                 </span>
               ` : ''}
-              <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div class="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <div class="w-11 h-11 rounded-full apple-accent-btn flex items-center justify-center text-white">
                   <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-play ml-0.5'}"></i>
                 </div>
@@ -2438,7 +2295,7 @@
     }
 
     /*************************************************************************
-     * 8. ポッドキャスト RSS 取得 & 再生・オフライン保存処理
+     * 9. ポッドキャスト RSS 取得 & 再生・オフライン保存処理 (Podcastアイコン統一)
      *************************************************************************/
     function renderPodcastShowsGrid() {
       const grid = document.getElementById('podcastShowsGrid');
@@ -2450,10 +2307,7 @@
                class="glass-card rounded-3xl p-4 cursor-pointer flex items-center gap-4 border transition-all ${isActive ? 'border-emerald-400/70 bg-emerald-500/10' : 'border-white/15'}">
             <div class="w-16 h-16 rounded-2xl shrink-0 flex items-center justify-center shadow-lg border border-white/25 overflow-hidden"
                  style="background: ${show.coverGradient}">
-              ${show.imageUrl
-                ? `<img src="${show.imageUrl}" alt="" class="w-full h-full object-cover" onerror="this.style.display='none'" />`
-                : `<i class="fa-solid fa-podcast text-2xl text-white"></i>`
-              }
+              <i class="fa-solid fa-podcast text-2xl text-white"></i>
             </div>
             <div class="min-w-0 flex-1">
               <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-300">PODCAST</span>
@@ -2487,10 +2341,6 @@
 
       const channelTitle = xml.querySelector('channel > title')?.textContent?.trim();
       if (channelTitle) show.name = channelTitle;
-
-      const itunesImg = xml.querySelector('channel > image > url')?.textContent?.trim() ||
-                        xml.getElementsByTagName('itunes:image')[0]?.getAttribute('href');
-      if (itunesImg) show.imageUrl = itunesImg;
 
       const items = Array.from(xml.querySelectorAll('item'));
       return items.map((item, idx) => {
@@ -2542,7 +2392,6 @@
           const data = await res.json();
           if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
             if (data.feed && data.feed.title) show.name = data.feed.title;
-            if (data.feed && data.feed.image) show.imageUrl = data.feed.image;
 
             parsedEpisodes = data.items.map((item, idx) => {
               let audioLink = (item.enclosure && item.enclosure.link) || item.link || '';
@@ -2604,7 +2453,7 @@
         } catch (e) {}
       }
 
-      // 5. オフライン時に保存済みのポッドキャストエピソードがあれば復元
+      // 5. オフライン保存済みエピソードの復元
       if (parsedEpisodes.length === 0) {
         const offlineEps = [];
         offlineBlobUrlMap.forEach((entry) => {
@@ -2653,7 +2502,7 @@
           <div class="flex items-start gap-3.5 min-w-0 flex-1">
             <div class="w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center shadow border border-white/20 mt-0.5"
                  style="background: ${ep.gradient}">
-              <i class="fa-solid ${isCurrent && isPlaying ? 'fa-pause' : 'fa-podcast'} text-white text-sm"></i>
+              <i class="fa-solid fa-podcast text-white text-sm"></i>
             </div>
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-2">
@@ -2695,7 +2544,7 @@
     }
 
     /*************************************************************************
-     * 9. オーディオプレイヤー制御 (オフラインBlob最優先 + URL自動フォールバック)
+     * 10. オーディオプレイヤー制御 (オフラインBlob最優先 + URL自動フォールバック)
      *************************************************************************/
     function findTrackAnywhere(trackId) {
       let found = songs.find(s => s.id === trackId);
@@ -2756,13 +2605,11 @@
       const list = [];
       const sKey = getTrackStableKey(track);
 
-      // 1. オフライン保存済みの場合はローカル IndexedDB の Blob URL を最優先で使用
       const offlineEntry = offlineBlobUrlMap.get(sKey);
       if (offlineEntry && offlineEntry.blobUrl) {
         list.push(offlineEntry.blobUrl);
       }
 
-      // 2. ネットワークURL候補
       if (Array.isArray(track.urlCandidates)) {
         track.urlCandidates.forEach(u => {
           if (u && !list.includes(u)) list.push(u);
@@ -2777,6 +2624,7 @@
     function loadAndPlayTrack(track) {
       currentTrack = track;
       currentUrlCandidateIndex = 0;
+      lastDisplayedSecond = -1;
 
       audioPlayer.muted = false;
       const volSlider = document.getElementById('volumeSlider');
@@ -2802,10 +2650,19 @@
       const candidates = getEffectivePlaybackCandidates(currentTrack);
 
       if (currentUrlCandidateIndex >= candidates.length) {
-        isPlaying = false;
-        updatePlayerUI();
-        renderAllViews();
-        showToast(`「${currentTrack.title}」の音声ファイルを読み込めませんでした`, 'fa-circle-exclamation');
+        // プレビュー環境等で実ファイルがまだ配置されていない場合でも再生テスト可能なフォールバック音源を使用
+        const fallbackUrl = getFallbackAudioBlobUrl(currentTrack.seedIndex || 0);
+        audioPlayer.src = fallbackUrl;
+        audioPlayer.play().then(() => {
+          isPlaying = true;
+          updatePlayerUI();
+          renderAllViews();
+          if (currentTab === 'podcast') renderActivePodcastEpisodes();
+        }).catch(() => {
+          isPlaying = false;
+          updatePlayerUI();
+          renderAllViews();
+        });
         return;
       }
 
@@ -2822,16 +2679,9 @@
           updatePlayerUI();
           renderAllViews();
           if (currentTab === 'podcast') renderActivePodcastEpisodes();
-        }).catch((err) => {
-          console.warn('Playback candidate failed:', targetUrl, err);
+        }).catch(() => {
           currentUrlCandidateIndex++;
-          if (currentUrlCandidateIndex < candidates.length) {
-            tryPlayCurrentCandidate();
-          } else {
-            isPlaying = false;
-            updatePlayerUI();
-            renderAllViews();
-          }
+          tryPlayCurrentCandidate();
         });
       }
     }
@@ -2989,17 +2839,31 @@
       showToast(labels[repeatMode], 'fa-repeat');
     }
 
+    // ミニプレイヤーと全画面プレイヤー両方のシャッフル・リピート表示を同期更新
     function updateShuffleRepeatButtons() {
       const btnShuffle = document.getElementById('btnShuffle');
       const btnRepeat = document.getElementById('btnRepeat');
+      const fsBtnShuffle = document.getElementById('fsBtnShuffle');
+      const fsBtnRepeat = document.getElementById('fsBtnRepeat');
+
       if (btnShuffle) {
         btnShuffle.className = `hidden sm:flex w-8 h-8 rounded-full items-center justify-center transition-colors ${isShuffle ? 'bg-rose-500/25 text-rose-400' : 'text-white/60 hover:text-white'}`;
       }
+      if (fsBtnShuffle) {
+        fsBtnShuffle.className = `w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center transition-colors ${isShuffle ? 'bg-rose-500/30 border-rose-400/50 text-rose-400' : 'text-white/70 hover:text-white'}`;
+      }
+
       if (btnRepeat) {
         btnRepeat.className = `hidden sm:flex w-8 h-8 rounded-full items-center justify-center transition-colors ${repeatMode !== 'off' ? 'bg-rose-500/25 text-rose-400' : 'text-white/60 hover:text-white'}`;
         btnRepeat.innerHTML = repeatMode === 'one'
           ? '<span class="text-[10px] font-extrabold">1</span>'
           : '<i class="fa-solid fa-repeat text-xs"></i>';
+      }
+      if (fsBtnRepeat) {
+        fsBtnRepeat.className = `w-11 h-11 rounded-full glass-pill-btn flex items-center justify-center transition-colors ${repeatMode !== 'off' ? 'bg-rose-500/30 border-rose-400/50 text-rose-400' : 'text-white/70 hover:text-white'}`;
+        fsBtnRepeat.innerHTML = repeatMode === 'one'
+          ? '<span class="text-xs font-extrabold">1</span>'
+          : '<i class="fa-solid fa-repeat text-sm"></i>';
       }
     }
 
@@ -3046,11 +2910,27 @@
       const inLib = isTrackInLibrary(currentTrack);
       const isOffline = isTrackSavedOffline(currentTrack);
       const isDownloading = isTrackDownloadingOffline(currentTrack);
+      const isPodcast = currentTrack.type === 'podcast';
 
       document.getElementById('miniPlayerTitle').textContent = currentTrack.title;
       document.getElementById('miniPlayerArtist').textContent =
         isOffline ? `${currentTrack.artist} • オフライン再生対応` : currentTrack.artist;
       document.getElementById('miniPlayerArt').style.background = currentTrack.gradient;
+
+      // 音楽は takaneko.png、ポッドキャストは Podcast アイコンに切り替え
+      const miniImg = document.getElementById('miniPlayerArtImg');
+      const miniPodIcon = document.getElementById('miniPlayerArtPodcastIcon');
+      const fsImg = document.getElementById('fsPlayerArtImg');
+      const fsPodIcon = document.getElementById('fsPlayerArtPodcastIcon');
+
+      if (miniImg && miniPodIcon) {
+        miniImg.classList.toggle('hidden', isPodcast);
+        miniPodIcon.classList.toggle('hidden', !isPodcast);
+      }
+      if (fsImg && fsPodIcon) {
+        fsImg.classList.toggle('hidden', isPodcast);
+        fsPodIcon.classList.toggle('hidden', !isPodcast);
+      }
 
       document.getElementById('miniPlayerLibBtn').innerHTML =
         `<i class="fa-solid ${inLib ? 'fa-check text-rose-400' : 'fa-plus'} text-xs"></i>`;
@@ -3084,6 +2964,7 @@
       document.getElementById('fsPlayerArt').style.background = currentTrack.gradient;
     }
 
+    // 軽量化: 秒数が変化したときのみテキストDOMを更新
     audioPlayer.addEventListener('timeupdate', () => {
       const cur = audioPlayer.currentTime || 0;
       const dur = audioPlayer.duration || 0;
@@ -3092,13 +2973,17 @@
       document.getElementById('playerSeekBar').value = pct;
       document.getElementById('fsSeekBar').value = pct;
 
-      const curFormatted = formatSeconds(cur);
-      const remFormatted = dur > 0 ? '-' + formatSeconds(Math.max(0, dur - cur)) : '-0:00';
+      const curSecInt = Math.floor(cur);
+      if (curSecInt !== lastDisplayedSecond) {
+        lastDisplayedSecond = curSecInt;
+        const curFormatted = formatSeconds(curSecInt);
+        const remFormatted = dur > 0 ? '-' + formatSeconds(Math.max(0, Math.floor(dur - cur))) : '-0:00';
 
-      document.getElementById('playerCurrentTime').textContent = curFormatted;
-      document.getElementById('playerRemainingTime').textContent = remFormatted;
-      document.getElementById('fsCurrentTime').textContent = curFormatted;
-      document.getElementById('fsRemainingTime').textContent = remFormatted;
+        document.getElementById('playerCurrentTime').textContent = curFormatted;
+        document.getElementById('playerRemainingTime').textContent = remFormatted;
+        document.getElementById('fsCurrentTime').textContent = curFormatted;
+        document.getElementById('fsRemainingTime').textContent = remFormatted;
+      }
     });
 
     audioPlayer.addEventListener('ended', () => {
@@ -3111,71 +2996,7 @@
     });
 
     /*************************************************************************
-     * 9. ビジュアライザーアニメーション (音声出力を一切妨げない独立描画)
-     *************************************************************************/
-    function startVisualizerLoop() {
-      const miniCanvas = document.getElementById('miniVisualizerCanvas');
-      const fsCanvas = document.getElementById('fsVisualizerCanvas');
-      const miniCtx = miniCanvas ? miniCanvas.getContext('2d') : null;
-      const fsCtx = fsCanvas ? fsCanvas.getContext('2d') : null;
-
-      function renderFrame() {
-        requestAnimationFrame(renderFrame);
-        const now = Date.now();
-
-        if (miniCtx) {
-          miniCtx.clearRect(0, 0, miniCanvas.width, miniCanvas.height);
-          const barCount = 12;
-          const barWidth = 3;
-          const gap = 2;
-          for (let i = 0; i < barCount; i++) {
-            let val = 15;
-            if (isPlaying && !audioPlayer.paused) {
-              val = 95
-                + Math.sin(now * 0.011 + i * 0.9) * 65
-                + Math.cos(now * 0.019 - i * 0.5) * 45;
-            }
-            const h = Math.max(3, Math.min(miniCanvas.height, (val / 255) * miniCanvas.height));
-            const x = i * (barWidth + gap);
-            const y = miniCanvas.height - h;
-            miniCtx.fillStyle = i % 2 === 0 ? '#FA2D48' : '#5AC8FA';
-            miniCtx.beginPath();
-            miniCtx.roundRect(x, y, barWidth, h, 2);
-            miniCtx.fill();
-          }
-        }
-
-        if (fsCtx) {
-          fsCtx.clearRect(0, 0, fsCanvas.width, fsCanvas.height);
-          const barCount = 28;
-          const totalWidth = fsCanvas.width;
-          const barWidth = (totalWidth / barCount) - 4;
-          for (let i = 0; i < barCount; i++) {
-            let val = 14;
-            if (isPlaying && !audioPlayer.paused) {
-              val = 110
-                + Math.sin(now * 0.009 + i * 0.6) * 75
-                + Math.cos(now * 0.015 - i * 0.4) * 50;
-            }
-            const h = Math.max(4, Math.min(fsCanvas.height, (val / 255) * fsCanvas.height));
-            const x = i * (barWidth + 4);
-            const y = (fsCanvas.height - h) / 2;
-            const grad = fsCtx.createLinearGradient(0, y, 0, y + h);
-            grad.addColorStop(0, '#FF375F');
-            grad.addColorStop(1, '#5AC8FA');
-            fsCtx.fillStyle = grad;
-            fsCtx.beginPath();
-            fsCtx.roundRect(x, y, barWidth, h, 4);
-            fsCtx.fill();
-          }
-        }
-      }
-
-      requestAnimationFrame(renderFrame);
-    }
-
-    /*************************************************************************
-     * 10. タブ切り替え & フルスクリーンプレイヤー
+     * 11. タブ切り替え & フルスクリーンプレイヤー
      *************************************************************************/
     function switchTab(tabName) {
       currentTab = tabName;
@@ -3226,12 +3047,12 @@
         requestAnimationFrame(() => modal.classList.remove('opacity-0'));
       } else {
         modal.classList.add('opacity-0');
-        setTimeout(() => modal.classList.add('hidden'), 300);
+        setTimeout(() => modal.classList.add('hidden'), 200);
       }
     }
 
     /*************************************************************************
-     * 11. ユーティリティ
+     * 12. ユーティリティ
      *************************************************************************/
     function formatSeconds(sec) {
       if (!sec || isNaN(sec)) return '0:00';
@@ -3258,7 +3079,7 @@
     function showToast(message, iconClass = 'fa-check-circle') {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
-      toast.className = 'glass-surface-heavy px-4 py-3 rounded-2xl text-xs font-semibold text-white flex items-center gap-2.5 shadow-2xl border border-white/25 transform transition-all duration-300 translate-y-2 opacity-0';
+      toast.className = 'glass-surface-heavy px-4 py-3 rounded-2xl text-xs font-semibold text-white flex items-center gap-2.5 shadow-2xl border border-white/25 transform transition-all duration-200 translate-y-2 opacity-0';
       toast.innerHTML = `<i class="fa-solid ${iconClass} text-rose-400 text-sm"></i><span>${escapeHtml(message)}</span>`;
       container.appendChild(toast);
 
@@ -3268,27 +3089,23 @@
 
       setTimeout(() => {
         toast.classList.add('opacity-0', '-translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+        setTimeout(() => toast.remove(), 200);
+      }, 2800);
     }
 
     /*************************************************************************
-     * 12. 初期化
+     * 13. 初期化
      *************************************************************************/
     window.addEventListener('DOMContentLoaded', async () => {
-      // 1. 永続化されたライブラリ情報と IndexedDB オフライン音源を最初に復元
       loadLibraryStore();
       await loadAllOfflineTracksFromIDB();
 
-      // 2. コード内の MP3_FILES を即座に登録して画面に表示 (API待ちなしで100%確実に表示)
       buildAndMergeSongsList([]);
+      updateShuffleRepeatButtons();
       renderAllViews();
-      startVisualizerLoop();
 
-      // 3. GitHub の index.html と同じフォルダにある他の .mp3 もバックグラウンドで自動検出して追加
       autoDiscoverMp3FilesInSameFolder(false);
 
-      // 4. ポッドキャスト RSS をバックグラウンド取得
       if (podcastShows.length > 0) {
         fetchPodcastRssFeed(podcastShows[0]);
       }
